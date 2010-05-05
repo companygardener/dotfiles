@@ -1,3 +1,4 @@
+. ./colors
 # rvm-prompt (i)nterpreter (v)ersion (p)atchlevel
 # rvm-prompt i v p
 PS1="\n\[$EBLUE\]\u\[$NO_COLOR\]: \[$ERED\]\$(~/.rvm/bin/rvm-prompt)\[$NO_COLOR\] \w \[$EBLACK\]\$(vcprompt)\[$NO_COLOR\] \n→ "
