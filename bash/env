@@ -1,0 +1,13 @@
+export CLICOLOR=1
+export TERM=xterm-color
+export LSCOLORS=exfxcxdxbxegedabagacad
+
+export HISTFILESIZE=300000
+export HISTCONTROL=ignoreboth
+export HISTSIZE=100000
+
+export PATH="~/bin:$PATH"
+
+export EDITOR=nano
+
+export P4CONFIG=.p4config

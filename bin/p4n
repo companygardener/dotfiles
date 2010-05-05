@@ -1,0 +1,61 @@
+#!/usr/bin/env ruby
+p4_ignore_list = ['selenium']
+def save_stderr_for_block opts={}
+  require 'thread'
+  insane = opts[:insane] || opts[:unsafe]
+  raise "wtf" unless Kernel.block_given?
+  old_stderr = STDERR.dup
+  rd, wr = IO.pipe
+  stderr_text = ''
+  #Method body in lambda so we can conditionally put in a thread.exclusive
+  body = lambda do
+    STDERR.reopen(wr)
+    yield
+    wr.close
+    STDERR.reopen(old_stderr)
+  end
+  if not insane
+    Thread.exclusive do
+      body.call
+    end
+  else
+    body.call
+  end
+  rd.readlines.join("\n")
+ensure
+  STDERR.reopen(old_stderr) unless STDERR.to_i==old_stderr.to_i
+end
+
+
+def build_ignores_list files
+  list=[]
+  files.each do |file|
+    ig_path = file.sub(/\/\.p4ignore/i,'')
+    File.read(file).each_line do |line|line.chomp!
+      next unless line=~/\S/
+      line.sub!('*','[^/]*')
+      line.sub!('...','.*')
+      list << File.join(ig_path,line)
+    end
+  end
+  list
+end
+local_depot_path=`p4 where`.split.first.chomp('...').chomp('/')
+local_path=`p4 where`.split[2].chomp('...').chomp('/')
+local_files = `find #{local_path} ! -type d 2>/dev/null`.split("\n")
+
+depot_files = `p4 files ...`.split("\n").map{|f|f.sub(/#(\d+) - [^#]*$/,'').sub(Regexp.new("^" + local_depot_path + '/'),'')}
+p4_opened_output = nil
+p4_opened_stderr = save_stderr_for_block do 
+  p4_opened_output = `p4 opened ...`
+end
+p4_opened_stderr.split("\n").each{|l|STDERR.puts l unless l=~/ile\(s\)\s+not\s+opened\s+on\s+this\s+client\./}
+opened_files = p4_opened_output.split("\n").select{|f|f=~/#(\d+) - [^#]*$/}
+opened_files.map!{|f|f.sub(/#(\d+) - [^#]*$/,'')}
+opened_files.map!{|f|f.sub(Regexp.new("^" + local_depot_path + '/'),'')}
+p4ignore_files = local_files.select{|f|f=~/.p4ignore$/i}
+ig_list=build_ignores_list(p4ignore_files)
+ig_list.map{|ig_filter|Regexp.new(ig_filter)}.each{|ig_filter|local_files.reject!{|f|ig_filter===f}}
+rel_local_files=local_files.map{|f|f.sub(Regexp.new("^" + local_path + '/'),'')} 
+
+( rel_local_files - depot_files - opened_files  ).each{|l|puts l}

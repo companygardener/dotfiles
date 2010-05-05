@@ -1,0 +1,13 @@
+alias ..="cd .."
+alias ..1=".."
+alias ..2="..;.."
+alias ..3="..;..;.."
+alias ..4="..;..;..;.."
+alias ..5="..;..;..;..;.."
+
+alias ls='ls -lah'
+
+alias reload='source ~/.bashrc'
+
+alias p4s="p4 sync"
+alias p4c="p4 change"
