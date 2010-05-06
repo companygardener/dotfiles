@@ -1,0 +1,6 @@
+# Ruby Enterprise Edition
+wget http://rubyforge.org/frs/download.php/68718/ruby-enterprise_1.8.7-2010.01_i386.deb
+sudo dpkg -i ruby-enterprise_1.8.7-2010.01_i386.deb
+
+# nginx & passenger
+
