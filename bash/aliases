@@ -5,7 +5,7 @@ alias ..3="..;..;.."
 alias ..4="..;..;..;.."
 alias ..5="..;..;..;..;.."
 
-alias ls='ls -lah --color=auto'
+alias ls='ls -lahG'
 
 alias reload='source ~/.bashrc'
 
