@@ -1,10 +1,10 @@
 source ~/.bashrc
 
-if [ ! -f ~/bin/vcprompt ]; then
-	cd ~/bin/dotfiles/src/vcprompt
-
-	make
-
-	cp vcprompt ~/bin/vcprompt
-	chmod 755 vcprompt
-fi
+# if [ ! -f ~/bin/vcprompt ]; then
+#	cd ~/bin/dotfiles/src/vcprompt
+#
+#	make
+#
+#	cp vcprompt ~/bin/vcprompt
+#	chmod 755 vcprompt
+# fi
