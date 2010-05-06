@@ -5,5 +5,5 @@
 if [ -f ~/.rvm/bin/rvm-prompt ]; then
 	PS1="\n\[$EBLUE\]\u\[$NO_COLOR\]: \[$ERED\]\$(~/.rvm/bin/rvm-prompt)\[$NO_COLOR\] \w \[$EBLACK\]\$(pyprompt)\[$NO_COLOR\] \n→ "
 else
-	PS1="\n\[$EBLUE\]\u\[$NO_COLOR\]: \w \[$EBLACK\]\$(vcprompt)\[$NO_COLOR\] \n→ "
+	PS1="\n\[$EBLUE\]\u\[$NO_COLOR\]: \w \[$EBLACK\]\$(pyprompt)\[$NO_COLOR\] \n→ "
 fi
