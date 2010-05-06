@@ -9,5 +9,7 @@ alias ls='ls -lah'
 
 alias reload='source ~/.bashrc'
 
+alias dotfiles='cd ~/bin/dotfiles'
+
 alias p4s="p4 sync"
 alias p4c="p4 change"

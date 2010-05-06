@@ -1,0 +1,542 @@
+#!/usr/bin/env python
+from __future__ import with_statement
+from subprocess import Popen, PIPE
+import optparse
+import os
+import re
+import sqlite3
+import sys
+
+__version__ = (0, 1, 3)
+
+DEPTH = os.environ.get('VCPROMPT_DEPTH', 0)
+FORMAT = os.environ.get('VCPROMPT_FORMAT', '%s:%b')
+UNKNOWN = os.environ.get('VCPROMPT_UNKNOWN', '(unknown)')
+SYSTEMS = []
+
+
+def sorted_alpha(sortme, unique=True):
+    """
+    Sorts a string alphabetically, but does (kind of) the opposite of
+    the built-in ``sorted`` function.
+
+    Sorted order is:
+
+      * lowercase
+      * uppercase
+      * digits
+      * punctuation
+
+    Example:
+
+    >>> sorted_alpha("aSD??fc?!")
+    afcSD?!
+    """
+    upper, lower, digit, punctuation, passed = ([], [], [], [], [])
+    passed = []
+    for char in sortme:
+        # skip duplicates
+        if unique and char in passed:
+            continue
+
+        if char.isupper():
+            upper.append(char)
+        elif char.islower():
+            lower.append(char)
+        elif char.isdigit():
+            digit.append(char)
+        else:
+            punctuation.append(char)
+
+        passed.append(char)
+
+    return ''.join(lower + upper + digit + punctuation)
+
+
+def systems(*args, **kwargs):
+    for system in SYSTEMS:
+        name = getattr(system, 'name', system.func_name)
+        desc = getattr(system, 'description', '')
+        output = "%s: %s" % (name, desc)
+        print output
+    sys.exit(0)
+
+
+def values(option, opt, value, parser, *args, **kwargs):
+    for option in parser.rargs:
+        if option == 'systems':
+            systems()
+        if option in globals().keys():
+            print globals()[option]
+    sys.exit(0)
+
+
+def vcs(name, description):
+    def wrapped(function):
+        function.name = name
+        function.description = name
+        SYSTEMS.append(function)
+        return function
+    return wrapped
+
+
+def vcprompt(path, formats, unknown, *args, **kwargs):
+    paths = os.path.abspath(os.path.expanduser(path)).split('/')
+    depth = kwargs.get('depth', 0)
+    systems = kwargs.get('systems', None)
+    prompt = None
+    count = 0
+
+    while paths:
+        path = '/'.join(paths)
+        paths.pop()
+        for vcs in SYSTEMS:
+            if not systems or systems and vcs.func_name in systems:
+                vcs_format = "format-%s" % vcs.func_name
+                format = formats[vcs_format] or formats['format']
+                prompt = vcs(path, format, unknown)
+                if prompt:
+                    return prompt
+        if depth:
+            if count == depth:
+                break
+            count += 1
+    return ''
+
+
+def version(*args):
+    v = '.'.join(map(str, __version__))
+    if '-v' in args or '--version' in args:
+        print "vcprompt", v
+        sys.exit(0)
+    return v
+
+
+def main():
+    # parser
+    parser = optparse.OptionParser()
+
+    # format
+    parser.add_option('-f', '--format', dest='format',
+                      default=FORMAT, help='The format string to use.')
+
+    # path
+    parser.add_option('-p', '--path', dest='path',
+                      default='.', help='The path to run vcprompt on.')
+
+    # max depth
+    parser.add_option('-d', '--max-depth', dest='depth', type='int',
+                      default=DEPTH,
+                      help='The maximum number of directories to traverse. ' \
+                            'Defaults to 0 (infinite).')
+    # systems
+    parser.add_option('-s', '--systems', dest='systems', action='append',
+                      help='The version control systems to use.')
+
+    # unknown
+    parser.add_option('-u', '--unknown', dest='unknown', default=UNKNOWN,
+                      help='The "unknown" value.')
+
+    # version
+    parser.add_option('-v', '--version', action='callback', callback=version,
+                      help="show program's version number and exit")
+
+
+    # per-VCS formatting
+    group = optparse.OptionGroup(parser, "VCS-specific formatting",
+                                 "These options can be used for VCS-specific" \
+                                 " prompt formatting.")
+
+    for system in SYSTEMS:
+        default = 'VCPROMPT_FORMAT_%s' % system.func_name.upper()
+        default = os.environ.get(default, None)
+        dest = 'format-%s' % system.func_name
+        flag = '--%s' % dest
+        help = 'The format string to use for %s' % system.name
+        group.add_option(flag, dest=dest, default=default, metavar="FORMAT",
+                         help=system.name)
+    parser.add_option_group(group)
+
+
+    # internally used stuff
+    group = optparse.OptionGroup(parser, "Internal options",
+                                 "These options are used internally or for " \
+                                 "testing. Use of these is not recommended.")
+    # values
+    group.add_option('--values', dest='values', action='callback',
+                     callback=values,
+                     help='Prints the values of the "format", "path" ' \
+                          'and "unknown" options.')
+
+    parser.add_option_group(group)
+
+    # parse!
+    options, args = parser.parse_args()
+
+    sys.stdout.write(vcprompt(depth=options.depth,
+                              formats=options.__dict__,
+                              path=options.path,
+                              systems=options.systems,
+                              unknown=options.unknown))
+
+
+@vcs('Bazaar', 'The Bazaar version control system')
+def bzr(path, string, unknown):
+    file = os.path.join(path, '.bzr/branch/last-revision')
+    if not os.path.exists(file):
+        return None
+
+    branch = hash = status = unknown
+
+    # local revision number
+    if re.search('%(r|h)', string):
+        with open(file, 'r') as f:
+            hash = f.read().strip().split(' ', 1)[0]
+
+
+    # status
+    if '%i' in string:
+        command = 'bzr status'
+        process = Popen(command.split(), stdout=PIPE)
+        output = process.communicate()[0]
+        returncode = process.returncode
+
+        if not returncode:
+            # the list of headers in 'bzr status' output
+            headers = {'added': 'A',
+                       'modified': 'M',
+                       'removed': 'R',
+                       'renamed': 'V',
+                       'kind changed': 'K',
+                       'unknown': '?'}
+            headers_regex = '%s:' % '|'.join(headers.keys())
+
+            status = ''
+            for line in output.split('\n'):
+                line = line.strip()
+                if re.match(headers_regex, line):
+                    header = line.split(':')[0]
+                    status = '%s%s' % (status, headers[header])
+
+            status = sorted_alpha(status)
+
+    # branch
+    # TODO figure out something more correct
+    string = string.replace('%b', os.path.basename(path))
+    string = string.replace('%h', hash)
+    string = string.replace('%r', hash)
+    string = string.replace('%i', status)
+    string = string.replace('%s', 'bzr')
+    return string
+
+
+@vcs('CVS', 'Concurrent Versions System.')
+def cvs(path, string, unknown):
+    # Stabbing in the dark here
+    # TODO make this not suck
+    file = os.path.join(path, 'CVS/')
+    if not os.path.exists(file):
+        return None
+
+    branch = revision = unknown
+
+    string = string.replace('%s', 'cvs')
+    string = string.replace('%b', branch)
+    string = string.replace('%r', revision)
+    return string
+
+
+@vcs('Darcs', 'Distributed. Interactive. Smart.')
+def darcs(path, string, unknown):
+    # It's almost a given that everything in here is
+    # going to be wrong
+    file = os.path.join(path, '_darcs/hashed_inventory')
+    if not os.path.exists(file):
+        return None
+
+    hash = branch = status = unknown
+    # hash
+    if re.search('%(h|r)', string):
+        with open(file, 'r') as f:
+            size, hash = f.read().strip().split('\n')[0].split('-')
+            hash = hash[:7]
+
+    # branch
+    # darcs doesn't have in-repo local branching (yet)
+    # http://bugs.darcs.net/issue555
+    # until it does, or I can think of something better, this'll have to do
+    branch = os.path.basename(path)
+
+    # status
+    if '%i' in string:
+        status = ''
+        command = 'darcs whatsnew -l'
+        process = Popen(command.split(), stdout=PIPE, stderr=PIPE)
+        output = process.communicate()[0]
+        returncode = process.returncode
+
+        if not returncode:
+            for line in output.split('\n'):
+                code = line.split(' ')[0]
+                status = '%s%s' % (status, code)
+            status = sorted_alpha(status)
+
+    # formatting
+    string = string.replace('%b', branch)
+    string = string.replace('%h', hash)
+    string = string.replace('%r', hash)
+    string = string.replace('%i', status)
+    string = string.replace('%s', 'darcs')
+    return string
+
+
+@vcs('Fossil', 'The Fossil version control system.')
+def fossil(path, string, unknown):
+    # In my five minutes of playing with Fossil this looks OK
+    file = os.path.join(path, '_FOSSIL_')
+    if not os.path.exists(file):
+        return None
+
+    branch = hash = status = unknown
+
+    # all this just to get the repository file :(
+    repository = None
+    try:
+        query = "SELECT value FROM vvar where name = 'repository'"
+        conn = sqlite3.connect(file)
+        c = conn.cursor()
+        c.execute(query)
+        repository = c.fetchone()[0]
+    except sqlite3.OperationalError:
+        pass
+    finally:
+        conn.close()
+
+    # we can grab the latest hash the manifest.uuid file
+    manifest = os.path.join(path, 'manifest.uuid')
+    if os.path.exists(manifest):
+        with open(manifest, 'r') as f:
+            hash = f.read().strip()[:7]
+
+    # branch
+    if hash != unknown:
+        try:
+            query = """SELECT value FROM tagxref WHERE rid =
+                       (SELECT rid FROM blob WHERE uuid LIKE '%s%%')
+                       AND value is not NULL LIMIT 1 """ % hash
+            conn = sqlite3.connect(repository)
+            c = conn.cursor()
+            c.execute(query)
+            branch = c.fetchone()[0]
+        except (sqlite3.OperationalError, TypeError):
+            pass
+        finally:
+            conn.close()
+
+    # status
+    if '%i' in string:
+        # new files
+        command = 'fossil extra'
+        process = Popen(command.split(), stdout=PIPE)
+        output = process.communicate()[0]
+        returncode = process.returncode
+
+        if not returncode and output:
+            if status == unknown:
+                status = ''
+            status = "%s?" % status
+
+        command = 'fossil changes'
+        process = Popen(command.split(), stdout=PIPE)
+        output = process.communicate()[0]
+        returncode = process.returncode
+
+        if not returncode:
+            if status == unknown:
+                status = ''
+            headers = {'EDITED': 'M',
+                       'MISSING': 'R'}
+            for line in output.split('\n'):
+                line = line.strip()
+                if line:
+                    status = "%s%s" % (status, line[0])
+
+            status = sorted_alpha(status)
+
+    # parse out formatting string
+    string = string.replace('%b', branch)
+    string = string.replace('%h', hash)
+    string = string.replace('%r', hash)
+    string = string.replace('%i', status)
+    string = string.replace('%s', 'fossil')
+    return string
+
+
+@vcs('Git', 'The fast version control system.')
+def git(path, string, unknown):
+    file = os.path.join(path, '.git/')
+    if not os.path.exists(file):
+        return None
+
+    branch = hash = status = unknown
+    # the current branch is required to get the hash
+    if re.search('%(b|r|h)', string):
+        branch_file = os.path.join(file, 'HEAD')
+        with open(branch_file, 'r') as f:
+            line = f.read()
+
+            # check if we're currently running on a branch
+            if re.match('^ref: refs/heads/', line.strip()):
+                branch = (line.split('/')[-1] or unknown).strip()
+
+        # hash/revision
+        if re.search('%(r|h)', string) and branch != unknown:
+            hash_file = os.path.join(file, 'refs/heads/%s' % branch)
+            with open(hash_file, 'r') as f:
+                hash = f.read().strip()[0:7]
+
+    # status
+    if '%i' in string:
+        command = 'git status'
+        process = Popen(command.split(), stdout=PIPE, stderr=PIPE)
+        output = process.communicate()[0]
+        returncode = process.returncode
+
+        if not returncode:
+            headers = {'modified': 'M',
+                       'removed': 'D',
+                       'renamed': 'R',
+                       'Untracked': '?'}
+            status = ''
+            for line in output.split('\n'):
+                # strip the hashes from the lines
+                line = line[1:].strip()
+                # ignore informational and blank lines
+                if line and not line.startswith('('):
+                    for key in headers.keys():
+                        if line.startswith(key):
+                            status += headers[key]
+                            break
+            status = sorted_alpha(status)
+
+    # formatting
+    string = string.replace('%b', branch)
+    string = string.replace('%h', hash)
+    string = string.replace('%r', hash)
+    string = string.replace('%i', status)
+    string = string.replace('%s', 'git')
+    return string
+
+
+@vcs('Mercurial', 'The Mercurial version control system.')
+def hg(path, string, unknown):
+    file = os.path.join(path, '.hg/branchheads.cache')
+    if not os.path.exists(file):
+        return None
+
+    branch = revision = hash = status = unknown
+
+    # changeset ID or global hash
+    if re.search('%(r|h)', string):
+        cache_file = os.path.join(path, '.hg/tags.cache')
+        if os.path.exists(cache_file):
+            with open(cache_file, 'r') as f:
+                revision, hash = f.read().split()
+                hash = hash[:7]
+
+    # branch
+    if re.search('%(r|h|b)', string):
+        count = 0
+        with open(file, 'r') as f:
+            for line in f:
+                hash, revision_branch = line.split()
+                hash = hash [:7]
+                if count > 0:
+                    branch = revision_branch
+                else:
+                    revision = revision_branch
+                count += 1
+
+    # status
+    if '%i' in string:
+        command = 'hg status'
+        process = Popen(command.split(), stdout=PIPE)
+        output = process.communicate()[0]
+        returncode = process.returncode
+        if not returncode:
+            status = ''
+            for line in output.split('\n'):
+                code = line.strip().split(' ')[0]
+                status = '%s%s' % (status, code)
+
+            # sort the string to make it all pretty like
+            status = sorted_alpha(status)
+
+    string = string.replace('%b', branch)
+    string = string.replace('%h', hash)
+    string = string.replace('%r', revision)
+    string = string.replace('%i', status)
+    string = string.replace('%s', 'hg')
+    return string
+
+
+@vcs('Subversion', 'The Subversion version control system.')
+def svn(path, string, unknown):
+    file = os.path.join(path, '.svn/entries')
+    if not os.path.exists(file):
+        return None
+
+    branch = revision = status = unknown
+
+    # branch
+    command = 'svn info %s' % path
+    process = Popen(command.split(), stdout=PIPE, stderr=PIPE)
+    output = process.communicate()[0]
+    returncode = process.returncode
+
+    if not returncode:
+        # compile some regexes
+        branch_regex = re.compile('((tags|branches)|trunk)')
+        revision_regex = re.compile('^Revision: (?P<revision>\d+)')
+
+        for line in output.split('\n'):
+            # branch
+            if '%b' in string:
+                if re.match('URL:', line):
+                    matches = re.search(branch_regex, line)
+                    if matches:
+                        branch = matches.groups(0)[0]
+
+            # revision/hash
+            if re.search('%(r|h)', string):
+                if re.match('Revision:', line):
+                    matches = re.search(revision_regex, line)
+                    if 'revision' in matches.groupdict():
+                        revision = matches.group('revision')
+
+    # status
+    if '%i' in string:
+        command = 'svn status'
+        process = Popen(command, shell=True, stdout=PIPE)
+        output = process.communicate()[0]
+        returncode = process.returncode
+
+        if not returncode:
+            status = ''
+            for line in output.split('\n'):
+                code = line.strip().split(' ')[0]
+                status = '%s%s' % (status, code)
+
+            status = sorted_alpha(status)
+
+    # formatting
+    string = string.replace('%r', revision)
+    string = string.replace('%h', revision)
+    string = string.replace('%b', branch)
+    string = string.replace('%i', status)
+    string = string.replace('%s', 'svn')
+    return string
+
+
+if __name__ == '__main__':
+    main()
