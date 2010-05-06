@@ -1,9 +1,9 @@
-. ./colors
+. ~/bin/dotfiles/bash/colors
 
 # rvm-prompt (i)nterpreter (v)ersion (p)atchlevel
 # rvm-prompt i v p
 if [ -f ~/.rvm/bin/rvm-prompt ]; then
-	PS1="\n\[$EBLUE\]\u\[$NO_COLOR\]: \[$ERED\]\$(~/.rvm/bin/rvm-prompt)\[$NO_COLOR\] \w \[$EBLACK\]\$(pyprompt)\[$NO_COLOR\] \n→ "
+	PS1="\n\[$EBLUE\]\u\[$NO_COLOR\]: \[$ERED\]\$(~/.rvm/bin/rvm-prompt)\[$NO_COLOR\] \w \[$EBLACK\][\$(pyprompt)]\[$NO_COLOR\] \n→ "
 else
-	PS1="\n\[$EBLUE\]\u\[$NO_COLOR\]: \w \[$EBLACK\]\$(pyprompt)\[$NO_COLOR\] \n→ "
+	PS1="\n\[$EBLUE\]\u\[$NO_COLOR\]: \w \[$EBLACK\][\$(pyprompt)]\[$NO_COLOR\] \n→ "
 fi
