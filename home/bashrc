@@ -1,6 +1,10 @@
 [ -z "$PS1" ] && return
 
-. ~/bin/dotfiles/bash/*
+. ~/bin/dotfiles/bash/env
+. ~/bin/dotfiles/bash/colors
+. ~/bin/dotfiles/bash/config
+. ~/bin/dotfiles/bash/aliases
+. ~/bin/dotfiles/bash/functions
 
 shopt -s histappend
 
