@@ -1,0 +1,6 @@
+[ -z "$PS1" ] && return
+
+. ~/bin/dotfiles/bash/*
+
+shopt -s histappend
+
