@@ -8,7 +8,7 @@ Dir['*'].each do |file|
   `ln -fs #{File.expand_path file} #{target}`
 end
 
-# exec "~/bin/dotfiles/install-bash"
+exec "~/bin/dotfiles/install-bash"
 
 # git push on commit
 # `echo 'git push' > .git/hooks/post-commit`
