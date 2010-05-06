@@ -5,7 +5,11 @@ alias ..3="..;..;.."
 alias ..4="..;..;..;.."
 alias ..5="..;..;..;..;.."
 
-alias ls='ls -lahG'
+if [ -f /etc/issue ]; then
+  alias ls='ls -lah --color=auto'
+else
+  alias ls='ls -lahG'
+fi
 
 alias reload='source ~/.bashrc'
 
