@@ -19,3 +19,21 @@
   changed = green
   untracked = cyan
 
+  [color]
+    ui = true
+  [color "diff"]
+    whitespace = red reverse
+  [core]
+    whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
+
+  [alias]
+    s = status
+    c = commit
+    b = branch
+    c = checkout
+    d = diff
+    l = log -p
+
+[user]
+	name = Erik Peterson
+	email = thecompanygardener@gmail.com
