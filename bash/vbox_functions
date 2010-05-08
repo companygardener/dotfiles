@@ -1,0 +1,23 @@
+function vbox_start { 
+  nohup VBoxHeadless -s $1 --vrdp off & 
+}
+
+function vbox_save { 
+  VBoxManage controlvm $1 savestate 
+}
+
+function vbox_pause {
+  VBoxManage controlvm $1 pause
+}
+
+function vbox_resume {
+  VBoxManage controlvm $1 resume
+}
+
+function vbox_stop { 
+  VBoxManage controlvm $1 poweroff 
+}
+
+function vbox_list { 
+  VBoxManage --nologo list runningvms 
+}

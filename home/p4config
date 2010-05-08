@@ -1,7 +1,0 @@
-P4USER=epeterson
-P4EDITOR=nano
-# P4DIFF=/Users/Erik/bin/araxisp4diff
-P4DIFF=diff -U 3
-P4PORT=p4d.cashnetusa.com:1666
-P4CLIENT=epeterson.macbookpro
-
