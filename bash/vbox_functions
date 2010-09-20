@@ -1,23 +1,23 @@
 vbox_start () { 
-  nohup VBoxHeadless -s $1 --vrdp off &;
+  nohup VBoxHeadless -s $1 --vrdp off &
 }
 
 vbox_save () { 
-  VBoxManage controlvm $1 savestate;
+  VBoxManage controlvm $1 savestate
 }
 
 vbox_pause () {
-  VBoxManage controlvm $1 pause;
+  VBoxManage controlvm $1 pause
 }
 
 vbox_resume () {
-  VBoxManage controlvm $1 resume;
+  VBoxManage controlvm $1 resume
 }
 
 vbox_stop () { 
-  VBoxManage controlvm $1 poweroff;
+  VBoxManage controlvm $1 poweroff
 }
 
 vbox_list () { 
-  VBoxManage --nologo list runningvms;
+  VBoxManage --nologo list runningvms
 }
