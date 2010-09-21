@@ -1,1 +1,6 @@
 export rvm_pretty_print_flag=1
+
+# rvm_archflags="-arch x86_64"
+
+# Set to number of cores + 1
+# rvm_make_flags="-j 3"
