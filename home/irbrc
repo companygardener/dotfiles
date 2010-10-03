@@ -1,0 +1,4 @@
+require 'rubygems'
+require 'logger'
+
+Rails.logger = Logger.new(STDOUT) if Rails
