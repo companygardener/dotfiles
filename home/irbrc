@@ -1,4 +1,4 @@
 require 'rubygems'
 require 'logger'
 
-Rails.logger = Logger.new(STDOUT) if Rails
+Rails.logger = Logger.new(STDOUT) if defined?(Rails)
