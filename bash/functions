@@ -1,5 +1,32 @@
+show-hidden-files() {
+  defaults write com.apple.finder AppleShowAllFiles $1
+  killall Finder
+}
+
+add-alias() {
+  local name=$1 value="$2"
+  echo "alias $name='$value'" >> ~/bin/dotfiles/bash/aliases
+  eval "alias $name='$value'"
+  alias $name
+}
+
+cdgem() {
+  cd `gem env gemdir`/gems
+  cd `ls | grep $1 | sort | awk '{print $9}' | tail -1`
+}
+
+gemdoc() {
+  GEMDIR=`gem env gemdir`/doc
+  open $GEMDIR/`ls $GEMDIR | grep $1 | sort | awk '{print $9}' | tail -1`/rdoc/index.html
+}
+
+mategem() {
+  GEMDIR=`gem env gemdir`/gems
+  mate $GEMDIR/`ls $GEMDIR | grep $1 | sort | awk '{print $9}' | tail -1`
+}
+
 # Easy extract
-extract () {
+extract() {
   if [ -f $1 ] ; then
       case $1 in
           *.tar.bz2)   tar xvjf $1    ;;
