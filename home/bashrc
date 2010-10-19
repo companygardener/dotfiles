@@ -1,14 +1,14 @@
 if [[ -n "$PS1" ]] ; then
-	. ~/bin/dotfiles/bash/env
-	. ~/bin/dotfiles/bash/colors
-	. ~/bin/dotfiles/bash/config
-	. ~/bin/dotfiles/bash/aliases
-	. ~/bin/dotfiles/bash/functions
-	. ~/bin/dotfiles/bash/vbox_functions
+  . ~/bin/dotfiles/bash/env
+  . ~/bin/dotfiles/bash/colors
+  . ~/bin/dotfiles/bash/config
+  . ~/bin/dotfiles/bash/aliases
+  . ~/bin/dotfiles/bash/functions
+  . ~/bin/dotfiles/bash/vbox_functions
 
-	shopt -s histappend
+  . ~/bin/dotfiles/bash/scripts
 
-	[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"  # This loads RVM into a shell session.
+  shopt -s histappend
 fi
 
 

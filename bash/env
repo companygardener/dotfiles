@@ -12,7 +12,11 @@ else
   export PATH="~/bin:~/bin/dotfiles/bin:/usr/local/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/opt/local/lib/postgresql83/bin:/opt/local/lib/mysql5/bin:/opt/depot_tools:$PATH"
 fi
 
-export EDITOR=nano
+if [ -f /usr/local/bin/mate ]; then
+  export EDITOR="mate -w"
+else
+  export EDITOR=nano
+fi
 
 export P4CONFIG=.p4config
 
@@ -20,4 +24,3 @@ export RUBY_HEAP_MIN_SLOTS=500000;
 export RUBY_GC_MALLOC_LIMIT=50000000;
 export RUBY_HEAP_SLOTS_GROWTH_FACTOR=1;
 export RUBY_HEAP_SLOTS_INCREMENT=100000;
-

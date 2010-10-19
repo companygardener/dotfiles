@@ -1,0 +1,13 @@
+startup_message off
+
+vbell off
+
+escape ``
+
+autodetach on
+
+defscrollback 10000
+
+hardstatus alwayslastline
+hardstatus string '%{= kg}[ %{G} deal_angler %{g}][%= %{= kw}%?%-Lw%?%{r} (%{W}%n*%f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{g}][%{B} %m/%d %{W}%c %{g}]'
+
