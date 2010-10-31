@@ -4,7 +4,20 @@ IRB.conf[:HISTORY_FILE] = "#{ENV['HOME']}/.irb-save-history"
 
 require 'rubygems'
 require 'logger'
-require 'ap'
-require 'hirb'
+
+require 'irbtools'
+require 'irbtools/more'
 
 Rails.logger = Logger.new(STDOUT) if defined?(Rails)
+
+def google(terms = paste)
+  url = "http://www.google.com/search?q=#{terms}"
+  `open "#{url}"`
+  url
+end
+
+def amazon(terms = paste)
+  url = "http://www.amazon.com/s/?url=search-alias%3Dstripbooks&field-keywords=#{terms}"
+  `open "#{url}"`
+  url
+end
