@@ -19,3 +19,6 @@ alias p4s="p4 sync"
 alias p4c="p4 change"
 alias p4e="p4 edit"
 alias p4i="p4 integrate"
+
+alias cnu.mac="cd ~/Documents/projects/export_cashnetusa"
+alias cnu.vm="cd /export/web"
