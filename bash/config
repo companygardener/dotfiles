@@ -2,10 +2,14 @@
 
 # rvm-prompt (i)nterpreter (v)ersion (p)atchlevel
 # rvm-prompt i v p
+
+PS1START="\n\[$EBLACK\]┌─[\T \d] \[$EBLUE\]\u\[$NO_COLOR\] @ \[$EBLACK\]\h\[$NO_COLOR\] :"
+PS1END="\w \[$EBLACK\][\$(pyprompt)]\[$NO_COLOR\] \n\[$EBLACK\]└─> % \[$NO_COLOR\]"
+
 if [ -f /usr/local/bin/rvm-prompt ]; then
-	PS1="\n\[$EBLUE\]\u\[$NO_COLOR\] @ \[$EBLACK\]\h\[$NO_COLOR\] : \[$ERED\]\$(/usr/local/bin/rvm-prompt)\[$NO_COLOR\] \w \[$EBLACK\][\$(pyprompt)]\[$NO_COLOR\] \n→ "
+        PS1="$PS1START \[$ERED\]\$(/usr/local/bin/rvm-prompt)\[$NO_COLOR\] $PS1END"
 elif [ -f ~/.rvm/bin/rvm-prompt ]; then
-	PS1="\n\[$EBLUE\]\u\[$NO_COLOR\] @ \[$EBLACK\]\h\[$NO_COLOR\] : \[$ERED\]\$(~/.rvm/bin/rvm-prompt)\[$NO_COLOR\] \w \[$EBLACK\][\$(pyprompt)]\[$NO_COLOR\] \n→ "
+        PS1="$PS1START \[$ERED\]\$(~/.rvm/bin/rvm-prompt)\[$NO_COLOR\] $PS1END"
 else
-	PS1="\n\[$EBLUE\]\u\[$NO_COLOR\] @ \[$EBLACK\]\h\[$NO_COLOR\] : \w \[$EBLACK\][\$(pyprompt)]\[$NO_COLOR\] \n→ "
+        PS1="$PS1START $PS1END"
 fi
