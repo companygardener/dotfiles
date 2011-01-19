@@ -2,6 +2,7 @@
   branch = auto
   diff = auto
   status = auto
+  ui=true
 
 [color "branch"]
   current = yellow reverse
@@ -13,27 +14,43 @@
   frag = magenta bold
   old = red bold
   new = green bold
+  whitespace = red reverse
 
 [color "status"]
   added = yellow
   changed = green
   untracked = cyan
 
-  [color]
-    ui = true
-  [color "diff"]
-    whitespace = red reverse
-  [core]
-    whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
+[core]
+  whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
+  autocrlf = input
+  safecrlf = true
 
-  [alias]
-    s = status
-    c = commit
-    b = branch
-    c = checkout
-    d = diff
-    l = log -p
+[alias]
+  s = status
+  c = commit
+  b = branch
+  co = checkout
+  d = diff
+  l = log -p
+  h = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+  hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+  ha   = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short --all
+  type = cat-file -t
+  dump = cat-file -p
 
 [user]
-	name = Erik Peterson
-	email = thecompanygardener@gmail.com
+  name = Erik Peterson
+  email = thecompanygardener@gmail.com
+
+[diff]
+  tool = p4merge
+
+[merge]
+  tool = p4merge
+
+[difftool]
+  prompt = false
+
+[mergetool]
+  prompt = false
