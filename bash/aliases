@@ -5,6 +5,8 @@ alias ..3="..;..;.."
 alias ..4="..;..;..;.."
 alias ..5="..;..;..;..;.."
 
+alias dus='du -Psckx * | sort -nr'
+
 if [ -f /etc/issue ]; then
   alias ls='ls -lah --color=auto'
 else

@@ -48,3 +48,15 @@ extract() {
 }
 
 alias xt=extract
+
+sumit () {
+ perl -ne '
+    # split into whitespace-separated fields and parse seperately
+    for (split) {
+        die "summit: error: non-numeric input (\"$_\")\n"
+            unless (m/^0x[a-fA-F\d]+$/ ||
+      s/(^-?\d*\.?\d+([eE]-?\d+)?)\%?$/$1/);
+        $n += eval($_);
+    }
+    END { print "$n\n"; } ' $*
+}
