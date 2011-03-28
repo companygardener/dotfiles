@@ -40,8 +40,8 @@
   dump = cat-file -p
 
 [user]
-  name = Erik Peterson
-  email = thecompanygardener@gmail.com
+	name = Erik Peterson
+	email = thecompanygardener@gmail.com
 
 [diff]
   tool = p4merge
