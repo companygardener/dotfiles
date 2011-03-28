@@ -1,0 +1,41 @@
+" set nobackup
+" set nowritebackup
+" set history=500
+" set showcmd
+
+" map Q gq
+
+" if has("autocmd")
+"   filetype plugin indent on
+
+"   autocmd BufNewFile,BufRead *.txt setfiletype text
+
+"   autocmd FileType text,markdown,html,xhtml,eruby setlocal wrap linebreak nolist
+
+"   augroup vimrcEx
+"   au!
+
+"   autocmd BufReadPost *
+"     \ if line("'\"") > 0 && line("'\"") <= line("$") |
+"     \   exe "normal g`\"" |
+"     \ endif
+
+"   augroup END
+" else
+"   set autoindent
+" endif
+
+colorscheme railscasts
+
+behave xterm
+set nu
+set ai
+
+set transparency=5
+set guioptions=aAce
+set guifont=Consolas:h10
+set columns=250
+
+let mapleader=","
+
+
