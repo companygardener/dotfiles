@@ -1,41 +1,90 @@
-" set nobackup
-" set nowritebackup
-" set history=500
-" set showcmd
-
-" map Q gq
-
-" if has("autocmd")
-"   filetype plugin indent on
-
-"   autocmd BufNewFile,BufRead *.txt setfiletype text
-
-"   autocmd FileType text,markdown,html,xhtml,eruby setlocal wrap linebreak nolist
-
-"   augroup vimrcEx
-"   au!
-
-"   autocmd BufReadPost *
-"     \ if line("'\"") > 0 && line("'\"") <= line("$") |
-"     \   exe "normal g`\"" |
-"     \ endif
-
-"   augroup END
-" else
-"   set autoindent
-" endif
-
-colorscheme railscasts
 
 behave xterm
-set nu
-set ai
 
-set transparency=5
-set guioptions=aAce
-set guifont=Consolas:h10
-set columns=250
+set title
+set visualbell
+set noerrorbells
 
-let mapleader=","
+set encoding=utf-8
 
+set nobackup
+set writebackup
+set history=1000
+set undolevels=1000
+
+set antialias
+
+set autochdir
+set autoread
+set cmdheight=2
+set concealcursor=nc
+
+set showmatch
+set nospell
+set ttyfast
+
+set autoindent
+set copyindent
+set nowrap
+set formatoptions=rolqn12
+set formatprg=par\ -w70req
+set whichwrap+=<,>,h,l
+
+set list
+set listchars=tab:»·,trail:·,eol:¬,extends:#,nbsp:%,precedes:<
+
+set statusline=[%l/%L,%v\ %P]\ %f\ %m%r%h%w\ (%{&ff})\ %{fugitive#statusline()}%y
+
+let ruby_space_errors = 1
+
+map ` :set fu!<cr>
+map <S-`> :ZoomWin<cr>
+
+cnoremap w!! %!sudo tee > /dev/null %
+
+nnoremap <leader>1 yypVr=
+nnoremap <leader>2 yypVr-
+nnoremap <silent> <leader><space> :nohlsearch<cr>
+
+nnoremap / /\v
+vnoremap / /\v
+
+nnoremap <tab> %
+vnoremap <tab> %
+
+nnoremap ; :
+
+nnoremap <leader>i :set list!<cr>
+nnoremap <leader>s :%s/\s\+$//e<cr>:let @/=''<cr>
+nnoremap <leader>a :Ack
+
+" Re-hardwrap paragraph
+vnoremap <leader>q gq
+nnoremap <leader>q gqip
+
+nnoremap <leader>v V`]
+
+inoremap jj <ESC>
+
+nnoremap <leader>w <C-w>v<C-w>l
+nnoremap <leader>W <C-w>s<C-w>j
+nnoremap <leader>= <C-w>=
+
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+if has("autocmd")
+  filetype on
+
+  autocmd! BufWritePost vimrc.local source %
+
+  autocmd FileType make setlocal ts=8 sts=8 sw=8 noexpandtab
+  autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+
+  autocmd FileType sql  setlocal ts=4 sts=4 sw=4 noexpandtab
+
+  autocmd BufWinLeave * call clearmatches()
+endif
 

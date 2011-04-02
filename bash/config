@@ -1,10 +1,10 @@
-. ~/bin/dotfiles/bash/colors
+ ~/bin/dotfiles/bash/colors
 
 # rvm-prompt (i)nterpreter (v)ersion (p)atchlevel
 # rvm-prompt i v p
 
-PS1START="\n\[$EBLACK\]┌─[\T \d] \[$EBLUE\]\u\[$NO_COLOR\] @ \[$EBLACK\]\h\[$NO_COLOR\] :"
-PS1END="\w \[$EBLACK\][\$(pyprompt)]\[$NO_COLOR\] \n\[$EBLACK\]└─> % \[$NO_COLOR\]"
+PS1START="\n\[$EBLUE\]┌─[\T \d] \[$BLUE\]\u\[$NO_COLOR\] @ \[$EMAGENTA\]\h\[$NO_COLOR\] :"
+PS1END="\w \[$YELLOW\][\$(pyprompt)]\[$NO_COLOR\] \n\[$EBLUE\]└─> % \[$NO_COLOR\]"
 
 if [ -f /usr/local/bin/rvm-prompt ]; then
         PS1="$PS1START \[$ERED\]\$(/usr/local/bin/rvm-prompt)\[$NO_COLOR\] $PS1END"
