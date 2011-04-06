@@ -1,5 +1,7 @@
 # Colors from http://wiki.archlinux.org/index.php/Color_Bash_Prompt
 # misc
+# http://ethanschoonover.com/solarized
+
 NO_COLOR='\e[0m' #disable any colors
 # regular colors
 BLACK='\e[0;30m'
