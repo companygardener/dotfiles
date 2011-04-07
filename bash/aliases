@@ -13,6 +13,8 @@ else
   alias ls='ls -lahG'
 fi
 
+alias xgrep='grep -C2 -TEHrn --color=auto'
+
 alias reload='source ~/.bashrc'
 
 alias dotfiles='cd ~/bin/dotfiles'

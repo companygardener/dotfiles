@@ -3,7 +3,13 @@
 # rvm-prompt (i)nterpreter (v)ersion (p)atchlevel
 # rvm-prompt i v p
 
-PS1START="\n\[$EBLUE\]┌─[\T \d] \[$BLUE\]\u\[$NO_COLOR\] @ \[$EMAGENTA\]\h\[$NO_COLOR\] :"
+if hostname | grep -E 'obr|nut' > /dev/null 2>&1; then
+  HOST="\[$RED\]\H\[$NO_COLOR\]"
+else
+  HOST="\[$EMAGENTA\]\h\[$NO_COLOR\]"
+fi
+
+PS1START="\n\[$EBLUE\]┌─[\T \d] \[$BLUE\]\u\[$NO_COLOR\] @ $HOST :"
 PS1END="\w \[$YELLOW\][\$(pyprompt)]\[$NO_COLOR\] \n\[$EBLUE\]└─> % \[$NO_COLOR\]"
 
 if [ -f /usr/local/bin/rvm-prompt ]; then
