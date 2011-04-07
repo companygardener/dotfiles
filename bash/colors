@@ -40,3 +40,28 @@ BMAGENTA='\e[45m'
 BCYAN='\e[46m'
 BWHITE='\e[47m'
 
+# Effects
+# 00 Default colour
+# 01 Bold
+# 04 Underlined
+# 05 Flashing text
+# 07 Reversetd
+# 08 Concealed
+
+# Extra colours
+# 90 Dark grey
+# 91 Light red
+# 92 Light green
+# 93 Yellow
+# 94 Light blue
+# 95 Light purple
+# 96 Turquoise
+# 97 White
+# 100 Dark grey background
+# 101 Light red background
+# 102 Light green background
+# 103 Yellow backgroundnd
+# 104 Light blue background
+# 105 Light purple background
+# 106 Turquoise background
+
