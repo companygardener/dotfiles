@@ -13,9 +13,9 @@ PS1START="\n\[$EBLUE\]┌─[\T \d] \[$BLUE\]\u\[$NO_COLOR\] @ $HOST :"
 PS1END="\w \[$YELLOW\][\$(pyprompt)]\[$NO_COLOR\] \n\[$EBLUE\]└─> % \[$NO_COLOR\]"
 
 if [ -f /usr/local/bin/rvm-prompt ]; then
-        PS1="$PS1START \[$ERED\]\$(/usr/local/bin/rvm-prompt)\[$NO_COLOR\] $PS1END"
+        PS1="$PS1START \[$RED\]\$(/usr/local/bin/rvm-prompt)\[$NO_COLOR\] $PS1END"
 elif [ -f ~/.rvm/bin/rvm-prompt ]; then
-        PS1="$PS1START \[$ERED\]\$(~/.rvm/bin/rvm-prompt)\[$NO_COLOR\] $PS1END"
+        PS1="$PS1START \[$RED\]\$(~/.rvm/bin/rvm-prompt)\[$NO_COLOR\] $PS1END"
 else
         PS1="$PS1START $PS1END"
 fi
