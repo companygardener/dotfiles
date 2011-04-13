@@ -4,7 +4,7 @@ export LSCOLORS=exfxcxdxbxegedabagacad
 export LS_COLORS="di=1;0;34:ln=0;35:so=32:pi=0;33:ex=0;31:bd=37;46:cd=37;43:su=37;41:sg=37;46:tw=37;42:ow=37;43:or=37;45:mi=37;43:"
 
 if echo hello | grep --color=auto l >/dev/null 2>&1; then
-  export GREP_OPTIONS='--color=auto -EIsr'
+  export GREP_OPTIONS='--color=auto'
   export GREP_COLOR='0;32'
   export GREP_COLORS="sl=0;37:cx=1;32:mt=1;35:fn=0;32:ln=1;34:se=1;33"
 fi
@@ -16,7 +16,7 @@ export HISTSIZE=100000
 if [ -f /etc/issue ]; then
   export PATH="~/bin:~/bin/dotfiles/bin:/usr/local/bin:/cnu/bin:/usr/bin:/bin:$PATH"
 else
-  export PATH="~/bin:~/bin/dotfiles/bin:/usr/local/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/opt/local/lib/postgresql83/bin:/opt/local/lib/mysql5/bin:/opt/depot_tools:$PATH"
+  export PATH="~/bin:~/bin/dotfiles/bin:/usr/local/bin:/usr/local/sbin:/Volumes/Data/Developer/usr/bin:$PATH"
 fi
 
 if [ -f /usr/local/bin/mate ]; then
