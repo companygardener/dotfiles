@@ -3,6 +3,16 @@ show-hidden-files() {
   killall Finder
 }
 
+add-dock-space-left() {
+  defaults write com.apple.dock persistent-apps -array-add '{tile-data={}; tile-type="spacer-tile";}'
+  killall Dock
+}
+
+add-dock-space-right() {
+  defaults write com.apple.dock persistent-others -array-add '{tile-data={}; tile-type="spacer-tile";}'
+  killall Dock
+}
+
 add-alias() {
   local name=$1 value="$2"
   echo "alias $name='$value'" >> ~/bin/dotfiles/bash/aliases
