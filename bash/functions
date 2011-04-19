@@ -25,6 +25,10 @@ cdgem() {
   cd `ls | grep $1 | sort | awk '{print $9}' | tail -1`
 }
 
+gems=(`/bin/ls $GEM_HOME/gems | sed 's/^\(.*\)-[0-9\.]*.*/\1/' | sed '/./!d' | sort | uniq`)
+
+compctl -k gems cdgem
+
 gemdoc() {
   GEMDIR=`gem env gemdir`/doc
   open $GEMDIR/`ls $GEMDIR | grep $1 | sort | awk '{print $9}' | tail -1`/rdoc/index.html

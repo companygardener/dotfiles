@@ -17,7 +17,6 @@ set antialias
 set autochdir
 set autoread
 set cmdheight=2
-set concealcursor=nc
 
 set showmatch
 set nospell
