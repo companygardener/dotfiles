@@ -8,9 +8,9 @@ alias ..5="..;..;..;..;.."
 alias dus='du -Psckx * | sort -nr'
 
 if [ -f /etc/issue ]; then
-  alias ls='ls -lah --color=auto'
+  alias ll='ls -lah --color=auto'
 else
-  alias ls='ls -lahG'
+  alias ll='ls -lahG'
 fi
 
 alias xgrep='grep -C2 -TEHIrns --color=auto'

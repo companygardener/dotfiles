@@ -5,8 +5,8 @@ IRB.conf[:HISTORY_FILE] = "#{ENV['HOME']}/.irb-save-history"
 require 'rubygems'
 require 'logger'
 
-require 'irbtools'
-require 'irbtools/more'
+# require 'irbtools'
+# require 'irbtools/more'
 
 Rails.logger = Logger.new(STDOUT) if defined?(Rails)
 

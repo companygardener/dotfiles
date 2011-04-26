@@ -25,10 +25,6 @@ cdgem() {
   cd `ls | grep $1 | sort | awk '{print $9}' | tail -1`
 }
 
-gems=(`/bin/ls $GEM_HOME/gems | sed 's/^\(.*\)-[0-9\.]*.*/\1/' | sed '/./!d' | sort | uniq`)
-
-compctl -k gems cdgem
-
 gemdoc() {
   GEMDIR=`gem env gemdir`/doc
   open $GEMDIR/`ls $GEMDIR | grep $1 | sort | awk '{print $9}' | tail -1`/rdoc/index.html
@@ -63,14 +59,24 @@ extract() {
 
 alias xt=extract
 
-sumit () {
- perl -ne '
-    # split into whitespace-separated fields and parse seperately
-    for (split) {
-        die "summit: error: non-numeric input (\"$_\")\n"
-            unless (m/^0x[a-fA-F\d]+$/ ||
-      s/(^-?\d*\.?\d+([eE]-?\d+)?)\%?$/$1/);
-        $n += eval($_);
-    }
-    END { print "$n\n"; } ' $*
+large-files() {
+  for file in $(find / -type f -size +"$1" 2> /dev/null); do ls -lh $file; done
 }
+
+sumit () {
+  ruby -e '
+    sums = []
+    ARGF.map {|x| puts x; x.split}.each {|x| x.each_with_index {|x,i| sums[i] = (sums[i] || 0) + x.to_i }}
+    puts sums.join(" ")
+  '
+}
+# perl -ne '
+    # split into whitespace-separated fields and parse seperately
+#    for (split) {
+#        die "summit: error: non-numeric input (\"$_\")\n"
+#            unless (m/^0x[a-fA-F\d]+$/ ||
+#      s/(^-?\d*\.?\d+([eE]-?\d+)?)\%?$/$1/);
+#        $n += eval($_);
+#    }
+#    END { print "$n\n"; } ' $*
+#}
