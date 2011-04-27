@@ -67,6 +67,12 @@ awksum() {
   awk "{ delta = \$$1 - mean; mean += delta / NR; mean2 += delta * (\$$1 - mean); } \$$1 <= min { min = \$$1 } \$$1 > max { max = \$$1 } END { printf(\"sum: %d avg: %d stdev: %d min: %d max: %d\n\",  mean * NR, mean, sqrt(mean2 / NR), min, max); }"
 }
 
+awksample() {
+  split="$1"
+  [ -z $1 ] && split=' '
+  head -n "${2:-1}" | awk -F "$split" '{ print NR ": " $0; for(i = 1; i <= NF; ++i) print "\t" i ": " $i }'
+}
+
 gzdir() {
   tar -cf - . | pv -s $(du -s . | awk '{print $1}') | gzip > out.tgz
 }
