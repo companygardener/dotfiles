@@ -63,10 +63,18 @@ large-files() {
   for file in $(find / -type f -size +"$1" 2> /dev/null); do ls -lh $file; done
 }
 
+awksum() {
+  awk "{ delta = \$$1 - mean; mean += delta / NR; mean2 += delta * (\$$1 - mean); } \$$1 <= min { min = \$$1 } \$$1 > max { max = \$$1 } END { printf(\"sum: %d avg: %d stdev: %d min: %d max: %d\n\",  mean * NR, mean, sqrt(mean2 / NR), min, max); }"
+}
+
+compress-current() {
+  tar -cf - . | pv -s $(du -sb . | awk '{print $1}') | gzip > out.tgz
+}
+
 sumit () {
   ruby -e '
     sums = []
-    ARGF.map {|x| puts x; x.split}.each {|x| x.each_with_index {|x,i| sums[i] = (sums[i] || 0) + x.to_i }}
+    ARGF.each {|x| puts x; x.split.each_with_index {|x,i| sums[i] = (sums[i] || 0) + x.to_i }}
     puts sums.join(" ")
   '
 }
