@@ -52,7 +52,7 @@ extract() {
           *.7z)        7z x $1        ;;
           *)           echo "don't know how to extract '$1'..." ;;
       esac
-  else                             
+  else
       echo "'$1' is not a valid file!"
   fi
 }
@@ -64,7 +64,19 @@ large-files() {
 }
 
 awksum() {
-  awk "{ delta = \$$1 - mean; mean += delta / NR; mean2 += delta * (\$$1 - mean); } \$$1 <= min { min = \$$1 } \$$1 > max { max = \$$1 } END { printf(\"sum: %d avg: %d stdev: %d min: %d max: %d\n\",  mean * NR, mean, sqrt(mean2 / NR), min, max); }"
+  awk "
+    !/^$/ { delta = \$$1 - mean; mean += delta / NR; mean2 += delta * (\$$1 - mean); sum += \$$1; count += 1; }
+
+    NR == 1 { min = \$$1; max = \$$1 }
+
+    \$$1 <= min && !/^$/ { min = \$$1 }
+    \$$1 >= max && !/^$/ { max = \$$1 }
+
+    END { printf(\"%d lines -- sum: %d avg: %d stdev: %d min: %d max: %d\n\", count, sum, mean, sqrt(mean2 / count), min, max); }"
+}
+
+awksumall() {
+  awk -F"${1:-' '}" -f ~/.awk/numerical.awk
 }
 
 awksample() {

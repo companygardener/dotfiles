@@ -19,3 +19,5 @@ elif [ -f ~/.rvm/bin/rvm-prompt ]; then
 else
         PS1="$PS1START $PS1END"
 fi
+
+export PROMPT_COMMAND='echo -ne "\033]0;${PWD##/*/}\007"'
