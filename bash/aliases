@@ -27,7 +27,3 @@ alias p4i="p4 integrate"
 alias cnu.mac="cd ~/Documents/projects/export_cashnetusa"
 alias cnu.vm="cd /export/web"
 
-alias us-slave="psql -h slavedb.cashnetusa.com -d cnuapp_prod"
-alias us-slave2="psql -h slavedb2.cashnetusa.com -d cnuapp_prod"
-alias us-slave3="psql -h slavedb3.cashnetusa.com -d cnuapp_prod"
-
