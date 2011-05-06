@@ -4,10 +4,6 @@ set scrolloff=3
 
 " set guiheadroom=20:w
 
-colorscheme jellybeans 
-
-highlight ColorColumn guibg=#222222
-
 if has("autocmd")
   autocmd! BufWritePost gvimrc.local source %
 endif

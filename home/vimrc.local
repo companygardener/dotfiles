@@ -14,7 +14,6 @@ set undolevels=1000
 
 set antialias
 
-set autochdir
 set autoread
 set cmdheight=2
 
@@ -87,3 +86,6 @@ if has("autocmd")
   autocmd BufWinLeave * call clearmatches()
 endif
 
+colorscheme jellybeans
+
+highlight ColorColumn guibg=#222222
