@@ -4,6 +4,7 @@ behave xterm
 set title
 set visualbell
 set noerrorbells
+set mouse=a
 
 set encoding=utf-8
 
@@ -86,6 +87,8 @@ if has("autocmd")
   autocmd BufWinLeave * call clearmatches()
 endif
 
+set t_Co=256
 colorscheme jellybeans
 
 highlight ColorColumn guibg=#222222
+
