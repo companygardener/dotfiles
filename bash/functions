@@ -22,7 +22,7 @@ add-alias() {
 
 cdgem() {
   cd `gem env gemdir`/gems
-  cd `ls | grep $1 | sort | awk '{print $9}' | tail -1`
+  cd `ls | grep $1 | sort | tail -1`
 }
 
 gemdoc() {
