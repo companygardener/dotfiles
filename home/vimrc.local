@@ -1,33 +1,69 @@
 
+" vim cheat sheet
+" http://walking-without-crutches.heroku.com/image/images/vi-vim-cheat-sheet.png
+"
+
 behave xterm
 
+set nocompatible
+
 set title
-set visualbell
+set novisualbell
 set noerrorbells
+set t_vb=
+
 set mouse=a
+set mousehide
+set mousemodel=extend
 
 set encoding=utf-8
+try
+  lang en_US
+catch
+endtry
+
+set fileformats=unix,dos,mac
 
 set nobackup
-set writebackup
-set history=1000
-set undolevels=1000
+set nowritebackup
+set noswapfile
+set history=200
+set undolevels=5000
+set undodir=~/.vim/tmp
+set undofile
 
 set antialias
+set nolazyredraw
+set ruler
+set number
 
 set autoread
-set cmdheight=2
+set cmdheight=3
 
 set showmatch
 set nospell
 set ttyfast
 
+set incsearch
+set hlsearch
+set ignorecase
+set smartcase
+
 set autoindent
+set smartindent
 set copyindent
+
+set tabstop=2
+set shiftwidth=2
+set softtabstop=2
+set expandtab
+
 set nowrap
 set formatoptions=rolqn12
 set formatprg=par\ -w70req
 set whichwrap+=<,>,h,l
+
+set backspace=eol,start,indent
 
 set list
 set listchars=tab:»·,trail:·,eol:¬,extends:#,nbsp:%,precedes:<
@@ -39,11 +75,35 @@ let ruby_space_errors = 1
 map ` :set fu!<cr>
 map <S-`> :ZoomWin<cr>
 
+nnoremap <space> :set fu!<cr>:ZoomWin<cr>
+
 cnoremap w!! %!sudo tee > /dev/null %
 
 nnoremap <leader>1 yypVr=
 nnoremap <leader>2 yypVr-
 nnoremap <silent> <leader><space> :nohlsearch<cr>
+
+" redo
+nnoremap <leader>r <C-r>
+
+" cd to directory of current buffer
+nnoremap <leader>cd :cd %:p:h<cr>
+
+" remove Windows ^M when encoding is borked
+nnoremap <leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
+
+nnoremap <leader>pp :setlocal paste!<cr>:set paste?<cr>
+nnoremap <leader>.. :cd ..<cr>
+
+" Spelling
+noremap <leader>ss :setlocal spell!<cr>
+noremap <leader>sn ]s
+noremap <leader>sp [s
+noremap <leader>sa zg
+noremap <leader>s? z=
+
+iabbrev xdate <c-r>=strftime("%m/%d/%Y")<cr>
+iabbrev xtime <c-r>=strftime("%m/%d/%Y %H:%M:%S")<cr>
 
 nnoremap / /\v
 vnoremap / /\v
@@ -77,6 +137,7 @@ nnoremap <C-l> <C-w>l
 if has("autocmd")
   filetype on
 
+  autocmd! BufWritePost vimrc.pre   source %
   autocmd! BufWritePost vimrc.local source %
 
   autocmd FileType make setlocal ts=8 sts=8 sw=8 noexpandtab

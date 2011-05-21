@@ -1,12 +1,18 @@
-set transparency=8 guioptions=acemg guifont=inconsolata:h11 columns=300
-set cursorline textwidth=80 cc=+1,+2,+3 linespace=1 fuoptions=maxvert
+set transparency=8
+set guioptions=acemg
+set guifont=inconsolata:h11
+set columns=240
+
+set cursorline
+set textwidth=80
+set colorcolumn=+1,+2,+3,7
+set linespace=1
+set fuoptions=maxvert
 
 colorscheme jellybeans
 highlight ColorColumn guibg=#222222
 
 set scrolloff=3
-
-" set guiheadroom=20:w
 
 if has("autocmd")
   autocmd! BufWritePost gvimrc.local source %
