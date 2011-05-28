@@ -13,16 +13,15 @@ PS1START="\n\[$EBLUE\]┌─[\T \d] \[$BLUE\]\u\[$NO_COLOR\] @ $HOST :"
 PS1END="\w \[$YELLOW\][\$(pyprompt)]\[$NO_COLOR\] \n\[$EBLUE\]└─> % \[$NO_COLOR\]"
 
 if [ -f /usr/local/bin/rvm-prompt ]; then
-  PS1="$PS1START \[$RED\]\$(/usr/local/bin/rvm-prompt)\[$NO_COLOR\] $PS1END"
+  PS1RVM="\$(/usr/local/bin/rvm-prompt)"
 elif [ -f /usr/local/rvm/bin/rvm-prompt ]; then
-  PS1="$PS1START \[$RED\]\$(/usr/local/rvm/bin/rvm-prompt)\[$NO_COLOR\] $PS1END"
+  PS1RVM="\$(/usr/local/rvm/bin/rvm-prompt)"
 elif [ -f ~/.rvm/bin/rvm-prompt ]; then
-  PS1="$PS1START \[$RED\]\$(~/.rvm/bin/rvm-prompt)\[$NO_COLOR\] $PS1END"
+  PS1RVM="\$(~/.rvm/bin/rvm-prompt)"
 else
-  PS1="$PS1START $PS1END"
+  PS1RVM=""
 fi
 
-export PROMPT_COMMAND='echo -ne "\033]0;${PWD##/*/}\007"'
+PS1="$PS1START \[$RED\]$PS1RVM\[$NO_COLOR\] $PS1END"
 
-# Disable bell
-setterm -blength 0
+export PROMPT_COMMAND='echo -ne "\033]0;${PWD##/*/}\007"'

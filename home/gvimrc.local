@@ -5,7 +5,7 @@ set columns=240
 
 set cursorline
 set textwidth=80
-set colorcolumn=+1,+2,+3,7
+set colorcolumn=+1,+2,+3
 set linespace=1
 set fuoptions=maxvert
 

@@ -1,2 +1,2 @@
-let mapleader = ","
+let mapleader   = ","
 let g:mapleader = ","
