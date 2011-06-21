@@ -4,3 +4,4 @@ sudo dpkg -i ruby-enterprise_1.8.7-2010.01_i386.deb
 
 # nginx & passenger
 
+test
