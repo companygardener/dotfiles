@@ -29,8 +29,6 @@ set nowritebackup
 set noswapfile
 set history=200
 set undolevels=5000
-set undodir=~/.vim/tmp
-set undofile
 
 set antialias
 set nolazyredraw

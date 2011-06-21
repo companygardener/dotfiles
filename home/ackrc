@@ -1,5 +1,5 @@
 --type-add
-ruby=.haml,.builder,.rake
+ruby=.haml,.builder,.rake,.rsel
 --type-add
 css=.sass,.scss
 --type-set
