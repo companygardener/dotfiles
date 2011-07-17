@@ -14,15 +14,15 @@ export HISTCONTROL=ignoreboth
 export HISTSIZE=100000
 
 if [ -f /etc/issue ]; then
-  export PATH="~/bin:~/bin/dotfiles/bin:/usr/local/bin:/cnu/bin:/usr/bin:/bin:$PATH"
+  export PATH="~/bin:~/bin/dotfiles/bin:/usr/local/bin:/opt/bin:/opt/local/bin:/cnu/bin:/usr/bin:/bin:/usr/local/sbin:/sbin:$PATH"
 else
-  export PATH="~/bin:~/bin/dotfiles/bin:/usr/local/bin:/usr/local/sbin:/Volumes/Data/Developer/usr/bin:$PATH"
+  export PATH="~/bin:~/bin/dotfiles/bin:/usr/local/bin:/opt/bin:/opt/local/bin:/usr/bin:/bin:/usr/local/sbin:/sbin:$PATH"
 fi
 
-if [ -f /usr/local/bin/mate ]; then
-  export EDITOR="mate -w"
+if [ -f /etc/issue ]; then
+  export EDITOR='vim -f'
 else
-  export EDITOR=nano
+  export EDITOR='mvim -f'
 fi
 
 export P4CONFIG=.p4config

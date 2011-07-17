@@ -1,29 +1,32 @@
-alias ..="cd .."
-alias ..1=".."
-alias ..2="..;.."
-alias ..3="..;..;.."
-alias ..4="..;..;..;.."
-alias ..5="..;..;..;..;.."
+alias ..='cd ..'
+alias ..2='..;..'
+alias ..3='..;..;..'
+alias ..4='..;..;..;..'
+alias ..5='..;..;..;..;..'
 
 alias dus='du -Psckx * | sort -nr'
 
+# No /etc/issue on OSX
 if [ -f /etc/issue ]; then
   alias ll='ls -lah --color=auto'
+  alias xgrep='grep -C2 -TEHIrns --color=auto'
+
+  alias code='cd /export/code; pwd'
 else
   alias ll='ls -lahG'
-fi
+  alias xgrep='grep -C2 -EHIrns --color=auto'
 
-alias xgrep='grep -C2 -TEHIrns --color=auto'
+  alias code='cd ~/code; pwd'
+  alias app='open -a'
+fi
 
 alias reload='source ~/.bashrc'
 
 alias dotfiles='cd ~/bin/dotfiles'
 
-alias p4s="p4 sync"
-alias p4c="p4 change"
-alias p4e="p4 edit"
-alias p4i="p4 integrate"
+alias p4s='p4 sync'
+alias p4c='p4 change'
+alias p4e='p4 edit'
+alias p4i='p4 integrate'
 
-alias cnu.mac="cd ~/Documents/projects/export_cashnetusa"
-alias cnu.vm="cd /export/web"
-
+alias df='df -h'
