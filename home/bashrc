@@ -11,4 +11,6 @@ if [[ -n "$PS1" ]] ; then
   shopt -s histappend
 fi
 
-
+if [[ -f "$HOME/.bashrc.local" ]]; then
+  . "$HOME/.bashrc.local"
+fi
