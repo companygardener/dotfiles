@@ -1,19 +1,19 @@
 [color]
   branch = auto
-  diff = auto
+  diff   = auto
   status = auto
-  ui=true
+  ui     = true
 
 [color "branch"]
   current = yellow reverse
-  local = yellow
-  remote = green
+  local   = yellow
+  remote  = green
 
 [color "diff"]
-  meta = yellow bold
-  frag = magenta bold
-  old = red bold
-  new = green bold
+  meta = yellow
+  frag = magenta
+  old  = red
+  new  = green
   whitespace = red reverse
 
 [color "status"]
@@ -40,8 +40,8 @@
   dump = cat-file -p
 
 [user]
-	name = Erik Peterson
-	email = thecompanygardener@gmail.com
+  name = Erik Peterson
+  email = thecompanygardener@gmail.com
 
 [diff]
   tool = p4merge

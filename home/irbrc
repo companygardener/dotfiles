@@ -1,14 +1,69 @@
 require 'irb/ext/save-history'
-IRB.conf[:SAVE_HISTORY] = 100
+IRB.conf[:SAVE_HISTORY] = 1000
 IRB.conf[:HISTORY_FILE] = "#{ENV['HOME']}/.irb-save-history"
 
 require 'rubygems'
-require 'logger'
 
-# require 'irbtools'
-# require 'irbtools/more'
+class Object
+  def local_methods
+    (methods - Object.instance_methods).sort
+  end
+end
 
-Rails.logger = Logger.new(STDOUT) if defined?(Rails)
+# Add all gems in the global gemset to the $LOAD_PATH so they can be used even
+# in places like 'rails console'.
+if defined?(::Bundler)
+  global_gemset = ENV['GEM_PATH'].split(':').grep(/ruby.*@global/).first
+
+  if global_gemset
+    all_global_gem_paths = Dir.glob("#{global_gemset}/gems/*")
+
+    all_global_gem_paths.each do |p|
+      gem_path = "#{p}/lib"
+      $LOAD_PATH << gem_path
+    end
+  end
+end
+
+begin
+  require 'wirb'
+  require 'irbtools/configure'
+
+  Irbtools.remove_library :fancy_irb
+  Irbtools.remove_library :methodfinder
+  Irbtools.start
+
+  Wirb.start
+
+  Wirb.schema.merge!({
+    :symbol       => [:magenta, :bright],
+    :open_array   => [:white],
+    :close_array  => [:white],
+    :open_hash    => [:white],
+    :close_hash   => [:white],
+    :comma        => [:white],
+    :refers       => [:white],
+
+    :open_string  => [:cyan, :bright],
+    :close_string => [:cyan, :bright],
+
+    :string       => [:green],
+    :number       => [:red],
+    :regex        => [:magenta],
+    :nil          => [:red],
+
+    :time         => [:blue],
+
+    :class_separator => [:blue, :bright],
+    :open_object     => [:cyan, :bright],
+    :close_object    => [:cyan, :bright],
+    :object_class    => [:cyan, :bright],
+    :object_description => [:green, :bright]
+  })
+
+  require 'irbtools/more'
+rescue LoadError
+end
 
 def google(terms = paste)
   url = "http://www.google.com/search?q=#{terms}"
