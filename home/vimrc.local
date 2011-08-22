@@ -1,5 +1,5 @@
 
-" vim cheat sheet
+" Vim cheat sheet
 " http://walking-without-crutches.heroku.com/image/images/vi-vim-cheat-sheet.png
 "
 
@@ -23,23 +23,27 @@ catch
 endtry
 
 set fileformats=unix,dos,mac
+set fileformat=unix
 
 set nobackup
 set nowritebackup
 set noswapfile
-set history=200
+set history=1000
 set undolevels=5000
 
 set antialias
-set nolazyredraw
+set lazyredraw
 set ruler
 set number
 
 set autoread
+set noautowrite
 set cmdheight=3
+set showmode
+set showcmd
+set more
 
 set showmatch
-set nospell
 set ttyfast
 
 set incsearch
@@ -57,6 +61,7 @@ set softtabstop=2
 set expandtab
 
 set nowrap
+set nolinebreak
 set formatoptions=rolqn12
 set formatprg=par\ -w70req
 set whichwrap+=<,>,h,l
@@ -66,9 +71,44 @@ set backspace=eol,start,indent
 set list
 set listchars=tab:»·,trail:·,eol:¬,extends:#,nbsp:%,precedes:<
 
-set statusline=[%l/%L,%v\ %P]\ %f\ %m%r%h%w\ (%{&ff})\ %{fugitive#statusline()}%y
+set statusline=%f\ 
+set statusline+=%y "filetype
+set statusline+=%{StatuslineLongLineWarning()}
 
-let ruby_space_errors = 1
+"display warnings for wrong fileformats, file encodings, and trailing whitespace
+set statusline+=%#warningmsg#
+set statusline+=%{&fileformat!='unix'?'['.&fileformat.']':''}
+set statusline+=%{&fileencoding!='utf-8'?'['.&fileencoding.']':''}
+set statusline+=%{StatuslineTrailingSpaceWarning()}
+set statusline+=%*
+"
+"display a warning if &et is wrong, or we have mixed-indenting
+set statusline+=%#error#
+set statusline+=%{StatuslineTabWarning()}
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%{&paste?'[paste]':''}
+set statusline+=%*
+
+
+set statusline+=%r "read-only flag
+set statusline+=%m "modified flag
+set statusline+=%w
+set statusline+=%{fugitive#statusline()}
+
+set statusline+=%= "left/right separator
+set statusline+=%{StatuslineCurrentHighlight()}
+set statusline+=[%l/%L,%v\ %P]
+
+set laststatus=2
+set report=0
+set complete=.,w,b,u,U,t,i,d
+set wildmenu
+set wildmode=list:longest
+set infercase
+
+set diffopt=filler,vertical
+
+let ruby_space_errors=1
 
 map ` :set fu!<cr>
 map <S-`> :ZoomWin<cr>
@@ -121,7 +161,7 @@ nnoremap <leader>q gqip
 
 nnoremap <leader>v V`]
 
-inoremap jj <ESC>
+inoremap ii <ESC>
 
 nnoremap <leader>w <C-w>v<C-w>l
 nnoremap <leader>W <C-w>s<C-w>j
@@ -132,8 +172,20 @@ nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 
+noremap <right> <ESC>:bn<RETURN>
+noremap <left> <ESC>:bp<RETURN>
+
+:command WQ wq
+:command Wq wq
+:command W w
+:command Q q
+
+iab RuL ----+----1----+----2----+----3----+----4----+----5----+----6----+----7----+----8----+----9----+----0
+
 if has("autocmd")
   filetype on
+  filetype indent on
+  filetype plugin on
 
   autocmd! BufWritePost vimrc.pre   source %
   autocmd! BufWritePost vimrc.local source %
@@ -144,6 +196,10 @@ if has("autocmd")
   autocmd FileType sql  setlocal ts=4 sts=4 sw=4 noexpandtab
 
   autocmd BufWinLeave * call clearmatches()
+
+  if v:version >= 700
+    autocmd BufNewFile,BufRead *.txt setlocal spell spelllang=en
+  endif
 endif
 
 set t_Co=256
@@ -151,3 +207,101 @@ colorscheme jellybeans
 
 highlight ColorColumn guibg=#222222
 
+" recalculate the trailing whitespace warning when idle, and after saving
+autocmd cursorhold,bufwritepost * unlet! b:statusline_trailing_space_warning
+
+function! StatuslineTrailingSpaceWarning()
+  if !exists("b:statusline_trailing_space_warning")
+    if search('\s\+$', 'nw') != 0
+      let b:statusline_trailing_space_warning = '[whitespace]'
+    else
+      let b:statusline_trailing_space_warning = ''
+    endif
+  endif
+
+  return b:statusline_trailing_space_warning
+endfunction
+
+"recalculate the tab warning flag when idle and after writing
+autocmd cursorhold,bufwritepost * unlet! b:statusline_tab_warning
+
+function! StatuslineTabWarning()
+  if !exists("b:statusline_tab_warning")
+    let tabs   = search('^\t', 'nw') != 0
+    let spaces = search('^ ', 'nw')  != 0
+
+    if tabs && spaces
+      let b:statusline_tab_warning = '[mixed-indenting]'
+    elseif (spaces && !&et) || (tabs && &et)
+      let b:statusline_tab_warning = '[expandtab]'
+    else
+      let b:statusline_tab_warning = ''
+    endif
+  endif
+
+  return b:statusline_tab_warning
+endfunction
+
+"recalculate the long line warnings when idle and after saving
+autocmd cursorhold,bufwritepost * unlet! b:statusline_long_line_warning
+
+function! StatuslineLongLineWarning()
+  if !exists("b:statusline_long_line_warning")
+    let long_line_lengths = s:LongLines()
+
+    if len(long_line_lengths) > 0
+      let b:statusline_long_line_warning = "[" .
+        \ '#' . len(long_line_lengths) . "," .
+        \ 'm' . s:Median(long_line_lengths) . "," .
+        \ '$' . max(long_line_lengths) . "]"
+    else
+      let b:statusline_long_line_warning = ""
+    endif
+  endif
+
+  return b:statusline_long_line_warning
+endfunction
+
+"return a list containing the lengths of the long lines in this buffer
+function! s:LongLines()
+  let threshold = (&textwidth ? &textwidth : 80)
+  let spaces = repeat(" ", &ts)
+
+  let long_line_lengths = []
+
+  let i = 1
+  while i <= line("$")
+    let len = strlen(substitute(getline(i), '\t', spaces, 'g'))
+
+    if len > threshold
+      call add(long_line_lengths, len)
+    endif
+
+    let i += 1
+  endwhile
+
+  return long_line_lengths
+endfunction
+
+"find the median of the given array of numbers
+function! s:Median(nums)
+  let nums = sort(a:nums)
+  let l = len(nums)
+
+  if l % 2 == 1
+    let i = (l - 1) / 2
+    return nums[i]
+  else
+    return (nums[1/2] + nums[(1/2)-1]) / 2
+  endif
+endfunction
+
+"return the syntax highlight group under the cursor
+function! StatuslineCurrentHighlight()
+  let name = synIDattr(synID(line('.'),col('.'),1),'name')
+  if name == ''
+    return ''
+  else
+    return '[' . name . ']'
+  endif
+endfunction
