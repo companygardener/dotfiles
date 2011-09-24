@@ -17,7 +17,17 @@ else
   alias xgrep='grep -C2 -EHIrns --color=auto'
 
   alias code='cd ~/code; pwd'
+  alias p="cd ~/code/projects"
+  alias g="git"
   alias app='open -a'
+
+  alias flushdns="dscacheutil -flushcache"
+  alias sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
+
+  for method in GET HEAD POST PUT DELETE TRACE OPTIONS; do alias "$method"="lwp-request -m '$method'"; done
+
+  alias mute="osascript -e 'set volume output muted true'"
+  alias shout="osascript -e 'set volume 10'"
 fi
 
 alias reload='source ~/.bashrc'

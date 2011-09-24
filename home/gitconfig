@@ -1,6 +1,9 @@
 [color]
   branch = auto
   diff   = auto
+  grep   = auto
+  interactive = auto
+  showbranch  = auto
   status = auto
   ui     = true
 
@@ -17,14 +20,20 @@
   whitespace = red reverse
 
 [color "status"]
-  added = yellow
-  changed = green
+  added     = yellow
+  changed   = green
   untracked = cyan
 
+[apply]
+  ignorewhitespace = false
+
 [core]
-  whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
+  whitespace=fix,blank-at-eol,blank-at-eof,cr-at-eol,space-before-tab,-indent-with-non-tab,-tab-in-indent
   autocrlf = input
   safecrlf = true
+  eol = native
+  symlinks = true
+  deltaBaseCacheLimit = 128m
 
 [alias]
   s = status
@@ -40,17 +49,15 @@
   dump = cat-file -p
 
 [user]
-  name = Erik Peterson
-  email = thecompanygardener@gmail.com
+	name = Erik Peterson
+	email = thecompanygardener@gmail.com
 
 [diff]
-  tool = p4merge
+  tool = p4diff
 
 [merge]
-  tool = p4merge
+  keepBackup = false
+  tool       = vimdiff
 
 [difftool]
-  prompt = false
-
-[mergetool]
   prompt = false

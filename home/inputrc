@@ -1,1 +1,21 @@
 set bell-style none
+
+set mark-directories on
+
+# Make Tab autocomplete regardless of filename case
+set completion-ignore-case on
+set completion-query-items 32
+set completion-prefix-display-length 2
+
+set echo-control-characters off
+set editing-mode vi
+
+# Append a slash when autocompleting symbolic links to directories
+set mark-symlinked-directories on
+
+# List all matches in case multiple possible completions are possible
+set show-all-if-ambiguous on
+
+set skip-completed-text on
+
+"\C-f": menu-complete

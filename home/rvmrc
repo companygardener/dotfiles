@@ -7,5 +7,3 @@ export rvm_make_flags="-j 9"
 
 rvm_install_on_use_flag=1
 rvm_project_rvmrc_default=1
-
-export rvm_path="/usr/local/rvm"
