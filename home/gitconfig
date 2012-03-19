@@ -1,11 +1,11 @@
 [color]
-  branch = auto
-  diff   = auto
-  grep   = auto
+  branch      = auto
+  diff        = auto
+  grep        = auto
   interactive = auto
   showbranch  = auto
-  status = auto
-  ui     = true
+  status      = auto
+  ui          = true
 
 [color "branch"]
   current = yellow reverse
@@ -28,29 +28,34 @@
   ignorewhitespace = false
 
 [core]
-  whitespace=fix,blank-at-eol,blank-at-eof,cr-at-eol,space-before-tab,-indent-with-non-tab,-tab-in-indent
-  autocrlf = input
-  safecrlf = true
-  eol = native
-  symlinks = true
+  whitespace          = fix,blank-at-eol,blank-at-eof,cr-at-eol,space-before-tab,-indent-with-non-tab,-tab-in-indent
+  autocrlf            = input
+  safecrlf            = true
+  eol                 = native
+  symlinks            = true
   deltaBaseCacheLimit = 128m
+  pager               = less -R
 
 [alias]
-  s = status
-  c = commit
-  b = branch
-  co = checkout
-  d = diff
-  l = log -p
-  h = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+  s    = status
+  c    = commit
+  b    = branch
+  co   = checkout
+  d    = diff
+  dc   = diff --cached
+  l    = log --date=short --pretty=format:'%C(bold magenta)%h %Creset%C(green)%cd%Creset %C(white)%cN%Creset %s %C(yellow)%d'
+  lg   = log --graph --decorate --pretty=oneline --abbrev-commit --all
+  h    = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
   hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
   ha   = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short --all
   type = cat-file -t
   dump = cat-file -p
+  i    = ls-files -o -i --exclude-standard
+  sub  = submodule
 
 [user]
-	name = Erik Peterson
-	email = thecompanygardener@gmail.com
+  name  = Erik Peterson
+  email = thecompanygardener@gmail.com
 
 [diff]
   tool = p4diff
@@ -61,3 +66,10 @@
 
 [difftool]
   prompt = false
+
+[branch "master"]
+  remote = origin
+  merge  = refs/heads/master
+
+[branch]
+  autosetupmerge = true

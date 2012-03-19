@@ -15,6 +15,8 @@ highlight ColorColumn guibg=#222222
 set scrolloff=3
 set sidescrolloff=1
 
+set noballooneval
+
 if has("autocmd")
   autocmd! BufWritePost gvimrc.local source %
 endif

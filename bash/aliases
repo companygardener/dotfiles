@@ -4,6 +4,8 @@ alias ..3='..;..;..'
 alias ..4='..;..;..;..'
 alias ..5='..;..;..;..;..'
 
+alias be='bundle exec'
+
 alias dus='du -Psckx * | sort -nr'
 
 # No /etc/issue on OSX

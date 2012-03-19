@@ -1,6 +1,9 @@
-\set PROMPT1 '%n@%m %~%R%# '
+\set PROMPT1 '%n@%m/%~:%> %R%#%x '
 \set HISTFILE ~/.psql_history/ :HOST - :DBNAME
 \set HISTSIZE 2000
+\set HISTCONTROL ignoredups
+
+\pset pager always
 \timing
 \encoding unicode
 
@@ -9,3 +12,6 @@
 \set table_sizes     '( SELECT table_schema AS sch, table_name AS rel, pg_relation_size( quote_ident(table_schema) || \'.\' || quote_ident(table_name)) AS size, pg_total_relation_size(quote_ident(table_schema) || \'.\' || quote_ident(table_name)) AS total_size FROM information_schema.tables WHERE table_type = \'BASE TABLE\' AND table_schema NOT IN (\'information_schema\', \'pg_catalog\', \'to_delete\', \'cnu_report\') ORDER BY pg_relation_size(quote_ident(table_schema) || \'.\' || quote_ident(table_name)) DESC, table_schema, table_name)'
 \set pretty_table_sizes '( SELECT sch, rel, pg_size_pretty(size) AS size, pg_size_pretty(total_size) AS total_size FROM (:table_sizes) x ORDER BY x.total_size DESC, x.size DESC, sch, rel)'
 
+\set current_queries '(SELECT FIRST(usename), FIRST(NOW() - query_start), FIRST(SUBSTR(current_query, 0, 70)) AS query, FIRST(procpid), FIRST(datname), FIRST(client_addr) AS host, FIRST(client_port) AS port, COUNT(l.*) AS lock_count FROM pg_stat_activity a INNER JOIN pg_locks l ON a.procpid = l.pid WHERE current_query <> \'<IDLE>\' and datname = \'cnuapp_prod\' GROUP BY procpid ORDER BY 2)'
+\set current 'SELECT * FROM :current_queries cq;'
+\set idle    'SELECT * FROM :current_queries cq WHERE query = \'<IDLE> in transaction\';'
