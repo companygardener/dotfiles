@@ -1,0 +1,15 @@
+[submodule "home/janus/vimroom"]
+	path = home/janus/vimroom
+	url = git://github.com/mikewest/vimroom.git
+[submodule "home/janus/textobj-user"]
+	path = home/janus/textobj-user
+	url = git://github.com/kana/vim-textobj-user.git
+[submodule "home/janus/textobj-rubyblock"]
+	path = home/janus/textobj-rubyblock
+	url = git://github.com/nelstrom/vim-textobj-rubyblock.git
+[submodule "home/janus/argtextobj"]
+	path = home/janus/argtextobj
+	url = git://github.com/vim-scripts/argtextobj.vim.git
+[submodule "home/janus/autotag"]
+	path = home/janus/autotag
+	url = git://github.com/vim-scripts/AutoTag.git
