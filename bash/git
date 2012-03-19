@@ -27,7 +27,7 @@ git-prompt() {
     local message="${color}${minutes}m${NO_COLOR}"
 
     # The __git_ps1 function inserts the current git branch where %s is
-    local prompt=`__git_ps1 "$YELLOW[%s$NO_COLOR ${message}$YELLOW]$NO_COLOR"`
+    local prompt=`__git_ps1 "$YELLOW[%s]$NO_COLOR ${message}"`
   else
     local message=`pyprompt`
 
