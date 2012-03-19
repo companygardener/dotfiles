@@ -10,7 +10,8 @@ else
 fi
 
 PS1START="\n\[$EBLUE\]┌─[\T \d] \[$BLUE\]\u\[$NO_COLOR\] @ $HOST :"
-PS1END="\w \[$YELLOW\][\$(pyprompt)]\[$NO_COLOR\] \n\[$EBLUE\]└─> % \[$NO_COLOR\]"
+#PS1END="\w \[$YELLOW\][\$(pyprompt)]\[$NO_COLOR\]\$(git-prompt) \n\[$EBLUE\]└─> % \[$NO_COLOR\]"
+PS1END="\w \$(git-prompt) \n\[$EBLUE\]└─> % \[$NO_COLOR\]"
 
 if [ -f /usr/local/bin/rvm-prompt ]; then
   PS1RVM="\$(/usr/local/bin/rvm-prompt)"
