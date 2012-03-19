@@ -13,3 +13,15 @@
 [submodule "home/janus/autotag"]
 	path = home/janus/autotag
 	url = git://github.com/vim-scripts/AutoTag.git
+[submodule "conque-shell"]
+	path = conque-shell
+	url = git://github.com/vim-scripts/Conque-Shell.git
+[submodule "home/janus/conque-shell"]
+	path = home/janus/conque-shell
+	url = git://github.com/vim-scripts/Conque-Shell.git
+[submodule "home/janus/ruby-conque"]
+	path = home/janus/ruby-conque
+	url = git://github.com/skwp/vim-ruby-conque.git
+[submodule "home/janus/conque"]
+	path = home/janus/conque
+	url = git://github.com/rson/vim-conque.git

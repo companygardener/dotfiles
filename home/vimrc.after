@@ -134,7 +134,7 @@ nnoremap <leader>pp :setlocal paste!<cr>:set paste?<cr>
 nnoremap <leader>.. :cd ..<cr>
 
 " Spelling
-noremap <leader>ss :setlocal spell!<cr>
+noremap <leader>s! :setlocal spell!<cr>
 noremap <leader>sn ]s
 noremap <leader>sp [s
 noremap <leader>sa zg
@@ -304,4 +304,13 @@ function! StatuslineCurrentHighlight()
   else
     return '[' . name . ']'
   endif
+endfunction
+
+" ruby-conque
+function! RunSingleConque(command)
+  try
+    exec "bdelete " . g:single_conque.buffer_name
+  catch
+  endtry
+  let g:single_conque = conque_term#open(a:command, ['botright vsplit'])
 endfunction
