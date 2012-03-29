@@ -5,6 +5,7 @@
 :sources:
 - http://rubygems.org/
 - http://gems.enova.com
+- http://gems.enova.com/
 :update_sources: true
 :verbose: true
 install: --no-rdoc --no-ri

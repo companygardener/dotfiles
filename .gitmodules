@@ -25,3 +25,6 @@
 [submodule "home/janus/conque"]
 	path = home/janus/conque
 	url = git://github.com/rson/vim-conque.git
+[submodule "home/janus/align"]
+	path = home/janus/align
+	url = https://github.com/vim-scripts/Align.git

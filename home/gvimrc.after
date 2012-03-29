@@ -18,5 +18,6 @@ set sidescrolloff=1
 set noballooneval
 
 if has("autocmd")
-  autocmd! BufWritePost gvimrc.local source %
+  autocmd! BufWritePost gvimrc.before source %
+  autocmd! BufWritePost gvimrc.after source %
 endif
