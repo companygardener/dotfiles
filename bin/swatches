@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+
+ARGF.each do |line|
+  filename, colors = line.split(/\s+/)
+  colors = [*colors.split(',')].flatten
+  puts "#{filename} -> #{colors.inspect}"
+
+  color_options = colors.each_with_index.map do |color, i|
+    %{-draw "fill #{color} rectangle #{i * 32},0 #{i * 32 + 32},32"}
+  end
+
+  %x[ convert -size #{colors.size * 32 }x32 xc:white #{color_options.join(' ')} "#{File.expand_path("~/tmp/swatches/#{File.basename(filename)}-swatch.png")}"]
+  %x[ open ~/tmp/swatches/#{filename}-swatch.png ]
+end

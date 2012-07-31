@@ -1,0 +1,321 @@
+#!/usr/bin/env bash
+#
+# Tool:    TLSSLed.sh
+#
+# Description:
+#      Script to extract the most relevant security details from a 
+#    target SSL/TLS HTTPS implementation by using sslscan & openssl.
+#
+# Author:  Raul Siles (raul _AT_ taddong _DOT_ com)
+#    Taddong SL (www.taddong.com)
+# Date:    2011-10-18
+# Version: 1.2
+#
+# - New in version 1.2:
+#   - Mac OS X support: sed regex switch changed - by [ anonymous ].
+#   - Test if target service speaks SSL/TLS - by Abraham Aranguren (AA).
+#     For performance reasons, this test has been merged with the SSL/TLS 
+#     renegotiation test.
+#   - Optimizations by removing cat usage in grepping for findings - by AA.
+#   - New initial tests to check for the tool prerequisites: openssl & sslscan.
+#   - Test for TLS v1.1 and v1.2 support (CVE-2011-3389 aka BEAST).
+#     The tests also include checking for SSLv3 and TLSv1 support.
+#   - Log files names changed from host:port to host_port and ":" removed 
+#     from the time portion of the date command, to be able to copy them 
+#     to Windows based file systems: 
+#     (In Windows ":" is not allowed in a filename, while "_" is).
+#
+# - New in version 1.1:
+#   - Cert public key length, subject, issuer, and validiy period.
+#   - Test HTTP(S) secure headers: Strict-Transport-Security (STS), and 
+#     cookies with and without the secure flag.
+#   - NOTE: openssl output is now saved to files too.
+#
+# - Current SSL/TLS tests: (version 1.0)
+#   SSLv2, NULL cipher, weak ciphers -key length-, strong ciphers -AES-, 
+#   MD5 signed cert, and SSL/TLS renegotiation.
+#
+#
+# Requires: 
+# - sslscan
+# https://sourceforge.net/projects/sslscan/
+# - openssl
+# http://www.openssl.org
+#
+# Credits: 
+# - Version 1.0 based on ssl_test.sh by Aung Khant, http://yehg.net.
+# - Abraham Aranguren (AA) - http://securityconscious.blogspot.com  (v1.2)
+# 
+
+#
+# /**************************************************************************
+# *   Copyright 2011 by Taddong SL (Raul Siles)                             *
+# *                                                                         *
+# *   This program is free software; you can redistribute it and/or modify  *
+# *   it under the terms of the GNU General Public License as published by  *
+# *   the Free Software Foundation; either version 3 of the License, or     *
+# *   (at your option) any later version.                                   *
+# *                                                                         *
+# *   This program is distributed in the hope that it will be useful,       *
+# *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+# *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+# *   GNU General Public License for more details.                          *
+# *                                                                         *
+# *   You should have received a copy of the GNU General Public License     *
+# *   along with this program. If not, see <http://www.gnu.org/licenses/>.  *
+# *                                                                         *
+# **************************************************************************/
+#
+
+VERSION=1.2
+
+# This script does not filter the input from certain commands, hence it might 
+# be vulnerable to local input command manipulation, such as in uname.
+
+# v1.2: Mac OS X (Darwin) support.
+# sed regexes in Linux use the -r switch, and in non-GNU systems the -E switch.
+SED_ARG_REGEX=-r
+if [ "$(uname)" == "Darwin" ] ; then
+   SED_ARG_REGEX=-E
+fi
+
+echo ------------------------------------------------------
+echo " TLSSLed - ($VERSION) based on sslscan and openssl"
+echo "                 by Raul Siles (www.taddong.com)"
+echo ------------------------------------------------------
+
+if [ -z `which openssl` ] ;then echo; echo "ERROR: openssl command not found!"; exit; fi
+if [ -z `which sslscan` ] ;then echo; echo "ERROR: sslscan command not found!"; exit; fi
+
+OPENSSLVERSION=$(openssl version)
+SSLSCANVERSION=$(sslscan --version | grep version | sed ${SED_ARG_REGEX} "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g")
+
+echo + openssl version: $OPENSSLVERSION
+echo + $SSLSCANVERSION
+echo ------------------------------------------------------
+echo
+
+if [ $# -ne 2 ]; then 
+   echo Usage: $0 HOSTNAME_or_IP PORT
+   exit
+fi
+
+HOST=$1
+PORT=$2
+
+echo [-] Analyzing SSL/TLS on $HOST:$PORT ..
+echo 
+
+# Run sslcan once, store the results to a log file and
+# analyze that file for all the different tests:
+DATE=$(date +%F_%R:%S | sed 's/://g')
+TARGET=$HOST\_$PORT
+LOGFILE=sslscan\_$TARGET\_$DATE.log
+ERRFILE=sslscan\_$TARGET\_$DATE.err
+RENEGLOGFILE=openssl\_RENEG\_$TARGET\_$DATE.log
+RENEGERRFILE=openssl\_RENEG\_$TARGET\_$DATE.err
+HEADLOGFILE=openssl\_HEAD\_$TARGET\_$DATE.log
+HEADERRFILE=openssl\_HEAD\_$TARGET\_$DATE.err
+
+# Check if the target service speaks SSL/TLS (& check renegotiation)
+(echo R; sleep 5) | openssl s_client -connect $HOST:$PORT > $RENEGLOGFILE 2> $RENEGERRFILE &
+pid=$!
+sleep 5
+
+SSL_HANDSHAKE_LINES=$(cat $RENEGLOGFILE | wc -l)
+
+if [ $SSL_HANDSHAKE_LINES -lt 5 ] ; then 
+  # SSL handshake failed - Non SSL/TLS service
+  # If the target service does not speak SSL/TLS, openssl does not 
+  # terminate
+  kill -s SIGINT ${pid}
+
+        echo "[+] ERROR: The target service $HOST:$PORT does not seem"
+  echo "           to speak SSL/TLS or is not available!!"
+        echo
+        exit
+else 
+  # SSL handshake succeded - Continue
+        echo "[*] The target service $HOST:$PORT seems to speak SSL/TLS..."
+        echo
+fi
+
+
+echo
+echo [-] Running sslscan on $HOST:$PORT...
+sslscan $HOST:$PORT > $LOGFILE 2> $ERRFILE
+
+echo
+echo [*] Testing for SSLv2 ...
+grep "Accepted  SSLv2" $LOGFILE
+echo
+echo [*] Testing for NULL cipher ...
+grep "NULL" $LOGFILE | grep Accepted
+echo
+echo [*] Testing for weak ciphers \(based on key length\) ...
+grep " 40 bits" $LOGFILE | grep Accepted
+echo 
+grep " 56 bits" $LOGFILE | grep Accepted
+echo
+echo [*] Testing for strong ciphers \(AES\) ...
+grep "AES" $LOGFILE | grep Accepted
+
+echo 
+echo [*] Testing for MD5 signed certificate ...
+#cat $LOGFILE | grep -E 'MD5WithRSAEncryption|md5WithRSAEncryption'
+grep -i 'MD5WithRSAEncryption' $LOGFILE
+
+echo 
+echo [*] Testing for certificate public key length ...
+grep -i 'RSA Public Key' $LOGFILE
+
+echo 
+echo [*] Testing for certificate subject ...
+grep -i 'Subject:' $LOGFILE
+
+echo 
+echo [*] Testing for certificate CA issuer ...
+grep -i 'Issuer:' $LOGFILE
+
+echo 
+echo [*] Testing for certificate validity period ...
+NOW=$(date -u)
+echo "    Today: $NOW"
+grep -i 'Not valid' $LOGFILE
+
+echo 
+echo [*] Checking preferred server ciphers ...
+# v1.1:
+# cat $LOGFILE | sed '/Prefered Server Cipher(s):/,/^$/!d' | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"
+#
+cat $LOGFILE | sed '/Prefered Server Cipher(s):/,/^$/!d' | sed ${SED_ARG_REGEX} "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"
+
+echo
+echo
+echo [-] Testing for SSLv3/TLSv1 renegotiation vuln. \(CVE-2009-3555\) ...
+#echo [*] echo R \| openssl s_client -connect $HOST:$PORT \| grep "DONE"
+#
+# Renegotiation details go to stderr (2>)
+#
+# if $OPENSSLVERSION is updated (version?) it supports RFC5746 and will print:
+# Secure Renegotiation IS NOT supported
+# Secure Renegotiation IS supported
+#
+
+# Executed as the first step to check if target service supports SSL/TLS:
+#
+# (echo R; sleep 5) | openssl s_client -connect $HOST:$PORT > $RENEGLOGFILE 2> $RENEGERRFILE
+
+echo
+echo [*] Testing for secure renegotiation ...
+grep -E "Secure Renegotiation IS" $RENEGLOGFILE
+
+
+echo
+echo
+echo [-] Testing for TLS v1.1 and v1.2 \(CVE-2011-3389 aka BEAST\) ...
+
+# Test for SSLv3 and TLSv1 support first (from sslscan)
+echo
+echo [*] Testing for SSLv3 and TLSv1 support first ...
+grep "Accepted  SSLv3" $LOGFILE
+grep "Accepted  TLSv1" $LOGFILE
+
+#
+# Connection details go to stderr (2>) and, therefore, to a variable:
+#
+# if $OPENSSLVERSION is updated (version >= 1.0.1-stable) it supports 
+# TLS v1.1 & v1.2, if not, the openssl help is displayed in the command output
+#
+# Example of server that supports all SSL and TLS versions: 
+# tls.woodgrovebank.com:443 (Microsoft) (20111012)
+
+OUTPUT_TLS1_1=$((sleep 5; echo QUIT) | openssl s_client -tls1_1 -connect $HOST:$PORT 2>&1)
+OUTPUT_TLS1_2=$((sleep 5; echo QUIT) | openssl s_client -tls1_2 -connect $HOST:$PORT 2>&1)
+
+#      if "DONE":                   TLS v1.x supported
+# else if "wrong version number":   TLS v1.x not supported
+# else if "unknown option":         OpenSSL does not support TLS v1.1 or v1.2
+
+echo
+echo [*] Testing for TLS v1.1 support ...
+
+if grep -q DONE <<<$OUTPUT_TLS1_1; then
+    echo "TLS v1.1 IS supported"
+elif grep -q "wrong version number" <<<$OUTPUT_TLS1_1; then
+    echo "TLS v1.1 IS NOT supported"
+elif grep -q "unknown option" <<<$OUTPUT_TLS1_1; then
+    echo "The local openssl version does NOT support TLS v1.1"
+else
+    echo "UNKNOWN"
+fi
+
+echo
+echo [*] Testing for TLS v1.2 support ...
+
+if grep -q DONE <<<$OUTPUT_TLS1_2; then
+    echo "TLS v1.2 IS supported"
+elif grep -q "wrong version number" <<<$OUTPUT_TLS1_2; then
+    echo "TLS v1.2 IS NOT supported"
+elif grep -q "unknown option" <<<$OUTPUT_TLS1_2; then
+    echo "The local openssl version does NOT support TLS v1.2"
+else
+    echo "UNKNOWN"
+fi
+
+echo
+echo
+echo [-] Testing for SSL/TLS HTTPS security headers ...
+#
+# 
+#
+(echo -e "HEAD / HTTP/1.0\n\n"; sleep 5) | openssl s_client -connect $HOST:$PORT > $HEADLOGFILE 2> $HEADERRFILE
+
+echo
+echo [*] Testing for Strict-Transport-Security \(STS\) header ...
+grep -i 'Strict-Transport-Security' $HEADLOGFILE
+
+echo
+echo [*] Testing for cookies with the secure flag ...
+grep -i 'Set-Cookie' $HEADLOGFILE | grep -i 'secure'
+
+echo
+echo [*] Testing for cookies without the secure flag ...
+grep -i 'Set-Cookie' $HEADLOGFILE | grep -v -i 'secure'
+
+
+echo
+echo
+echo [-] New files created:
+ls -l $LOGFILE
+ls -l $HEADLOGFILE
+ls -l $RENEGLOGFILE
+
+# Delete all empty error files:
+# It could potentially delete other .err zero-size files not created by TLSSLed
+# find . -size 0 -name '*.err' -delete 
+
+if [ ! -s $ERRFILE ]; then
+  # Error file is empty
+  rm $ERRFILE
+else
+  ls -l $ERRFILE
+fi
+if [ ! -s $RENEGERRFILE ]; then
+  # Renegotiation error file is empty
+  rm $RENEGERRFILE
+else
+  ls -l $RENEGERRFILE
+fi
+if [ ! -s $HEADERRFILE ]; then
+  # Openssl HEAD error file is empty
+  rm $HEADERRFILE
+else
+  ls -l $HEADERRFILE
+fi
+
+echo
+echo 
+echo [-] done
+echo
+

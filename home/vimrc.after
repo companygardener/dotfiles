@@ -1,50 +1,73 @@
-
-" Vim cheat sheet
-" http://walking-without-crutches.heroku.com/image/images/vi-vim-cheat-sheet.png
+" Modeline and Comments {
+"   vim: set foldmarker={,} foldlevel=0 foldmethod=marker
 "
+"   Vim cheat sheet
+"   http://walking-without-crutches.heroku.com/image/images/vi-vim-cheat-sheet.png
+"
+"   shoutout
+"   http://spf13.com/post/perfect-vimrc-vim-config-file
+" }
 
-behave xterm
+" Environment {
+  behave xterm
 
-set nocompatible
+  set nocompatible
+  set background=dark
+" }
 
-set title
-set novisualbell
-set noerrorbells
-set t_vb=
+" General {
+  set title
 
-set mouse=a
-set mousehide
-set mousemodel=extend
+  set novisualbell
+  set noerrorbells
+  set t_vb=
 
-set encoding=utf-8
-try
-  lang en_US
-catch
-endtry
+  set mouse=a
+  set mousehide
+  set mousemodel=extend
 
-set fileformats=unix,dos,mac
-set fileformat=unix
+  set encoding=utf-8
+  try
+    lang en_US
+  catch
+  endtry
 
-set nobackup
-set nowritebackup
-set noswapfile
-set history=1000
-set undolevels=5000
+  set nobackup
+  set nowritebackup
+  set noswapfile
+  set history=1000
+  set undolevels=5000
 
-set antialias
-set lazyredraw
-set ruler
-set number
+  set autoread
+  set noautowrite
+" }
 
-set autoread
-set noautowrite
-set cmdheight=3
-set showmode
-set showcmd
-set more
+" UI {
+  set antialias
+  set lazyredraw
 
-set showmatch
-set ttyfast
+  set ruler
+  set number
+
+  set cmdheight=3
+  set showmode
+  set showcmd
+  set more
+
+  set showmatch
+  set ttyfast
+" }
+
+" Formatting {
+  set fileformats=unix,dos,mac
+  set fileformat=unix
+" }
+
+" Key (re)Mappings {
+" }
+
+" Functions {
+" }
 
 set incsearch
 set hlsearch
@@ -104,6 +127,7 @@ set report=0
 set complete=.,w,b,u,U,t,i,d
 set wildmenu
 set wildmode=list:longest
+set wildignore=*.o,*.obj,.git,*.rbc,*.rbo,*.class,.svn,*.gem,*.zip,*.tar.gz,*.tar.bz2,*.rar,*.tar.xz,*/vendor/gems/*,*/vendor/cache/*,*/.bundle/*,*/.sass-cache/*,*.swp,*~,._*
 set infercase
 
 set diffopt=filler,vertical
@@ -172,23 +196,73 @@ nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 
-noremap <right> <ESC>:bn<RETURN>
-noremap <left> <ESC>:bp<RETURN>
+"noremap <right> <ESC>:bn<RETURN>
+"noremap <left> <ESC>:bp<RETURN>
 
-:command WQ wq
-:command Wq wq
-:command W w
-:command Q q
+:command! WQ wq
+:command! Wq wq
+:command! W w
+:command! Q q
 
 iab RuL ----+----1----+----2----+----3----+----4----+----5----+----6----+----7----+----8----+----9----+----0
+
+vnoremap <leader>a<bar> :Tabularize /<bar><cr>
+nnoremap <leader>a<bar> :Tabularize /<bar><cr>
+
+vnoremap <leader>a<space> :Tabularize /<space><cr>
+nnoremap <leader>a<space> :Tabularize /<space><cr>
+
+vnoremap <leader>am2 :Tabularize /<bar>/l1c1l1c1r1c1<cr>
+nnoremap <leader>am2 :Tabularize /<bar>/l1c1l1c1r1c1<cr>
+
+vnoremap <leader>am3 :Tabularize /<bar>/l1c1l1c1l1c1r1c1<cr>
+nnoremap <leader>am3 :Tabularize /<bar>/l1c1l1c1l1c1r1c1<cr>
+
+map <Leader>n <plug>NERDTreeTabsToggle<CR>
+
+" dbext
+let g:dbext_default_window_use_horiz = 1
+
+let g:dbext_default_window_use_bottom = 1
+let g:dbext_default_buffer_lines = 30
+
+let g:dbext_default_window_use_right = 1
+let g:dbext_default_window_width = 80
+let g:dbext_default_window_increment = 80
+
+" auto-align cucumber tables using Tabularize
+inoremap <silent> <Bar>   <Bar><Esc>:call <SID>align()<CR>a
+function! s:align()
+  let p = '^\s*|\s.*\s|\s*$'
+  if exists(':Tabularize') && getline('.') =~# '^\s*|' && (getline(line('.')-1) =~# p || getline(line('.')+1) =~# p)
+    let column = strlen(substitute(getline('.')[0:col('.')],'[^|]','','g'))
+    let position = strlen(matchstr(getline('.')[0:col('.')],'.*|\s*\zs.*'))
+    Tabularize/|/l1
+    normal! 0
+    call search(repeat('[^|]*|',column).'\s\{-\}'.repeat('.',position),'ce',line('.'))
+  endif
+endfunction
+
+" auto-align = using Tabularize
+" inoremap <silent> = =<Esc>:call <SID>ealign()<CR>a
+" function! s:ealign()
+"   let p = '^.*=\s.*$'
+"   if exists(':Tabularize') && getline('.') =~# '^.*=' && (getline(line('.')-1) =~# p || getline(line('.')+1) =~# p)
+"     let column = strlen(substitute(getline('.')[0:col('.')],'[^=]','','g'))
+"     let position = strlen(matchstr(getline('.')[0:col('.')],'.*=\s*\zs.*'))
+"     Tabularize/=/l1
+"     normal! 0
+"     call search(repeat('[^=]*=',column).'\s\{-\}'.repeat('.',position),'ce',line('.'))
+"   endif
+" endfunction
 
 if has("autocmd")
   filetype on
   filetype indent on
   filetype plugin on
 
-  autocmd! BufWritePost vimrc.before source %
-  autocmd! BufWritePost vimrc.after  source %
+  autocmd! BufWritePost .vimrc.before source %
+  autocmd! BufWritePost .vimrc.after  source %
 
   autocmd FileType make setlocal ts=8 sts=8 sw=8 noexpandtab
   autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab

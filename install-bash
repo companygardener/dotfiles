@@ -1,5 +1,3 @@
-. ~/.bashrc
-
 if [ ! -f ~/bin/vcprompt ]; then
   cd ~/bin/dotfiles/src/vcprompt
 

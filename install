@@ -4,7 +4,7 @@ home = File.expand_path('~')
 
 Dir.chdir('home')
 Dir['*'].each do |file|
-  target = File.join(home, ".#{file}")
+  target = File.expand_path File.join(home, ".#{file}")
   `ln -fs #{File.expand_path file} #{target}`
 end
 

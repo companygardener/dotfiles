@@ -33,7 +33,8 @@
   safecrlf            = true
   eol                 = native
   symlinks            = true
-  deltaBaseCacheLimit = 128m
+  deltaBaseCacheLimit = 512m
+  preloadindex        = true
   pager               = less -R
 
 [alias]
@@ -73,3 +74,12 @@
 
 [branch]
   autosetupmerge = true
+
+[push]
+  default = tracking
+
+[pull]
+  default = tracking
+
+[rebase]
+  default = master

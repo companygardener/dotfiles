@@ -8,13 +8,9 @@ alias be='bundle exec'
 
 alias dus='du -Psckx * | sort -nr'
 
-# No /etc/issue on OSX
-if [ -f /etc/issue ]; then
-  alias ll='ls -lah --color=auto'
-  alias xgrep='grep -C2 -TEHIrns --color=auto'
+if [ "$(uname)" == 'Darwin' ]; then
+  is_darwin=1
 
-  alias code='cd /export/code; pwd'
-else
   alias ll='ls -lahG'
   alias xgrep='grep -C2 -EHIrns --color=auto'
 
@@ -23,6 +19,8 @@ else
   alias g="git"
   alias app='open -a'
 
+  alias pstree='pstree -g2 -w'
+
   alias flushdns="dscacheutil -flushcache"
   alias sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
 
@@ -30,11 +28,20 @@ else
 
   alias mute="osascript -e 'set volume output muted true'"
   alias shout="osascript -e 'set volume 10'"
+else
+  is_darwin=0
+
+  alias ll='ls -lah --color=auto'
+  alias xgrep='grep -C2 -TEHIrns --color=auto'
+
+  alias code='cd /export/code; pwd'
 fi
 
 alias reload='source ~/.bashrc'
 
 alias dotfiles='cd ~/bin/dotfiles'
+
+alias psql='PAGER=vimpager psql'
 
 alias p4s='p4 sync'
 alias p4c='p4 change'
@@ -42,3 +49,28 @@ alias p4e='p4 edit'
 alias p4i='p4 integrate'
 
 alias df='df -h'
+alias rvmpow='rvm env . -- --env > .powenv'
+
+
+
+# alias ll='ls -la'
+# alias lt='ls -ltra'
+# alias newalias='vi ~/.bash_aliases;. ~/.bash_aliases'
+# alias lsc='pg_lsclusters'
+# alias spdo='sudo -u postgres'
+# alias stdo='sudo -u skytools'
+# alias sql='$HOME/scripts/pgsql.sh'
+# alias pgenv='. $HOME/.pgenv'
+# alias sup='sudo su - postgres'
+# alias pgdir='cd ~postgres'
+# alias vlog='sudo -u postgres vi $PGLOG'
+# alias tlog='sudo -u postgres tail -f $PGLOG'
+# alias cdlog='cd $(dirname $PGLOG)'
+# alias lsp='env | grep PG'
+# alias pgconf='sudo -u postgres vi /etc/postgresql/$version/$cluster/postgresql.conf'
+# alias pghba='sudo -u postgres vi /etc/postgresql/$version/$cluster/pg_hba.conf'
+# alias pgetc='cd /etc/postgresql/$version/$cluster'
+# alias pgreload='sudo -u postgres pg_ctlcluster $version $cluster reload'
+# alias pgwhat='echo $PGCLUSTER; echo $PGDATABASE'
+# alias run='psql -q'
+# alias pgkill='sudo -u postgres kill $1'

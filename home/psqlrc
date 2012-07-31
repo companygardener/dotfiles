@@ -1,17 +1,42 @@
-\set PROMPT1 '%n@%m/%~:%> %R%#%x '
+\set PROMPT1 '%n@%[%033[0;32m%]%m%[%033[0m%]/%~:%> %R%#%x '
+\set PROMPT2 ' %R%# '
+
 \set HISTFILE ~/.psql_history/ :HOST - :DBNAME
-\set HISTSIZE 2000
+\set HISTSIZE 5000
 \set HISTCONTROL ignoredups
 
 \pset pager always
 \timing
 \encoding unicode
 
-\set unused_indexes  '( SELECT s.schemaname AS sch, s.relname AS rel, s.indexrelname AS idx, s.idx_scan AS scans, pg_size_pretty(pg_relation_size(s.relid)) AS ts, pg_size_pretty(pg_relation_size(s.indexrelid)) AS "is" FROM pg_stat_user_indexes s JOIN pg_index i ON i.indexrelid=s.indexrelid LEFT JOIN pg_constraint c ON i.indrelid=c.conrelid AND array_to_string(i.indkey, '' '') = array_to_string(c.conkey, '' '') WHERE i.indisunique IS FALSE AND pg_relation_size(s.relid) > 1000000 AND s.idx_scan < 100000 AND c.confrelid IS NULL ORDER BY s.idx_scan ASC, pg_relation_size(s.indexrelid) DESC )'
-\set missing_indexes '( SELECT src_table, dst_table, fk_name, pg_size_pretty(s_size) AS s_size, pg_size_pretty(d_size) AS d_size, d FROM ( SELECT DISTINCT ON (1,2,3,4,5) textin(regclassout(c.conrelid)) AS src_table, textin(regclassout(c.confrelid)) AS dst_table, c.conname AS fk_name, pg_relation_size(c.conrelid) AS s_size, pg_relation_size(c.confrelid) AS d_size, array_upper(di.indkey::int[], 1) + 1 - array_upper(c.conkey::int[], 1) AS d FROM pg_constraint c LEFT JOIN pg_index di ON di.indrelid = c.conrelid AND array_to_string(di.indkey, '' '') ~ (''^'' || array_to_string(c.conkey, '' '') || ''( |$)'') JOIN pg_stat_user_tables st ON st.relid = c.conrelid WHERE c.contype = ''f'' ORDER BY 1,2,3,4,5,6 ASC) mfk WHERE mfk.d IS DISTINCT FROM 0 AND mfk.s_size > 1000000 ORDER BY mfk.s_size DESC, mfk.d DESC )'
-\set table_sizes     '( SELECT table_schema AS sch, table_name AS rel, pg_relation_size( quote_ident(table_schema) || \'.\' || quote_ident(table_name)) AS size, pg_total_relation_size(quote_ident(table_schema) || \'.\' || quote_ident(table_name)) AS total_size FROM information_schema.tables WHERE table_type = \'BASE TABLE\' AND table_schema NOT IN (\'information_schema\', \'pg_catalog\', \'to_delete\', \'cnu_report\') ORDER BY pg_relation_size(quote_ident(table_schema) || \'.\' || quote_ident(table_name)) DESC, table_schema, table_name)'
-\set pretty_table_sizes '( SELECT sch, rel, pg_size_pretty(size) AS size, pg_size_pretty(total_size) AS total_size FROM (:table_sizes) x ORDER BY x.total_size DESC, x.size DESC, sch, rel)'
+\set unused_indexes    '( SELECT s.schemaname AS sch, s.relname AS rel, s.indexrelname AS idx, s.idx_scan AS scans, pg_size_pretty(pg_relation_size(s.relid)) AS ts, pg_size_pretty(pg_relation_size(s.indexrelid)) AS "is" FROM pg_stat_user_indexes s JOIN pg_index i ON i.indexrelid=s.indexrelid LEFT JOIN pg_constraint c ON i.indrelid=c.conrelid AND array_to_string(i.indkey, '' '') = array_to_string(c.conkey, '' '') WHERE i.indisunique IS FALSE AND pg_relation_size(s.relid) > 1000000 AND s.idx_scan < 100000 AND c.confrelid IS NULL ORDER BY s.idx_scan ASC, pg_relation_size(s.indexrelid) DESC )'
+\set missing_indexes   '( SELECT src_table, dst_table, fk_name, pg_size_pretty(s_size) AS s_size, pg_size_pretty(d_size) AS d_size, d FROM ( SELECT DISTINCT ON (1,2,3,4,5) textin(regclassout(c.conrelid)) AS src_table, textin(regclassout(c.confrelid)) AS dst_table, c.conname AS fk_name, pg_relation_size(c.conrelid) AS s_size, pg_relation_size(c.confrelid) AS d_size, array_upper(di.indkey::int[], 1) + 1 - array_upper(c.conkey::int[], 1) AS d FROM pg_constraint c LEFT JOIN pg_index di ON di.indrelid = c.conrelid AND array_to_string(di.indkey, '' '') ~ (''^'' || array_to_string(c.conkey, '' '') || ''( |$)'') JOIN pg_stat_user_tables st ON st.relid = c.conrelid WHERE c.contype = ''f'' ORDER BY 1,2,3,4,5,6 ASC) mfk WHERE mfk.d IS DISTINCT FROM 0 AND mfk.s_size > 1000000 ORDER BY mfk.s_size DESC, mfk.d DESC )'
+\set table_sizes       '( SELECT table_schema AS sch, table_name AS rel, pg_relation_size( quote_ident(table_schema) || \'.\' || quote_ident(table_name)) AS size, pg_total_relation_size(quote_ident(table_schema) || \'.\' || quote_ident(table_name)) AS total_size FROM information_schema.tables WHERE table_type = \'BASE TABLE\' AND table_schema NOT IN (\'information_schema\', \'pg_catalog\', \'to_delete\', \'cnu_report\') ORDER BY pg_relation_size(quote_ident(table_schema) || \'.\' || quote_ident(table_name)) DESC, table_schema, table_name)'
 
-\set current_queries '(SELECT FIRST(usename), FIRST(NOW() - query_start), FIRST(SUBSTR(current_query, 0, 70)) AS query, FIRST(procpid), FIRST(datname), FIRST(client_addr) AS host, FIRST(client_port) AS port, COUNT(l.*) AS lock_count FROM pg_stat_activity a INNER JOIN pg_locks l ON a.procpid = l.pid WHERE current_query <> \'<IDLE>\' and datname = \'cnuapp_prod\' GROUP BY procpid ORDER BY 2)'
+\set pretty_table_size '( SELECT sch, rel, pg_size_pretty(size) AS size, pg_size_pretty(total_size) AS total_size FROM (:table_sizes) x ORDER BY x.total_size DESC, x.size DESC, sch, rel)'
+\set pretty_db_size    'SELECT pg_size_pretty(pg_database_size(CURRENT_DATABASE()));'
+
+\set size_of 'SELECT * FROM :pretty_table_size s WHERE rel like '
+
+\set current_queries '(SELECT usename, to_char(NOW() - xact_start, \'HH24:MI:SS\') AS xtime, to_char(NOW() - query_start, \'HH24:MI:SS\') AS qtime, SUBSTR(current_query, 0, 70) AS query, procpid, datname, client_addr AS host, client_port AS port, (SELECT COUNT(*) FROM pg_locks WHERE pid = a.procpid) AS locks, (SELECT COUNT(*) FROM pg_locks WHERE pid = a.procpid AND granted = FALSE) AS waits FROM pg_stat_activity a WHERE current_query <> \'<IDLE>\' and datname LIKE \'cnuapp_prod%\' ORDER BY qtime DESC, xtime DESC)'
 \set current 'SELECT * FROM :current_queries cq;'
 \set idle    'SELECT * FROM :current_queries cq WHERE query = \'<IDLE> in transaction\';'
+\set connections 'SELECT usename, COUNT(*) FROM pg_stat_activity GROUP BY 1 ORDER BY 2 DESC;'
+
+\set health '((SELECT \'locks\' AS name, COUNT(*) AS n, 8000 AS warn FROM pg_locks UNION ALL SELECT \'waits\' AS name, COUNT(*) AS n, 10 AS warn FROM pg_locks WHERE granted = false) UNION ALL SELECT \'connections\' AS name, COUNT(*) AS n, 1800 AS warn FROM pg_stat_activity) UNION ALL SELECT \'queries\' AS name, COUNT(*) AS n, 100 AS warn FROM pg_stat_activity WHERE current_query <> \'<IDLE>\';'
+
+\set lag 'SELECT consumer_name, to_char(lag, \'HH24:MI:SS\') AS lag, to_char(last_seen, \'HH24:MI:SS\') AS last_seen FROM pgq.get_consumer_info();'
+
+\set bg_stats 'SELECT buffers_checkpoint/buffers_clean AS checkpoint_spike, ROUND(100.0*buffers_checkpoint/(buffers_checkpoint + buffers_clean + buffers_backend),2) AS checkpoint_percentage, ROUND(100.0*buffers_clean/(buffers_checkpoint + buffers_clean + buffers_backend),2) AS pg_writer_percentage, ROUND(100.0*buffers_backend/(buffers_checkpoint + buffers_clean + buffers_backend),2) AS backend_percentage FROM pg_stat_bgwriter;'
+
+\set batchdata '(select id, config_name, created_on::date, to_char(created_on, \'HH12:MIam\') AS "time", to_char(created_on, \'Dy\') AS day, status_cd, to_char((SELECT MIN(created_on) FROM batchruns WHERE parent_id = b.id) - created_on, \'HH24:MI:SS\') AS qtime, to_char(finished_on - started_on, \'HH24:MI:SS\') AS "runtime", units_to_process AS units, units_processed AS good, (units_to_process - units_processed) AS fail, (SELECT COUNT(*) FROM batchruns WHERE parent_id = b.id) AS kids, to_char((SELECT SUM(started_on - created_on) FROM batchruns WHERE parent_id = b.id), \'HH24:MI:SS\') AS queue_time, to_char((SELECT SUM(COALESCE(finished_on, started_on) - started_on) FROM batchruns WHERE parent_id = b.id), \'HH24:MI:SS\') AS child_time, (CASE WHEN finished_on IS NOT NULL AND finished_on <> started_on AND units_processed <> 0 THEN units_processed / extract(\'epoch\' from (finished_on - started_on))::integer ELSE NULL END) AS velocity, exceptions from batchruns b where parent_id IS NULL ORDER BY id) b'
+
+\set seq_tuples 'SELECT schemaname, relname, (case when seq_scan > 0 then seq_tup_read / seq_scan end) AS "tup/scan", seq_scan, idx_scan, seq_tup_read, idx_tup_fetch, seq_tup_read + idx_tup_fetch AS total, last_vacuum::date, last_autovacuum::date, last_autoanalyze::date FROM pg_stat_all_tables ORDER BY seq_tup_read DESC;'
+
+\set nc_payments 'SELECT p.payment_id, (SELECT account_id FROM loans WHERE loan_id = p.loan_id) AS account_id, p.loan_id, p.effective_date, p.amount, repayment_method, (CASE WHEN is_outgoing = false AND due_date is null THEN \'extra\' END) AS "extra?", payment_status, (CASE is_outgoing WHEN true THEN \'FUND\' WHEN false THEN \'PAYMENT\' END) AS direction, (CASE WHEN a.activity_id IS NOT NULL THEN \'✔\' ELSE \'\' END) AS "recorded?" FROM payments p NATURAL JOIN payment_statuses LEFT JOIN scheduled_payments USING (scheduled_payment_id) NATURAL JOIN repayment_methods LEFT JOIN accounting.activities a ON p.loan_id = a.source_id AND p.amount = a.activity_amount AND p.effective_date = a.effective_date ORDER BY effective_date ASC, is_outgoing DESC, repayment_method ASC, payment_status ASC, loan_id ASC;'
+
+\set q '\\q'
+
+-- max_shared_locks = max_locks_per_transaction * (max_connections + max_prepared_transactions)
+-- UK: 121920 = 64 * (1900 + 5)
+-- US:  52800 = 64 * (825 + 0)

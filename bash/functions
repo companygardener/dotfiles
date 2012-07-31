@@ -2,6 +2,23 @@ md() {
   mkdir -p "$@" && cd "$@"
 }
 
+up() {
+  local d=""
+  limit=$1
+  for ((i=1; i <= limit; i++))
+    do
+      d=$d/..
+    done
+
+  d=$(echo $d | sed 's/^\///')
+
+  if [ -z "$d" ]; then
+    d=..
+  fi
+
+  cd $d
+}
+
 show-hidden-files() {
   defaults write com.apple.finder AppleShowAllFiles $1
   killall Finder
@@ -27,6 +44,46 @@ add-alias() {
 cdgem() {
   cd `gem env gemdir`/gems
   cd `ls | grep $1 | sort | tail -1`
+}
+
+dirsize() {
+  du -shx * .[a-zA-Z0-9_]* 2> /dev/null | \
+  egrep '^ *[0-9.]*[MG]' | sort -n > /tmp/list
+  egrep '^ *[0-9.]*M' /tmp/list
+  egrep '^ *[0-9.]*G' /tmp/list
+  rm -rf /tmp/list
+}
+
+copy-dotfiles() {
+  mkdir -p ~/tmp
+  rm -rf ~/tmp/bin
+  cp -r ~/bin tmp/bin
+  cd ~/tmp
+  rm -rf bin/dotfiles/.git
+  tar cjvf dotfiles.tar.bz2 bin
+  scp dotfiles.tar.bz2 $1:~/
+  ssh $1 -C "tar xjvf dotfiles.tar.bz2 && bin/dotfiles/install && rm dotfiles.tar.bz2"
+  rm dotfiles.tar.bz2
+  cd -
+}
+
+fn_exists()
+{
+  type $1 2>/dev/null | grep -q 'is a function'
+}
+
+function ff() {
+  osascript -e 'tell application "Finder"' \
+            -e "if (${1-1} <= (count Finder windows)) then" \
+            -e "get POSIX path of (target of window ${1-1} as alias)" \
+            -e 'else' \
+            -e 'get POSIX path of (desktop as alias)' \
+            -e 'end if' \
+            -e 'end tell'
+}
+
+function cdf() {
+  cd "$(ff $@)"
 }
 
 gemdoc() {
@@ -91,6 +148,10 @@ awksample() {
 
 gzdir() {
   tar -cf - . | pv -s $(du -s . | awk '{print $1}') | gzip > out.tgz
+}
+
+gdx() {
+  git diff $1 --name-only | grep -v -E "$2" | xargs git diff -w $1 --
 }
 
 sumit () {

@@ -1,30 +1,45 @@
+[submodule "home/janus/align"]
+	path = home/janus/align
+	url = https://github.com/vim-scripts/Align
 [submodule "home/janus/vimroom"]
 	path = home/janus/vimroom
 	url = git://github.com/mikewest/vimroom.git
-[submodule "home/janus/textobj-user"]
-	path = home/janus/textobj-user
+[submodule "home/janus/vim-textobj-user"]
+	path = home/janus/vim-textobj-user
 	url = git://github.com/kana/vim-textobj-user.git
-[submodule "home/janus/textobj-rubyblock"]
-	path = home/janus/textobj-rubyblock
+[submodule "home/janus/vim-textobj-rubyblock"]
+	path = home/janus/vim-textobj-rubyblock
 	url = git://github.com/nelstrom/vim-textobj-rubyblock.git
-[submodule "home/janus/argtextobj"]
-	path = home/janus/argtextobj
+[submodule "home/janus/argtextobj.vim"]
+	path = home/janus/argtextobj.vim
 	url = git://github.com/vim-scripts/argtextobj.vim.git
 [submodule "home/janus/autotag"]
 	path = home/janus/autotag
 	url = git://github.com/vim-scripts/AutoTag.git
-[submodule "conque-shell"]
-	path = conque-shell
-	url = git://github.com/vim-scripts/Conque-Shell.git
 [submodule "home/janus/conque-shell"]
 	path = home/janus/conque-shell
 	url = git://github.com/vim-scripts/Conque-Shell.git
-[submodule "home/janus/ruby-conque"]
-	path = home/janus/ruby-conque
+[submodule "home/janus/vim-ruby-conque"]
+	path = home/janus/vim-ruby-conque
 	url = git://github.com/skwp/vim-ruby-conque.git
-[submodule "home/janus/conque"]
-	path = home/janus/conque
+[submodule "home/janus/vim-conque"]
+	path = home/janus/vim-conque
 	url = git://github.com/rson/vim-conque.git
-[submodule "home/janus/align"]
-	path = home/janus/align
-	url = https://github.com/vim-scripts/Align.git
+[submodule "home/janus/tabular"]
+	path = home/janus/tabular
+	url = git://github.com/godlygeek/tabular.git
+[submodule "home/janus/vim-nerdtree-tabs"]
+	path = home/janus/vim-nerdtree-tabs
+	url = git://github.com/jistr/vim-nerdtree-tabs.git
+[submodule "home/janus/vim-bundler"]
+	path = home/janus/vim-bundler
+	url = git://github.com/tpope/vim-bundler.git
+[submodule "home/janus/vim-rake"]
+	path = home/janus/vim-rake
+	url = git://github.com/tpope/vim-rake.git
+[submodule "home/janus/dbext.vim"]
+	path = home/janus/dbext.vim
+	url = git://github.com/vim-scripts/dbext.vim.git
+[submodule "home/janus/vim-speeddating"]
+	path = home/janus/vim-speeddating
+	url = git://github.com/tpope/vim-speeddating.git

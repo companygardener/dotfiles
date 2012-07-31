@@ -3,15 +3,34 @@
 # rvm-prompt (i)nterpreter (v)ersion (p)atchlevel
 # rvm-prompt i v p
 
-if hostname | grep -E 'obr|nut' > /dev/null 2>&1; then
-  HOST="\[$RED\]\H\[$NO_COLOR\]"
+SSH_IP=$( echo $SSH_CLIENT  | awk '{ print $1 }')
+SSH2_ip=$(echo $SSH2_CLIENT | awk '{print $1 }')
+
+if hostname | grep -E '\.(obr|nut|nav)' > /dev/null 2>&1; then
+  HOST="@\[${WHITE}${BRED}\]\H\[${NO_COLOR}\]"
+elif [ $SSH_IP ] || [ $SSH2_IP ]; then
+  HOST="@\[$EMAGENTA\]\h\[$NO_COLOR\]"
 else
-  HOST="\[$EMAGENTA\]\h\[$NO_COLOR\]"
+  HOST=""
 fi
 
-PS1START="\n\[$EBLUE\]┌─[\T \d] \[$BLUE\]\u\[$NO_COLOR\] @ $HOST :"
-#PS1END="\w \[$YELLOW\][\$(pyprompt)]\[$NO_COLOR\]\$(git-prompt) \n\[$EBLUE\]└─> % \[$NO_COLOR\]"
-PS1END="\w \$(git-prompt) \n\[$EBLUE\]└─> % \[$NO_COLOR\]"
+FIX_LEFT="\[\033[G\]"
+
+PS1START="${FIX_LEFT}\n#\
+\$(
+  if [ \$? -eq 0 ]; then
+    echo -e \"\[$GREEN\] ✔ \"
+  else
+    echo -e \"\[$RED\] ✘ \"
+  fi
+)\[$NO_COLOR\] [\!]-[\T \d]-[\
+\$(
+  if [ \$(jobs | wc -c) -ne 0 ]; then
+    echo -e \"\[$RED\]\"
+  fi
+)\j\[$NO_COLOR\]]"
+
+PS1END="\[$BLUE\]\u\[$NO_COLOR\]$HOST:\w \$(git-prompt) \n\[$NO_COLOR\]"
 
 if [ -f /usr/local/bin/rvm-prompt ]; then
   PS1RVM="\$(/usr/local/bin/rvm-prompt)"
@@ -23,6 +42,6 @@ else
   PS1RVM=""
 fi
 
-PS1="$PS1START \[$RED\]$PS1RVM\[$NO_COLOR\] $PS1END"
+PS1="$PS1START \[${RED}\]${PS1RVM}\[${NO_COLOR}\] $PS1END"
 
 export PROMPT_COMMAND='echo -ne "\033]0;${PWD##/*/}\007"'

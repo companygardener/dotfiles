@@ -1,3 +1,10 @@
+MAX_CONFLICTED_FILES=2
+DELTA_CHAR="✎"
+CONFLICT_CHAR="☢"
+BISECTING_TEXT="✄"
+NOBRANCH_TEXT="DETACHED"
+SUBMODULE_TEXT="submodule "
+
 git-seconds() {
   now=`date +%s`
   last=`git log --pretty=format:'%at' -1`
@@ -11,23 +18,42 @@ git-minutes() {
 }
 
 git-prompt() {
-  local g="$(__gitdir)"
+  fn_exists __gitdir
 
-  if [ -n "$g" ]; then
-    local minutes=`git-minutes`
+  if [ $? -eq 0 ]; then
+    local g="$(__gitdir 2>&1)"
 
-    if [ "$minutes" -gt 30 ]; then
-      local color=${RED}
-    elif [ "$minutes" -gt 10 ]; then
-      local color=${YELLOW}
-    else
-      local color=${GREEN}
+    if [ -n "$g" ]; then
+      status=$(git status)
+      change=$(echo $status | egrep 'modified:|deleted:|new file:')
+
+      if [ -n "$change" ]; then
+        change=" $DELTA_CHAR "
+      fi
+
+      local minutes=`git-minutes`
+
+      if [ "$minutes" -gt 30 ]; then
+        local color=${RED}
+      elif [ "$minutes" -gt 10 ]; then
+        local color=${YELLOW}
+      else
+        local color=${GREEN}
+      fi
+
+      local message="${color}${minutes}m${NO_COLOR}"
+
+      num=$(echo $(git status) | grep "Your branch is ahead of" | awk '{split($0,a," "); print a[13];}') || return
+
+      if [ -n "$num" ]; then
+        num=" +$num"
+      else
+        num=""
+      fi
+
+      # The __git_ps1 function inserts the current git branch where %s is
+      local prompt=`__git_ps1 "$YELLOW[%s$num$change]$NO_COLOR ${message}"`
     fi
-
-    local message="${color}${minutes}m${NO_COLOR}"
-
-    # The __git_ps1 function inserts the current git branch where %s is
-    local prompt=`__git_ps1 "$YELLOW[%s]$NO_COLOR ${message}"`
   else
     local message=`pyprompt`
 
@@ -38,5 +64,16 @@ git-prompt() {
     fi
   fi
 
-  echo ${prompt}
+  echo -e ${prompt}
 }
+
+
+# any conflicts? (sed madness is to remove line breaks)
+# files=\$(git ls-files -u | cut -f 2 | sort -u | sed '$(($MAX_CONFLICTED_FILES+1)),1000d' |  sed -e :a -e '\$!N;s/\\\n/, /;ta' -e 'P;D')
+
+# Show conflicted files if any
+# if [ -n \"\$files\" ]; then
+#     prompt=\$prompt\" \\[\$COLOR_RED\\](\\[\$COLOR_YELLOW\\]\"
+#     prompt=\$prompt\"\\[`tput sc`\\]  \\[`tput rc`\\]\\[\$COLOR_YELLOW\\]\\[\$CONFLICT_CHAR\\] \"
+#     prompt=\$prompt\"\\[\$COLOR_RED\\] \${files})\"
+# fi
