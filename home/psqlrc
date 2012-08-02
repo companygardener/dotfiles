@@ -18,7 +18,7 @@
 
 \set size_of 'SELECT * FROM :pretty_table_size s WHERE rel like '
 
-\set current_queries '(SELECT usename, to_char(NOW() - xact_start, \'HH24:MI:SS\') AS xtime, to_char(NOW() - query_start, \'HH24:MI:SS\') AS qtime, SUBSTR(current_query, 0, 70) AS query, procpid, datname, client_addr AS host, client_port AS port, (SELECT COUNT(*) FROM pg_locks WHERE pid = a.procpid) AS locks, (SELECT COUNT(*) FROM pg_locks WHERE pid = a.procpid AND granted = FALSE) AS waits FROM pg_stat_activity a WHERE current_query <> \'<IDLE>\' and datname LIKE \'cnuapp_prod%\' ORDER BY qtime DESC, xtime DESC)'
+\set current_queries '(SELECT usename, to_char(NOW() - xact_start, \'HH24:MI:SS\') AS xtime, to_char(NOW() - query_start, \'HH24:MI:SS\') AS qtime, SUBSTR(current_query, 0, 70) AS query, procpid, datname, client_addr AS host, client_port AS port, (SELECT COUNT(*) FROM pg_locks WHERE pid = a.procpid) AS locks, (SELECT COUNT(*) FROM pg_locks WHERE pid = a.procpid AND granted = FALSE) AS waits FROM pg_stat_activity a WHERE current_query <> \'<IDLE>\' and datname LIKE \'%_prod%\' ORDER BY qtime DESC, xtime DESC)'
 \set current 'SELECT * FROM :current_queries cq;'
 \set idle    'SELECT * FROM :current_queries cq WHERE query = \'<IDLE> in transaction\';'
 \set connections 'SELECT usename, COUNT(*) FROM pg_stat_activity GROUP BY 1 ORDER BY 2 DESC;'
