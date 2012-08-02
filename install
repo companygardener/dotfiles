@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-home = File.expand_path('~')
+home = File.expand_path('~/bin/dotfiles/home')
 
 Dir.chdir(home)
 Dir['*'].each do |file|
