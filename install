@@ -1,7 +1,8 @@
 #!/usr/bin/env ruby
 
-Dir['~/bin/dotfiles/home/*'].each do |file|
-  target = File.expand_path File.join(home, ".#{file}")
+Dir.chdir(File.expand_path "~/bin/dotfiles/home")
+Dir["*"].each do |file|
+  target = File.expand_path File.join("~", ".#{file}")
   puts "linking #{target}"
   `rm -rf #{target}`
   `ln -s #{File.expand_path file} #{target}`

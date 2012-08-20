@@ -17,6 +17,12 @@ git-minutes() {
   echo $((seconds / 60))
 }
 
+git-current-branch() {
+  local ref=$(git symbolic-ref HEAD 2> /dev/null) || return
+  echo ${ref#refs/heads/}
+}
+
+
 git-prompt() {
   fn_exists __gitdir
 
@@ -52,7 +58,7 @@ git-prompt() {
       fi
 
       # The __git_ps1 function inserts the current git branch where %s is
-      local prompt=`__git_ps1 "$YELLOW[%s$num$change]$NO_COLOR ${message}"`
+      local prompt="$YELLOW[$(git-current-branch)$num$change]$NO_COLOR ${message}"
     fi
   else
     local message=`pyprompt`
