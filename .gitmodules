@@ -46,3 +46,6 @@
 [submodule "home/janus/tplugin_vim"]
 	path = home/janus/tplugin_vim
 	url = git://github.com/tomtom/tplugin_vim.git
+[submodule "home/janus/tcomment_vim"]
+	path = home/janus/tcomment_vim
+	url = git://github.com/tomtom/tcomment_vim.git
