@@ -43,3 +43,6 @@
 [submodule "home/janus/vim-speeddating"]
 	path = home/janus/vim-speeddating
 	url = git://github.com/tpope/vim-speeddating.git
+[submodule "home/janus/tplugin_vim"]
+	path = home/janus/tplugin_vim
+	url = git://github.com/tomtom/tplugin_vim.git

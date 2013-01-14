@@ -132,6 +132,8 @@ set infercase
 
 set diffopt=filler,vertical
 
+set previewheight=30
+
 let ruby_space_errors=1
 
 map ` :set fu!<cr>
@@ -141,8 +143,21 @@ nnoremap <leader>ff :set fu!<cr>:ZoomWin<cr>
 
 cnoremap w!! %!sudo tee > /dev/null %
 
+" Markdown
 nnoremap <leader>1 yypVr=
 nnoremap <leader>2 yypVr-
+nnoremap <silent> <leader>md :! open -a Marked %:p<cr><cr>
+
+" rails
+" nnoremap <leader>tv :CommandTFlush<cr><bar>:CommandT app/views<cr>
+" nnoremap <leader>tc :CommandTFlush<cr><bar>:CommandT app/controllers<cr>
+" nnoremap <leader>tm :CommandTFlush<cr><bar>:CommandT app/models<cr>
+" nnoremap <leader>ta :CommandTFlush<cr><bar>:CommandT app/assets<cr>
+" nnoremap <leader>tl :CommandTFlush<cr><bar>:CommandT lib<cr>
+" nnoremap <leader>tp :CommandTFlush<cr><bar>:CommandT public<cr>
+nnoremap <leader>tr :botright :vsplit config/routes.rb<cr>
+nnoremap <leader>tg :botright :vsplit Gemfile<cr>
+
 nnoremap <silent> <leader><space> :nohlsearch<cr>
 
 " redo
@@ -163,6 +178,10 @@ noremap <leader>sn ]s
 noremap <leader>sp [s
 noremap <leader>sa zg
 noremap <leader>s? z=
+
+" Ruby
+nnoremap <leader>rh :%s/\([^[:alnum:]:]\):\([[:alnum:]_]*\)\s\=\(\s*\)=>/\1\2:\3/g<cr>
+vnoremap <leader>rh  :s/\([^[:alnum:]:]\):\([[:alnum:]_]*\)\s\=\(\s*\)=>/\1\2:\3/g<cr>
 
 iabbrev xdate <c-r>=strftime("%m/%d/%Y")<cr>
 iabbrev xtime <c-r>=strftime("%m/%d/%Y %H:%M:%S")<cr>
@@ -218,7 +237,8 @@ nnoremap <leader>am2 :Tabularize /<bar>/l1c1l1c1r1c1<cr>
 vnoremap <leader>am3 :Tabularize /<bar>/l1c1l1c1l1c1r1c1<cr>
 nnoremap <leader>am3 :Tabularize /<bar>/l1c1l1c1l1c1r1c1<cr>
 
-map <Leader>n <plug>NERDTreeTabsToggle<CR>
+map <Leader>n  :NERDTreeToggle<CR>
+map <Leader>f :NERDTreeFind<CR>
 
 " dbext
 let g:dbext_default_window_use_horiz = 1
@@ -270,6 +290,12 @@ if has("autocmd")
   autocmd FileType sql  setlocal ts=4 sts=4 sw=4 expandtab
 
   autocmd BufWinLeave * call clearmatches()
+  autocmd BufRead * call s:set_hidden()
+  function s:set_hidden()
+    if empty(&buftype) "most explorer plugins have buftype=nofile
+        setlocal bufhidden=delete
+    endif
+  endfunction
 
   if v:version >= 700
     autocmd BufNewFile,BufRead *.txt setlocal spell spelllang=en
