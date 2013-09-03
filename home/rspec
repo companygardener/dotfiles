@@ -1,2 +1,4 @@
 --color
+--order random
+--format progress
 --profile

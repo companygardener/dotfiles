@@ -6,71 +6,80 @@ NOBRANCH_TEXT="DETACHED"
 SUBMODULE_TEXT="submodule "
 
 git-seconds() {
-  now=`date +%s`
-  last=`git log --pretty=format:'%at' -1`
+  now=$(date +%s)
+  last=$(git log --pretty=format:'%at' -1 2> /dev/null)
 
   echo $((now - last))
 }
 
 git-minutes() {
-  seconds=`git-seconds`
+  seconds=$(git-seconds)
   echo $((seconds / 60))
 }
 
-git-current-branch() {
-  local ref=$(git symbolic-ref HEAD 2> /dev/null) || return
-  echo ${ref#refs/heads/}
+git-work-tree() {
+  git rev-parse --is-inside-work-tree &> /dev/null
 }
 
+git-current-branch() {
+  if git-work-tree; then
+    branch=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD 2> /dev/null)
 
-git-prompt() {
-  fn_exists __gitdir
+    if [[ $branch = "HEAD" ]]; then
+      sha=$(git name-rev --name-only HEAD 2> /dev/null)
 
-  if [ $? -eq 0 ]; then
-    local g="$(__gitdir 2>&1)"
-
-    if [ -n "$g" ]; then
-      status=$(git status)
-      change=$(echo $status | egrep 'modified:|deleted:|new file:')
-
-      if [ -n "$change" ]; then
-        change=" $DELTA_CHAR "
-      fi
-
-      local minutes=`git-minutes`
-
-      if [ "$minutes" -gt 30 ]; then
-        local color=${RED}
-      elif [ "$minutes" -gt 10 ]; then
-        local color=${YELLOW}
+      if [[ $sha != "undefined" ]]; then
+        echo "@$sha"
       else
-        local color=${GREEN}
+        git rev-parse --short HEAD 2> /dev/null
       fi
-
-      local message="${color}${minutes}m${NO_COLOR}"
-
-      num=$(echo $(git status) | grep "Your branch is ahead of" | awk '{split($0,a," "); print a[13];}') || return
-
-      if [ -n "$num" ]; then
-        num=" +$num"
-      else
-        num=""
-      fi
-
-      # The __git_ps1 function inserts the current git branch where %s is
-      local prompt="$YELLOW[$(git-current-branch)$num$change]$NO_COLOR ${message}"
-    fi
-  else
-    local message=`pyprompt`
-
-    if [ -n "$message" ]; then
-      local prompt="[${message}]"
     else
-      local prompt=""
+      echo "$branch"
     fi
   fi
+}
 
-  echo -e ${prompt}
+git-prompt() {
+  if git-work-tree; then
+    status=$(git status)
+
+    regex="(modified|deleted|new file):"
+
+    if [[ $status =~ $regex ]]; then
+      change=" $DELTA_CHAR "
+    fi
+
+    minutes=$(git-minutes)
+
+    if ((minutes > 30)); then
+      color=${RED}
+    elif ((minutes > 10)); then
+      color=${YELLOW}
+    else
+      color=${GREEN}
+    fi
+
+    message="${color}${minutes}m${NO_COLOR}"
+
+    lead=$(echo "$status" | grep 'Your branch is ahead of' | awk '{ print $9 }')
+    lag=$( echo "$status" | grep 'Your branch is behind'   | awk '{ print $8 }')
+
+    if [[ -n $lead ]]; then
+      offset=" +$lead"
+    elif [[ -n $lag ]]; then
+      ff=$(echo "$status" | grep "can be fast-forwarded")
+
+      if [[ -n $ff ]]; then
+        offset=" -$lag →"
+      else
+        offset=" -$lag"
+      fi
+    fi
+
+    prompt="$YELLOW[$(git-current-branch)${offset}${change}]$NO_COLOR ${message}"
+  fi
+
+  echo -e "$prompt"
 }
 
 
@@ -83,3 +92,66 @@ git-prompt() {
 #     prompt=\$prompt\"\\[`tput sc`\\]  \\[`tput rc`\\]\\[\$COLOR_YELLOW\\]\\[\$CONFLICT_CHAR\\] \"
 #     prompt=\$prompt\"\\[\$COLOR_RED\\] \${files})\"
 # fi
+
+# From https://github.com/adamv/dotfiles/blob/master/bashrc
+# function parse_git_branch {
+#   branch_pattern="^# On branch ([^${IFS}]*)"
+#   remote_pattern_ahead="# Your branch is ahead of"
+#   remote_pattern_behind="# Your branch is behind"
+#   remote_pattern_ff="# Your branch (.*) can be fast-forwarded."
+#   diverge_pattern="# Your branch and (.*) have diverged"
+# 
+#   git_status="$(git status 2> /dev/null)"
+#   if [[ ! ${git_status} =~ ${branch_pattern} ]]; then
+#     # Rebasing?
+#     toplevel=$(git rev-parse --show-toplevel 2> /dev/null)
+#     [[ -z "$toplevel" ]] && return
+# 
+#     [[ -d "$toplevel/.git/rebase-merge" || -d "$toplevel/.git/rebase-apply" ]] && {
+#       sha_file="$toplevel/.git/rebase-merge/stopped-sha"
+#       [[ -e "$sha_file" ]] && {
+#         sha=`cat "${sha_file}"`
+#       }
+#       echo "${PINK}(rebase in progress)${COLOR_NONE} ${sha}"
+#     }
+#     return
+#   fi
+# 
+#   branch=${BASH_REMATCH[1]}
+# 
+#   # Dirty?
+#   if [[ ! ${git_status} =~ "working directory clean" ]]; then
+#     [[ ${git_status} =~ "modified:" ]] && {
+#       git_is_dirty="${RED}${LIGHTNING_BOLT}"
+#     }
+# 
+#     [[ ${git_status} =~ "Untracked files" ]] && {
+#       git_is_dirty="${git_is_dirty}${WHITE}${MIDDOT}"
+#     }
+# 
+#     [[ ${git_status} =~ "new file:" ]] && {
+#       git_is_dirty="${git_is_dirty}${LT_GREEN}+"
+#     }
+# 
+#     [[ ${git_status} =~ "deleted:" ]] && {
+#       git_is_dirty="${git_is_dirty}${RED}-"
+#     }
+# 
+#     [[ ${git_status} =~ "renamed:" ]] && {
+#       git_is_dirty="${git_is_dirty}${YELLOW}→"
+#     }
+#   fi
+# 
+#   # Are we ahead of, beind, or diverged from the remote?
+#   if [[ ${git_status} =~ ${remote_pattern_ahead} ]]; then
+#     remote="${YELLOW}${UP_ARROW}"
+#   elif [[ ${git_status} =~ ${remote_pattern_ff} ]]; then
+#     remote_ff="${WHITE}${FF_ARROW}"
+#   elif [[ ${git_status} =~ ${remote_pattern_behind} ]]; then
+#     remote="${YELLOW}${DOWN_ARROW}"
+#   elif [[ ${git_status} =~ ${diverge_pattern} ]]; then
+#     remote="${YELLOW}${UD_ARROW}"
+#   fi
+# 
+#   echo "${remote}${remote_ff}${GREEN}(${branch})${COLOR_NONE}${git_is_dirty}${COLOR_NONE}"
+# }

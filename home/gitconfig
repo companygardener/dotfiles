@@ -29,18 +29,17 @@
 
 [core]
   whitespace          = fix,blank-at-eol,blank-at-eof,cr-at-eol,space-before-tab,-indent-with-non-tab,-tab-in-indent
-  autocrlf            = input
-  safecrlf            = true
   eol                 = native
   symlinks            = true
   deltaBaseCacheLimit = 512m
   preloadindex        = true
   pager               = less -R
+	excludesfile = /Users/epeterson/.gitignore
 
 [alias]
   s    = status
   c    = commit
-  b    = branch
+  b    = checkout -b
   co   = checkout
   d    = diff
   dc   = diff --cached
@@ -53,6 +52,13 @@
   dump = cat-file -p
   i    = ls-files -o -i --exclude-standard
   sub  = submodule
+  who  = shortlog -ns --
+  graphviz = "!f() { echo 'digraph git {' ; git log --pretty='format:  %h -> { %p }' \"$@\" | sed 's/[0-9a-f][0-9a-f]*/\"&\"/g' ; echo '}'; }; f"
+  assume   = update-index --assume-unchanged
+  unassume = update-index --no-assume-unchanged
+  assumed  = "!git ls-files -v | grep ^h | cut -c 3-"
+  snapshot = !git stash save "snapshot: $(date)" && git stash apply "stash@{0}"
+  pr       = "!f() { git fetch origin refs/pull/$1/head:pr/$1; } ; f"
 
 [user]
   name  = Erik Peterson
@@ -60,6 +66,7 @@
 
 [diff]
   tool = p4diff
+	algorithm = patience
 
 [merge]
   keepBackup = false
@@ -76,7 +83,7 @@
   autosetupmerge = true
 
 [push]
-  default = tracking
+	default = current
 
 [pull]
   default = tracking

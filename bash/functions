@@ -24,12 +24,20 @@ show-hidden-files() {
   killall Finder
 }
 
-add-dock-space-left() {
+find-empty-folders() {
+  find . -depth -type d -empty
+}
+
+kill-empty-folders() {
+  find . -depth -type d -empty -exec rmdir "{}" \;
+}
+
+insert-dock-space-left() {
   defaults write com.apple.dock persistent-apps -array-add '{tile-data={}; tile-type="spacer-tile";}'
   killall Dock
 }
 
-add-dock-space-right() {
+insert-dock-space-right() {
   defaults write com.apple.dock persistent-others -array-add '{tile-data={}; tile-type="spacer-tile";}'
   killall Dock
 }
@@ -54,12 +62,16 @@ dirsize() {
   rm -rf /tmp/list
 }
 
+to-utf8() {
+  iconv -c -t UTF-8 < $1 > /tmp/to-utf8
+  diff $1 /tmp/to-utf8
+}
+
 copy-dotfiles() {
   mkdir -p ~/tmp
   rm -rf ~/tmp/bin
   cp -r ~/bin tmp/bin
   cd ~/tmp
-  rm -rf bin/dotfiles/.git
   tar cjvf dotfiles.tar.bz2 bin
   scp dotfiles.tar.bz2 $1:~/
   ssh $1 -C "tar xjvf dotfiles.tar.bz2 && bin/dotfiles/install && rm dotfiles.tar.bz2"
@@ -67,12 +79,11 @@ copy-dotfiles() {
   cd -
 }
 
-fn_exists()
-{
+fn_exists() {
   type $1 2>/dev/null | grep -q 'is a function'
 }
 
-function ff() {
+ff() {
   osascript -e 'tell application "Finder"' \
             -e "if (${1-1} <= (count Finder windows)) then" \
             -e "get POSIX path of (target of window ${1-1} as alias)" \
@@ -82,8 +93,8 @@ function ff() {
             -e 'end tell'
 }
 
-function cdf() {
-  cd "$(ff $@)"
+cdf() {
+  cd "$(ff "$@")"
 }
 
 gemdoc() {
@@ -125,7 +136,7 @@ large-files() {
 }
 
 awksum() {
-  awk "
+  awk '
     !/^$/ { delta = \$$1 - mean; mean += delta / NR; mean2 += delta * (\$$1 - mean); sum += \$$1; count += 1; }
 
     NR == 1 { min = \$$1; max = \$$1 }
@@ -133,7 +144,7 @@ awksum() {
     \$$1 <= min && !/^$/ { min = \$$1 }
     \$$1 >= max && !/^$/ { max = \$$1 }
 
-    END { printf(\"%d lines -- sum: %d avg: %d stdev: %d min: %d max: %d\n\", count, sum, mean, sqrt(mean2 / count), min, max); }"
+    END { printf(\"%d lines -- sum: %d avg: %d stdev: %d min: %d max: %d\n\", count, sum, mean, sqrt(mean2 / count), min, max); }'
 }
 
 awksumall() {
@@ -152,6 +163,10 @@ gzdir() {
 
 gdx() {
   git diff $1 --name-only | grep -v -E "$2" | xargs git diff -w $1 --
+}
+
+samplecolors() {
+  convert $1 -colors 16 -depth 16 -unique-colors -scale 10000% png:- | open -fa Preview
 }
 
 sumit () {

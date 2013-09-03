@@ -2,8 +2,9 @@
 # misc
 # http://ethanschoonover.com/solarized
 
-NO_COLOR='\033[0m' #disable any colors
-# regular colors
+NO_COLOR='\033[0m' # Unset color
+
+# Plain
 BLACK='\033[0;30m'
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -12,7 +13,8 @@ BLUE='\033[0;34m'
 MAGENTA='\033[0;35m'
 CYAN='\033[0;36m'
 WHITE='\033[0;37m'
-# emphasized (bolded) colors
+
+# Emphasized (bolded)
 EBLACK='\033[1;30m'
 ERED='\033[1;31m'
 EGREEN='\033[1;32m'
@@ -21,7 +23,8 @@ EBLUE='\033[1;34m'
 EMAGENTA='\033[1;35m'
 ECYAN='\033[1;36m'
 EWHITE='\033[1;37m'
-# underlined colors
+
+# Underlined
 UBLACK='\033[4;30m'
 URED='\033[4;31m'
 UGREEN='\033[4;32m'
@@ -30,7 +33,8 @@ UBLUE='\033[4;34m'
 UMAGENTA='\033[4;35m'
 UCYAN='\033[4;36m'
 UWHITE='\033[4;37m'
-# background colors
+
+# Background
 BBLACK='\033[40m'
 BRED='\033[41m'
 BGREEN='\033[42m'
@@ -65,3 +69,11 @@ BWHITE='\033[47m'
 # 105 Light purple background
 # 106 Turquoise background
 
+# Less
+export LESS_TERMCAP_mb=$'\e[0;32m'
+export LESS_TERMCAP_md=$'\e[0;32m'
+export LESS_TERMCAP_me=$'\E[0m'
+export LESS_TERMCAP_se=$'\E[0m'
+export LESS_TERMCAP_so=$'\E[1;44;37m'
+export LESS_TERMCAP_us=$'\E[4;37m'
+export LESS_TERMCAP_ue=$'\E[0m'

@@ -1,20 +1,21 @@
-if [[ -n "$PS1" ]] ; then
-  . ~/bin/dotfiles/bash/env
-  . ~/bin/dotfiles/bash/colors
-  . ~/bin/dotfiles/bash/git
-  . ~/bin/dotfiles/bash/config
-  . ~/bin/dotfiles/bash/aliases
-  . ~/bin/dotfiles/bash/functions
-  . ~/bin/dotfiles/bash/vbox_functions
+# If not running interactively, don't do anything
+[ -z "$PS1" ] && return
 
-  . ~/bin/dotfiles/bash/scripts
+export DOTFILES="$HOME/bin/dotfiles"
 
-  shopt -s histappend
-  shopt -s checkwinsize
-fi
+. $DOTFILES/bash/env
+. $DOTFILES/bash/colors
+. $DOTFILES/bash/git
+. $DOTFILES/bash/config
+. $DOTFILES/bash/aliases
+. $DOTFILES/bash/functions
+. $DOTFILES/bash/vbox_functions
+
+. $DOTFILES/bash/scripts
+
+shopt -s histappend
+shopt -s checkwinsize
 
 if [[ -f "$HOME/.bashrc.local" ]]; then
   . "$HOME/.bashrc.local"
 fi
-
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting

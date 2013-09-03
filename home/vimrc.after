@@ -86,7 +86,7 @@ set expandtab
 set nowrap
 set nolinebreak
 set formatoptions=rolqn12
-set formatprg=par\ -w70req
+set formatprg=par\ -w120req
 set whichwrap+=<,>,h,l
 
 set backspace=eol,start,indent
@@ -143,6 +143,12 @@ nnoremap <leader>ff :set fu!<cr>:ZoomWin<cr>
 
 cnoremap w!! %!sudo tee > /dev/null %
 
+nnoremap <leader>t  :set   expandtab tabstop=2 shiftwidth=2 softtabstop=2<CR>
+nnoremap <leader>t4 :set   expandtab tabstop=4 shiftwidth=4 softtabstop=4<CR>
+nnoremap <leader>T2 :set noexpandtab tabstop=2 shiftwidth=2 softtabstop=2<CR>
+nnoremap <leader>T4 :set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4<CR>
+nnoremap <leader>T8 :set noexpandtab tabstop=8 shiftwidth=8 softtabstop=8<CR>
+
 " Markdown
 nnoremap <leader>1 yypVr=
 nnoremap <leader>2 yypVr-
@@ -183,8 +189,8 @@ noremap <leader>s? z=
 nnoremap <leader>rh :%s/\([^[:alnum:]:]\):\([[:alnum:]_]*\)\s\=\(\s*\)=>/\1\2:\3/g<cr>
 vnoremap <leader>rh  :s/\([^[:alnum:]:]\):\([[:alnum:]_]*\)\s\=\(\s*\)=>/\1\2:\3/g<cr>
 
-iabbrev xdate <c-r>=strftime("%m/%d/%Y")<cr>
-iabbrev xtime <c-r>=strftime("%m/%d/%Y %H:%M:%S")<cr>
+iabbrev xd <c-r>=strftime("%m/%d/%Y")<cr>
+iabbrev xt <c-r>=strftime("%m/%d/%Y %H:%M:%S")<cr>
 
 nnoremap / /\v
 vnoremap / /\v
@@ -204,7 +210,9 @@ nnoremap <leader>q gqip
 
 nnoremap <leader>v V`]
 
-inoremap ii <ESC>
+inoremap ii <esc>
+inoremap vv <esc>V
+inoremap vq <esc>Vgq
 
 nnoremap <leader>w <C-w>v<C-w>l
 nnoremap <leader>W <C-w>s<C-w>j
@@ -224,6 +232,16 @@ nnoremap <C-l> <C-w>l
 :command! Q q
 
 iab RuL ----+----1----+----2----+----3----+----4----+----5----+----6----+----7----+----8----+----9----+----0
+
+" Drawing
+nnoremap <leader>dl a├─<space><esc>
+nnoremap <leader>dbl a└─<space><esc>
+nnoremap <leader>d- a─<esc>
+nnoremap <leader>dj a│<space><space><esc>
+inoremap <leader>dl ├─<space>
+inoremap <leader>dbl └─<space>
+inoremap <leader>d- ─
+inoremap <leader>dj │<space><space>
 
 vnoremap <leader>a<bar> :Tabularize /<bar><cr>
 nnoremap <leader>a<bar> :Tabularize /<bar><cr>
@@ -247,8 +265,8 @@ let g:dbext_default_window_use_bottom = 1
 let g:dbext_default_buffer_lines = 30
 
 let g:dbext_default_window_use_right = 1
-let g:dbext_default_window_width = 80
-let g:dbext_default_window_increment = 80
+let g:dbext_default_window_width = 120
+let g:dbext_default_window_increment = 120
 
 " auto-align cucumber tables using Tabularize
 inoremap <silent> <Bar>   <Bar><Esc>:call <SID>align()<CR>a
@@ -288,13 +306,21 @@ if has("autocmd")
   autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 
   autocmd FileType sql  setlocal ts=4 sts=4 sw=4 expandtab
+  autocmd BufNewFile,BufRead *.sql syntax match Comment /\%^---\_.\{-}---$/ contains=@Yaml
+  autocmd BufNewFile,BufRead * call yaml:frontmatter()
 
   autocmd BufWinLeave * call clearmatches()
   autocmd BufRead * call s:set_hidden()
-  function s:set_hidden()
+  function! s:set_hidden()
     if empty(&buftype) "most explorer plugins have buftype=nofile
         setlocal bufhidden=delete
     endif
+  endfunction
+
+  function! yaml:frontmatter()
+    unlet b:current_syntax
+    syntax include @Yaml syntax/yaml.vim
+    syntax region yamlFrontmatter start=/\%^---$/ end=/^---$/ keepend contains=@Yaml,@Spell
   endfunction
 
   if v:version >= 700
@@ -364,7 +390,7 @@ endfunction
 
 "return a list containing the lengths of the long lines in this buffer
 function! s:LongLines()
-  let threshold = (&textwidth ? &textwidth : 80)
+  let threshold = (&textwidth ? &textwidth : 120)
   let spaces = repeat(" ", &ts)
 
   let long_line_lengths = []

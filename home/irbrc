@@ -1,7 +1,10 @@
 begin
   require 'irb/ext/save-history'
+  require 'irb/completion'
 rescue LoadError
 end
+
+ARGV.concat [ "--readline", "--prompt-mode", "simple" ]
 
 IRB.conf[:SAVE_HISTORY] = 1000
 IRB.conf[:HISTORY_FILE] = "#{ENV['HOME']}/.irb-save-history"
@@ -16,18 +19,18 @@ end
 
 # Add all gems in the global gemset to the $LOAD_PATH so they can be used even
 # in places like 'rails console'.
-if defined?(::Bundler)
-  global_gemset = ENV['GEM_PATH'].split(':').grep(/ruby.*@global/).first
-
-  if global_gemset
-    all_global_gem_paths = Dir.glob("#{global_gemset}/gems/*")
-
-    all_global_gem_paths.each do |p|
-      gem_path = "#{p}/lib"
-      $LOAD_PATH << gem_path
-    end
-  end
-end
+# if defined?(::Bundler)
+#   global_gemset = ENV['GEM_PATH'].split(':').grep(/ruby.*@global/).first
+# 
+#   if global_gemset
+#     all_global_gem_paths = Dir.glob("#{global_gemset}/gems/*")
+# 
+#     all_global_gem_paths.each do |p|
+#       gem_path = "#{p}/lib"
+#       $LOAD_PATH << gem_path
+#     end
+#   end
+# end
 
 begin
   require 'wirb'

@@ -5,10 +5,11 @@ alias ..4='..;..;..;..'
 alias ..5='..;..;..;..;..'
 
 alias be='bundle exec'
+alias rb=rbenv
 
 alias dus='du -Psckx * | sort -nr'
 
-if [ "$(uname)" == 'Darwin' ]; then
+if [[ $(uname) = Darwin ]]; then
   is_darwin=1
 
   alias ll='ls -lahG'
@@ -28,6 +29,10 @@ if [ "$(uname)" == 'Darwin' ]; then
 
   alias mute="osascript -e 'set volume output muted true'"
   alias shout="osascript -e 'set volume 10'"
+  alias slime='open -a "Sublime Text 2"'
+
+  alias soundfix="sudo pkill coreaudiod"
+  alias uuid=uuidgen
 else
   is_darwin=0
 
@@ -51,6 +56,7 @@ alias p4i='p4 integrate'
 alias df='df -h'
 alias rvmpow='rvm env . -- --env > .powenv'
 
+alias myip='wget -nv -O - http://checkip.dyndns.org/ 2>&1'
 
 
 # alias ll='ls -la'
@@ -74,3 +80,4 @@ alias rvmpow='rvm env . -- --env > .powenv'
 # alias pgwhat='echo $PGCLUSTER; echo $PGDATABASE'
 # alias run='psql -q'
 # alias pgkill='sudo -u postgres kill $1'
+alias pgreset='lunchy stop postgres && rm -rf /usr/local/var/postgres && initdb /usr/local/var/postgres && lunchy start postgres && createdb epeterson && createuser -s dummy && be rake db:create'

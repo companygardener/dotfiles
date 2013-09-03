@@ -32,16 +32,36 @@ PS1START="${FIX_LEFT}\n#\
 
 PS1END="\[$BLUE\]\u\[$NO_COLOR\]$HOST:\w \$(git-prompt) \n\[$NO_COLOR\]"
 
-if [ -f /usr/local/bin/rvm-prompt ]; then
-  PS1RVM="\$(/usr/local/bin/rvm-prompt)"
+rbenv-version-failing() {
+  rbenv version-name 2>&1 | ruby -pe "gsub(/.*\`(.*)'.*/, '\1')"
+}
+
+rbenv-gemset() {
+	if [ -d /usr/local/Cellar/rbenv-gemset ]; then
+		echo -e "[\$(rbenv gemset active > /dev/null 2>&1)]"
+  fi
+}
+
+if command -v rbenv > /dev/null 2>&1; then
+  PS1RUBY="rbenv:\
+\$(
+  if rbenv version-name 2>&1 | grep 'not installed' > /dev/null; then
+    echo -e \"\[$WHITE\[$BRED\]\$(rbenv-version-failing)\$(rbenv-gemset)\[$NO_COLOR\]\"
+  else
+    echo -e \"\$(rbenv version-name)\$(rbenv-gemset > /dev/null 2>&1)\"
+  fi
+)"
+  # PS1RUBY="rbenv:\$(rbenv-version)"
+elif [ -f /usr/local/bin/rvm-prompt ]; then
+  PS1RUBY="rvm:\$(/usr/local/bin/rvm-prompt)"
 elif [ -f /usr/local/rvm/bin/rvm-prompt ]; then
-  PS1RVM="\$(/usr/local/rvm/bin/rvm-prompt)"
+  PS1RUBY="rvm:\$(/usr/local/rvm/bin/rvm-prompt)"
 elif [ -f ~/.rvm/bin/rvm-prompt ]; then
-  PS1RVM="\$(~/.rvm/bin/rvm-prompt)"
+  PS1RUBY="rvm:\$(~/.rvm/bin/rvm-prompt)"
 else
-  PS1RVM=""
+  PS1RUBY="system"
 fi
 
-PS1="$PS1START \[${RED}\]${PS1RVM}\[${NO_COLOR}\] $PS1END"
+PS1="$PS1START \[${RED}\]${PS1RUBY}\[${NO_COLOR}\] $PS1END"
 
 export PROMPT_COMMAND='echo -ne "\033]0;${PWD##/*/}\007"'
