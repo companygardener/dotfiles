@@ -1,0 +1,197 @@
+# OS X
+.DS_Store
+Icon?
+
+# Thumbnails
+._*
+
+# Files on external disk
+.Spotlight-V100
+.Trashes
+
+# Linux
+.*
+*~
+*.sw[a-p]
+
+# KDE
+.directory
+
+# Compiled source
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Packages
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.tar.gz
+*.zip
+*.bzip
+
+# Logs and databases
+*.log
+*.sqlite
+
+# Vim
+*.swp
+*.swo
+.*.sw[a-z]
+*.un~
+vim/backup/*
+vim/temp
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+.elc
+auto-save-list
+tramp
+
+# Textmate
+*.tmproj
+*.tmproject
+tmtags
+
+# Redcar
+.redcar
+
+# etags/ctags
+TAGS
+tags
+
+# SVN
+/.svn/*
+*/.svn/*
+
+# Automake
+Makefile.in
+
+# Autoconf
+/autom4te.cache
+/aclocal.m4
+/compile
+/configure
+/depcomp
+/install-sh
+/missing
+
+# CMake
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+install_manifest.txt
+
+# C/C++
+*.slo
+*.lo
+*.o
+*.so
+*.lai
+*.la
+*.a
+
+# Latex
+*.aux
+*.bbl
+*.blg
+*.glg
+*.glo
+*.gls
+*.idx
+*.ilg
+*.ind
+*.ist
+*.log
+*.out
+*.toc
+*.fdb_latexmk
+*.pdfsync
+*.synctex.gz
+*.nav
+*.snm
+*.vrb
+
+# Node
+lib-cov
+*.seed
+*.log
+*.dat
+*.out
+*.pid
+*.gz
+
+pids
+logs
+results
+
+# XCode/Objective-C
+build/*
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+*.xcworkspace
+!default.xcworkspace
+xcuserdata
+profile
+*.moved-aside
+
+# Scala
+*.class
+*.log
+
+# Ruby
+coverage
+rdoc
+pkg
+test/tmp
+test/version_tmp
+tmp
+pkg
+*.gem
+*.rbc
+lib/bundler/man
+spec/reports
+.config
+InstalledFiles
+.bundle
+
+# YARD artifacts
+.yardoc
+_yardoc
+doc/
+
+# Rails
+*.rbc
+*.sassc
+.sass-cache
+capybara-*.html
+.rspec
+/.bundle
+/vendor/bundle
+/log/*
+/tmp/*
+/db/*.sqlite3
+/public/system/*
+/coverage/
+/spec/tmp/*
+**.orig
+rerun.txt
+
+# Java
+*.class

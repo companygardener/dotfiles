@@ -1,3 +1,26 @@
+# TODO: http://stackoverflow.com/questions/6127328/how-can-i-delete-all-git-branches-which-are-already-merged
+# TODO: http://mroth.github.io/lolcommits/
+#
+# gem install github git-pulls
+
+[user]
+  name  = Erik Peterson
+  email = thecompanygardener@gmail.com
+
+[advice]
+  statushints = false
+
+[apply]
+  ignorewhitespace = false
+
+[branch]
+  autosetupmerge  = true
+  autosetuprebase = always
+
+[branch "master"]
+  remote = origin
+  merge  = refs/heads/master
+
 [color]
   branch      = auto
   diff        = auto
@@ -14,7 +37,7 @@
 
 [color "diff"]
   meta = yellow
-  frag = magenta
+  frag = magenta bold
   old  = red
   new  = green
   whitespace = red reverse
@@ -24,69 +47,116 @@
   changed   = green
   untracked = cyan
 
-[apply]
-  ignorewhitespace = false
-
 [core]
-  whitespace          = fix,blank-at-eol,blank-at-eof,cr-at-eol,space-before-tab,-indent-with-non-tab,-tab-in-indent
-  eol                 = native
-  symlinks            = true
   deltaBaseCacheLimit = 512m
+  editor              = vim -pc ':normal gg'
+  eol                 = native
+  excludesfile        = /Users/epeterson/.gitignore
+  pager               = less -FXR
   preloadindex        = true
-  pager               = less -R
-	excludesfile = /Users/epeterson/.gitignore
+  symlinks            = true
+  whitespace          = fix,blank-at-eol,blank-at-eof,cr-at-eol,space-before-tab,-indent-with-non-tab,-tab-in-indent
 
-[alias]
-  s    = status
-  c    = commit
-  b    = checkout -b
-  co   = checkout
-  d    = diff
-  dc   = diff --cached
-  l    = log --date=short --pretty=format:'%C(bold magenta)%h %Creset%C(green)%cd%Creset %C(white)%cN%Creset %s %C(yellow)%d'
-  lg   = log --graph --decorate --pretty=oneline --abbrev-commit --all
-  h    = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
-  hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
-  ha   = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short --all
-  type = cat-file -t
-  dump = cat-file -p
-  i    = ls-files -o -i --exclude-standard
-  sub  = submodule
-  who  = shortlog -ns --
-  graphviz = "!f() { echo 'digraph git {' ; git log --pretty='format:  %h -> { %p }' \"$@\" | sed 's/[0-9a-f][0-9a-f]*/\"&\"/g' ; echo '}'; }; f"
-  assume   = update-index --assume-unchanged
-  unassume = update-index --no-assume-unchanged
-  assumed  = "!git ls-files -v | grep ^h | cut -c 3-"
-  snapshot = !git stash save "snapshot: $(date)" && git stash apply "stash@{0}"
-  pr       = "!f() { git fetch origin refs/pull/$1/head:pr/$1; } ; f"
-
-[user]
-  name  = Erik Peterson
-  email = thecompanygardener@gmail.com
+[credential]
+  helper = osxkeychain
 
 [diff]
-  tool = p4diff
-	algorithm = patience
+	algorithm = histogram
+  renames   = copies
+  mnemonicprefix = true
 
-[merge]
-  keepBackup = false
-  tool       = vimdiff
+[diff "pdf-html"]
+  textconv=pdf2htmlex
 
 [difftool]
   prompt = false
 
-[branch "master"]
-  remote = origin
-  merge  = refs/heads/master
+[github]
+  user = companygardener
 
-[branch]
-  autosetupmerge = true
-
-[push]
-	default = current
+[merge]
+  keepbackup = false
+  stat       = true
+  tool       = vimdiff
+  defaulttoupstream = true
 
 [pull]
-  default = tracking
+  default = upstream
+  rebase  = true
+
+[push]
+	default = simple
 
 [rebase]
   default = master
+
+[rerere]
+  enabled = true
+
+[alias]
+  assume     = update-index --assume-unchanged
+  assumed    = "!git ls-files -v | grep ^h | cut -c 3-"
+  a          = add
+  aa         = add --all
+  ae         = add --edit
+  ai         = add --interactive
+  amend      = commit --amend -C HEAD
+  ap         = add --patch
+  au         = add --update
+  authors    = shortlog --numbered --summary --no-merges
+  b          = branch -vv
+  c          = commit
+  ca         = commit --amend
+  changes    = diff --name-status -r
+  check      = diff --check
+  cm         = commit --message
+  co         = checkout
+  conflicts  = grep --name-only --full-name '<<<<<<< HEAD'
+  d          = diff
+  dc         = diff --cached
+  # div        = git-divergence
+  ds         = diff --staged
+  dt         = difftool
+  dump       = cat-file -p
+  graphviz   = "!f() { echo 'digraph git {' ; git log --pretty='format:  %h -> { %p }' \"$@\" | sed 's/[0-9a-f][0-9a-f]*/\"&\"/g' ; echo '}'; }; f"
+  h          = help
+  irb        = rebase --interactive
+  l          = "!git log --date=short --pretty='%C(bold magenta)%h	%C(reset)%C(green)%cd	%C(bold green)%cN	%C(reset)%s%C(yellow)%d' $* | column -t -s '\t' | less -FXRS"
+  lg         = log --graph --abbrev-commit --pretty='%C(bold magenta)%h %C(reset)%C(green)[%cr] %C(reset)%s %C(bold green)%an%C(reset)%C(yellow)%d'
+  lga        = "!git log --graph --pretty='	%C(bold magenta)%h	%C(reset)%C(green)%cr	%C(reset)%s %C(bold green)%an%C(reset)%C(yellow)%d' $* | column -t -s '\t' | less -FXRS"
+  lr         = log --graph --abbrev-commit --pretty='%C(bold magenta)%h %C(reset)%C(green)[%cr] %C(reset)%s %C(bold green)%an%C(reset)%C(yellow)%d' -20
+  i          = ls-files --exclude-standard --ignored --others
+  ls-ignored = ls-files --exclude-standard --ignored --others
+  m          = merge -s recursive -X patience
+  mm         = merge --no-ff
+  news       = log --patch HEAD@{1}..HEAD@{0}
+  p          = cherry-pick --signoff
+  pick       = cherry-pick
+  pr         = "!f() { git fetch origin refs/pull/$1/head:pr/$1; } ; f"
+  prune      = "!for remote in `git remote`; do git remote prune $remote; done"
+  r          = remote
+  rb         = rebase
+  rba        = rebase --abort
+  rbc        = rebase --continue
+  rbs        = rebase --skip
+  rh         = reset --hard
+  ru         = remote update --prune
+  s          = status --short --branch
+  sl         = shortlog
+  sm         = submodule
+  sma        = submodule add
+  smu        = submodule update --init
+  snapshot   = !git stash save "snapshot: $(date)" && git stash apply "stash@{0}"
+  ss         = submodule summary
+  st         = stash
+  stl        = stash list
+  stp        = stash pop
+  stat       = diff --stat
+  type       = cat-file -t
+  unassume   = update-index --no-assume-unchanged
+  undo       = reset --soft HEAD@{1}
+  wd         = diff --color-words
+  wdb        = diff --color-words          --ignore-space-change
+  wds        = diff --color-words --staged
+  wdsb       = diff --color-words --staged --ignore-space-change
+  who        = shortlog --numbered --summary --

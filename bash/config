@@ -37,12 +37,15 @@ rbenv-version-failing() {
 }
 
 rbenv-gemset() {
-	if [ -d /usr/local/Cellar/rbenv-gemset ]; then
-		echo -e "[\$(rbenv gemset active > /dev/null 2>&1)]"
+  if [ -d /usr/local/Cellar/rbenv-gemset ]; then
+    echo -e "[\$(rbenv gemset active > /dev/null 2>&1)]"
   fi
 }
 
-if command -v rbenv > /dev/null 2>&1; then
+if command -v chruby > /dev/null 2>&1; then
+  # PS1RUBY="chruby:\${RUBY_ENGINE}-\${RUBY_VERSION}"
+  PS1RUBY="chruby:\${RUBY_ROOT##*/}"
+elif command -v rbenv > /dev/null 2>&1; then
   PS1RUBY="rbenv:\
 \$(
   if rbenv version-name 2>&1 | grep 'not installed' > /dev/null; then

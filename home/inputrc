@@ -2,13 +2,19 @@ set bell-style none
 
 set mark-directories on
 
+# make bash 8-bit safe
+set meta-flag on
+set convert-meta off
+set output-meta on
+
 # Make Tab autocomplete regardless of filename case
 set completion-ignore-case on
 set completion-query-items 32
 set completion-prefix-display-length 2
 
 set echo-control-characters off
-set editing-mode vi
+
+# set editing-mode vi
 
 # Append a slash when autocompleting symbolic links to directories
 set mark-symlinked-directories on

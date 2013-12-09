@@ -38,19 +38,3 @@ endfun
 
 command! -nargs=0 Less call Less()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

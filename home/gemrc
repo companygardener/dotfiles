@@ -6,5 +6,21 @@
 - https://rubygems.org
 :update_sources: true
 :verbose: true
+
+# `gem install rubygems-test` adds a `gem test` command
+test_options:
+  auto_test_on_install: false
+  test_on_install: false
+  install_development_dependencies: true
+  test_development_dependencies: true
+  upload_results: true
+  force_install: true
+  force_uninstall_on_failure: false
+
+# run gem [command] against local|remote|both
+search: --both
 install: --no-rdoc --no-ri --no-document
-update: --no-rdoc --no-ri --no-document
+update:  --no-rdoc --no-ri --no-document
+
+# show gem's path, description, and other meta data
+list: --details

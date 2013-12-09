@@ -12,24 +12,26 @@ alias dus='du -Psckx * | sort -nr'
 if [[ $(uname) = Darwin ]]; then
   is_darwin=1
 
+  alias app='open -a'
+
   alias ll='ls -lahG'
   alias xgrep='grep -C2 -EHIrns --color=auto'
 
   alias code='cd ~/code; pwd'
   alias p="cd ~/code/projects"
-  alias g="git"
-  alias app='open -a'
 
-  alias pstree='pstree -g2 -w'
+  alias m.='mvim .'
 
   alias flushdns="dscacheutil -flushcache"
   alias sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
 
   for method in GET HEAD POST PUT DELETE TRACE OPTIONS; do alias "$method"="lwp-request -m '$method'"; done
 
+  alias pstree='pstree -g2 -w'
+
   alias mute="osascript -e 'set volume output muted true'"
   alias shout="osascript -e 'set volume 10'"
-  alias slime='open -a "Sublime Text 2"'
+  alias slime='open -a "Sublime Text"'
 
   alias soundfix="sudo pkill coreaudiod"
   alias uuid=uuidgen
@@ -42,7 +44,14 @@ else
   alias code='cd /export/code; pwd'
 fi
 
-alias reload='source ~/.bashrc'
+alias g=git
+alias ga="git add"
+alias gc="git commit"
+alias gd="git diff"
+alias gh="git help"
+
+# Autocomplete for 'g' as well
+complete -o default -o nospace -F _git g
 
 alias dotfiles='cd ~/bin/dotfiles'
 
@@ -54,9 +63,15 @@ alias p4e='p4 edit'
 alias p4i='p4 integrate'
 
 alias df='df -h'
+alias h='history | grep -i '
+
 alias rvmpow='rvm env . -- --env > .powenv'
 
 alias myip='wget -nv -O - http://checkip.dyndns.org/ 2>&1'
+
+alias reload='source ~/.bashrc'
+
+alias screen="screen -U"
 
 
 # alias ll='ls -la'
@@ -80,4 +95,6 @@ alias myip='wget -nv -O - http://checkip.dyndns.org/ 2>&1'
 # alias pgwhat='echo $PGCLUSTER; echo $PGDATABASE'
 # alias run='psql -q'
 # alias pgkill='sudo -u postgres kill $1'
+
 alias pgreset='lunchy stop postgres && rm -rf /usr/local/var/postgres && initdb /usr/local/var/postgres && lunchy start postgres && createdb epeterson && createuser -s dummy && be rake db:create'
+alias mini='cd ~/code/work/enova/tools/miniraiser'

@@ -1,0 +1,8 @@
+# Gemfile.lock merge=bundleinstall
+# db/schema.rb merge=railsschema
+
+*.m diff=objc
+*.pdf diff=pdf-html
+*.rb  diff=ruby
+*.sql diff=sql
+*.zip diff=zip

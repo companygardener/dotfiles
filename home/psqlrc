@@ -1,20 +1,45 @@
-\set PROMPT1 '%n@%[%033[0;32m%]%m%[%033[0m%]/%~:%> %R%#%x '
-\set PROMPT2 ' %R%# '
+-- Postgres Tips
+-- http://www.manniwood.com/postgresql_stuff/index.html
+--
+-- Partitioning
+-- http://www.if-not-true-then-false.com/2009/howto-create-postgresql-table-partitioning-part-1/
+
+\set QUIET 1
+
+\set AUTOCOMMIT off
+
+\set COMP_KEYWORD_CASE upper
 
 \set HISTFILE ~/.psql_history/ :HOST - :DBNAME
-\set HISTSIZE 5000
-\set HISTCONTROL ignoredups
+\set HISTSIZE 10000
+\set HISTCONTROL ignoreboth
+
+\set ON_ERROR_ROLLBACK interactive
+
+\set PROMPT1 '[%`date +%H:%M:%S`] %n@%[%033[0;32m%]%m%[%033[0m%]/%~:%> %R%#%x '
+\set PROMPT2 '[more] %R%# '
+
+\set VERBOSITY verbose
 
 \pset pager always
-\timing
+\pset null ¤
+
 \encoding unicode
 
-\set unused_indexes    '( SELECT s.schemaname AS sch, s.relname AS rel, s.indexrelname AS idx, s.idx_scan AS scans, pg_size_pretty(pg_relation_size(s.relid)) AS ts, pg_size_pretty(pg_relation_size(s.indexrelid)) AS "is" FROM pg_stat_user_indexes s JOIN pg_index i ON i.indexrelid=s.indexrelid LEFT JOIN pg_constraint c ON i.indrelid=c.conrelid AND array_to_string(i.indkey, '' '') = array_to_string(c.conkey, '' '') WHERE i.indisunique IS FALSE AND pg_relation_size(s.relid) > 1000000 AND s.idx_scan < 100000 AND c.confrelid IS NULL ORDER BY s.idx_scan ASC, pg_relation_size(s.indexrelid) DESC )'
-\set missing_indexes   '( SELECT src_table, dst_table, fk_name, pg_size_pretty(s_size) AS s_size, pg_size_pretty(d_size) AS d_size, d FROM ( SELECT DISTINCT ON (1,2,3,4,5) textin(regclassout(c.conrelid)) AS src_table, textin(regclassout(c.confrelid)) AS dst_table, c.conname AS fk_name, pg_relation_size(c.conrelid) AS s_size, pg_relation_size(c.confrelid) AS d_size, array_upper(di.indkey::int[], 1) + 1 - array_upper(c.conkey::int[], 1) AS d FROM pg_constraint c LEFT JOIN pg_index di ON di.indrelid = c.conrelid AND array_to_string(di.indkey, '' '') ~ (''^'' || array_to_string(c.conkey, '' '') || ''( |$)'') JOIN pg_stat_user_tables st ON st.relid = c.conrelid WHERE c.contype = ''f'' ORDER BY 1,2,3,4,5,6 ASC) mfk WHERE mfk.d IS DISTINCT FROM 0 AND mfk.s_size > 1000000 ORDER BY mfk.s_size DESC, mfk.d DESC )'
-\set table_sizes       '( SELECT table_schema AS sch, table_name AS rel, pg_relation_size( quote_ident(table_schema) || \'.\' || quote_ident(table_name)) AS size, pg_total_relation_size(quote_ident(table_schema) || \'.\' || quote_ident(table_name)) AS total_size FROM information_schema.tables WHERE table_type = \'BASE TABLE\' AND table_schema NOT IN (\'information_schema\', \'pg_catalog\', \'to_delete\', \'cnu_report\') ORDER BY pg_relation_size(quote_ident(table_schema) || \'.\' || quote_ident(table_name)) DESC, table_schema, table_name)'
+\echo
+\echo Started at `date  +"%Y-%m-%d %H:%M:%S"`
+\echo
 
-\set pretty_table_size '( SELECT sch, rel, pg_size_pretty(size) AS size, pg_size_pretty(total_size) AS total_size FROM (:table_sizes) x ORDER BY x.total_size DESC, x.size DESC, sch, rel)'
-\set pretty_db_size    'SELECT pg_size_pretty(pg_database_size(CURRENT_DATABASE()));'
+SET bytea_output TO escape; commit;
+
+\unset QUIET
+
+\set unused_indexes     '( SELECT s.schemaname AS sch, s.relname AS rel, s.indexrelname AS idx, s.idx_scan AS scans, pg_size_pretty(pg_relation_size(s.relid)) AS ts, pg_size_pretty(pg_relation_size(s.indexrelid)) AS "is" FROM pg_stat_user_indexes s JOIN pg_index i ON i.indexrelid=s.indexrelid LEFT JOIN pg_constraint c ON i.indrelid=c.conrelid AND array_to_string(i.indkey, '' '') = array_to_string(c.conkey, '' '') WHERE i.indisunique IS FALSE AND pg_relation_size(s.relid) > 1000000 AND s.idx_scan < 100000 AND c.confrelid IS NULL ORDER BY s.idx_scan ASC, pg_relation_size(s.indexrelid) DESC )'
+\set missing_indexes    '( SELECT src_table, dst_table, fk_name, pg_size_pretty(s_size) AS s_size, pg_size_pretty(d_size) AS d_size, d FROM ( SELECT DISTINCT ON (1,2,3,4,5) textin(regclassout(c.conrelid)) AS src_table, textin(regclassout(c.confrelid)) AS dst_table, c.conname AS fk_name, pg_relation_size(c.conrelid) AS s_size, pg_relation_size(c.confrelid) AS d_size, array_upper(di.indkey::int[], 1) + 1 - array_upper(c.conkey::int[], 1) AS d FROM pg_constraint c LEFT JOIN pg_index di ON di.indrelid = c.conrelid AND array_to_string(di.indkey, '' '') ~ (''^'' || array_to_string(c.conkey, '' '') || ''( |$)'') JOIN pg_stat_user_tables st ON st.relid = c.conrelid WHERE c.contype = ''f'' ORDER BY 1,2,3,4,5,6 ASC) mfk WHERE mfk.d IS DISTINCT FROM 0 AND mfk.s_size > 1000000 ORDER BY mfk.s_size DESC, mfk.d DESC )'
+\set table_sizes        '( SELECT table_schema AS sch, table_name AS rel, pg_relation_size( quote_ident(table_schema) || \'.\' || quote_ident(table_name)) AS size, pg_total_relation_size(quote_ident(table_schema) || \'.\' || quote_ident(table_name)) AS total_size FROM information_schema.tables WHERE table_type = \'BASE TABLE\' AND table_schema NOT IN (\'information_schema\', \'pg_catalog\', \'to_delete\', \'cnu_report\') ORDER BY pg_relation_size(quote_ident(table_schema) || \'.\' || quote_ident(table_name)) DESC, table_schema, table_name)'
+
+\set pretty_table_sizes '( SELECT sch, rel, pg_size_pretty(size) AS size, pg_size_pretty(total_size) AS total_size FROM (:table_sizes) x ORDER BY x.total_size DESC, x.size DESC, sch, rel)'
+\set pretty_db_size     'SELECT pg_size_pretty(pg_database_size(CURRENT_DATABASE()));'
 
 \set size_of 'SELECT * FROM :pretty_table_size s WHERE rel like '
 
@@ -45,6 +70,8 @@
 
 \set hits 'SELECT SUM(heap_blks_read) as heap_read, SUM(heap_blks_hit) as heap_hit, TO_CHAR((SUM(heap_blks_hit) - SUM(heap_blks_read)) / SUM(heap_blks_hit) * 100, \'999D99%\') AS rate FROM pg_statio_user_tables;'
 \set table_stats 'SELECT relname AS table, SUM(heap_blks_read) as heap_read, SUM(heap_blks_hit) as heap_hit, TO_CHAR((SUM(heap_blks_hit) - SUM(heap_blks_read)) / (SUM(heap_blks_hit) + 1) * 100, \'999D99%\') AS rate, (SELECT 100 * idx_scan / (seq_scan + idx_scan) FROM pg_stat_user_tables WHERE relname = s.relname) AS idx_rate FROM pg_statio_user_tables s GROUP BY relname ORDER BY (SUM(heap_blks_hit) - SUM(heap_blks_read)) / (SUM(heap_blks_hit) + 1) ASC;'
+
+\set slow_queries 'SELECT (total_time / 1000 / 60) AS total_minutes, (total_time / calls) AS average_time, query FROM pg_catalog.pg_stat_statements ORDER BY 1 DESC LIMIT 100;'
 
 \set q '\\q'
 

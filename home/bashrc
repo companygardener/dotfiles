@@ -6,7 +6,6 @@ export DOTFILES="$HOME/bin/dotfiles"
 . $DOTFILES/bash/env
 . $DOTFILES/bash/colors
 . $DOTFILES/bash/git
-. $DOTFILES/bash/config
 . $DOTFILES/bash/aliases
 . $DOTFILES/bash/functions
 . $DOTFILES/bash/vbox_functions
@@ -19,3 +18,5 @@ shopt -s checkwinsize
 if [[ -f "$HOME/.bashrc.local" ]]; then
   . "$HOME/.bashrc.local"
 fi
+
+. $DOTFILES/bash/config

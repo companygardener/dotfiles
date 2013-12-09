@@ -1,12 +1,15 @@
 AwesomePrint.defaults = {
   :color => {
-    :nilclass   => :redish,
     :falseclass => :redish,
-    :trueclass  => :greenish,
-    :string     => :greenish,
-    :symbol     => :purple,
     :fixnum     => :redish,
     :float      => :redish,
-    :time       => :blueish
-  }
+    :nilclass   => :redish,
+    :string     => :greenish,
+    :symbol     => :purple,
+    :time       => :blueish,
+    :trueclass  => :greenish },
+
+  :indent => -2,
+  :plain  => false,
+  :html   => false
 }

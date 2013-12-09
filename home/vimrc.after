@@ -24,7 +24,7 @@
 
   set mouse=a
   set mousehide
-  set mousemodel=extend
+  set mousemodel=popup
 
   set encoding=utf-8
   try
@@ -189,6 +189,8 @@ noremap <leader>s? z=
 nnoremap <leader>rh :%s/\([^[:alnum:]:]\):\([[:alnum:]_]*\)\s\=\(\s*\)=>/\1\2:\3/g<cr>
 vnoremap <leader>rh  :s/\([^[:alnum:]:]\):\([[:alnum:]_]*\)\s\=\(\s*\)=>/\1\2:\3/g<cr>
 
+inoremap <C-l> <space>=><space>
+
 iabbrev xd <c-r>=strftime("%m/%d/%Y")<cr>
 iabbrev xt <c-r>=strftime("%m/%d/%Y %H:%M:%S")<cr>
 
@@ -249,6 +251,11 @@ nnoremap <leader>a<bar> :Tabularize /<bar><cr>
 vnoremap <leader>a<space> :Tabularize /<space><cr>
 nnoremap <leader>a<space> :Tabularize /<space><cr>
 
+nnoremap <leader>a: :Tabularize /:\zs<cr>
+vnoremap <leader>a: :Tabularize /:\zs<cr>
+nnoremap <leader>a, :Tabularize /,\zs<cr>
+vnoremap <leader>a, :Tabularize /,\zs<cr>
+
 vnoremap <leader>am2 :Tabularize /<bar>/l1c1l1c1r1c1<cr>
 nnoremap <leader>am2 :Tabularize /<bar>/l1c1l1c1r1c1<cr>
 
@@ -302,12 +309,15 @@ if has("autocmd")
   autocmd! BufWritePost .vimrc.before source %
   autocmd! BufWritePost .vimrc.after  source %
 
-  autocmd FileType make setlocal ts=8 sts=8 sw=8 noexpandtab
-  autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+  autocmd FileType ruby,haml,eruby,yaml,html,javascript,sass,cucumber setlocal autoindent ts=2 sts=2 sw=2 expandtab
+  autocmd FileType python setlocal autoindent ts=4 sts=4 sw=4 expandtab
 
+  autocmd FileType make setlocal ts=8 sts=8 sw=8 noexpandtab
   autocmd FileType sql  setlocal ts=4 sts=4 sw=4 expandtab
+
   autocmd BufNewFile,BufRead *.sql syntax match Comment /\%^---\_.\{-}---$/ contains=@Yaml
-  autocmd BufNewFile,BufRead * call yaml:frontmatter()
+  autocmd BufNewFile,BufRead psqlrc setlocal filetype=sql
+  autocmd BufNewFile,BufRead {Gemfile,Rakefile,Thorfile,config.ru} setlocal filetype=ruby
 
   autocmd BufWinLeave * call clearmatches()
   autocmd BufRead * call s:set_hidden()
@@ -317,11 +327,13 @@ if has("autocmd")
     endif
   endfunction
 
-  function! yaml:frontmatter()
-    unlet b:current_syntax
-    syntax include @Yaml syntax/yaml.vim
-    syntax region yamlFrontmatter start=/\%^---$/ end=/^---$/ keepend contains=@Yaml,@Spell
-  endfunction
+  " autocmd BufNewFile,BufRead * call yaml:frontmatter()
+
+  " function! yaml:frontmatter()
+  "   unlet b:current_syntax
+  "   syntax include @Yaml syntax/yaml.vim
+  "   syntax region yamlFrontmatter start=/\%^---$/ end=/^---$/ keepend contains=@Yaml,@Spell
+  " endfunction
 
   if v:version >= 700
     autocmd BufNewFile,BufRead *.txt setlocal spell spelllang=en
