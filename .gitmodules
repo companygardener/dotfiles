@@ -61,3 +61,6 @@
 [submodule "home/janus/vim-ember-script"]
 	path = home/janus/vim-ember-script
 	url = git://github.com/heartsentwined/vim-ember-script.git
+[submodule "home/janus/nerdtree-chmod"]
+	path = home/janus/nerdtree-chmod
+	url = git@github.com:EvanDotPro/nerdtree-chmod.git

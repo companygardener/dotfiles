@@ -35,6 +35,8 @@ if [[ $(uname) = Darwin ]]; then
 
   alias soundfix="sudo pkill coreaudiod"
   alias uuid=uuidgen
+
+  alias mate="~/build/TextMate/Applications/mate/mate -w"
 else
   is_darwin=0
 

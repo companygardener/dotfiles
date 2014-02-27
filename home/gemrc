@@ -23,4 +23,4 @@ install: --no-rdoc --no-ri --no-document
 update:  --no-rdoc --no-ri --no-document
 
 # show gem's path, description, and other meta data
-list: --details
+# list: --details

@@ -105,6 +105,10 @@
   au         = add --update
   authors    = shortlog --numbered --summary --no-merges
   b          = branch -vv
+  bib        = bisect bad
+  big        = bisect good
+  bis        = bisect skip
+  bm         = branch --merged
   c          = commit
   ca         = commit --amend
   changes    = diff --name-status -r
@@ -113,6 +117,7 @@
   co         = checkout
   conflicts  = grep --name-only --full-name '<<<<<<< HEAD'
   d          = diff
+  dbm        = !git branch --merged | grep -v 'master\\|^\\*' | xargs git branch --delete
   dc         = diff --cached
   # div        = git-divergence
   ds         = diff --staged
@@ -128,6 +133,7 @@
   i          = ls-files --exclude-standard --ignored --others
   ls-ignored = ls-files --exclude-standard --ignored --others
   m          = merge -s recursive -X patience
+  master     = checkout master
   mm         = merge --no-ff
   news       = log --patch HEAD@{1}..HEAD@{0}
   p          = cherry-pick --signoff
@@ -142,9 +148,12 @@
   rh         = reset --hard
   ru         = remote update --prune
   s          = status --short --branch
+  si         = status --short --branch --ignored
+  sign       = commit --amend --signoff --reuse-message HEAD
   sl         = shortlog
   sm         = submodule
   sma        = submodule add
+  small      = submodule foreach
   smu        = submodule update --init
   snapshot   = !git stash save "snapshot: $(date)" && git stash apply "stash@{0}"
   ss         = submodule summary

@@ -5,18 +5,21 @@
 --group
 --pager=less -FXRS
 --recurse
+--smart-case
 --sort-files
 
 --color-filename=bold magenta
 --color-match=black on_green
 
---type-add=ruby=.haml,.builder,.rake,.rsel
 --type-add=css=.sass,.scss,.less
+--type-add=ruby=.haml,.hamlbars,.builder,.rake,.rsel
 
 --type-set=actionscript=.as
+--type-set=coffee=.coffee,.iced
 --type-set=cucumber=.feature
 --type-set=haml=.haml
 --type-set=markdown=.markdown,.md,.mdown
+--type-set=sass=.sass,.scss
 
 --actionscript
 --css
@@ -31,6 +34,7 @@
 --ignore-dir=vendor
 --ignore-dir=log
 --ignore-dir=doc
+--ignore-dir=node_modules
 
 # Ignore jekyll site dir
 --ignore-dir=_site

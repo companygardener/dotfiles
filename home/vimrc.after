@@ -83,7 +83,7 @@ set shiftwidth=2
 set softtabstop=2
 set expandtab
 
-set nowrap
+set wrap
 set nolinebreak
 set formatoptions=rolqn12
 set formatprg=par\ -w120req
@@ -93,15 +93,16 @@ set backspace=eol,start,indent
 
 set list
 set listchars=tab:»·,trail:·,eol:¬,extends:#,nbsp:%,precedes:<
+set ambiwidth=single
 
-set statusline=%f\ 
-set statusline+=%y "filetype
+set statusline=%.50f\ " space
 set statusline+=%{StatuslineLongLineWarning()}
 
 "display warnings for wrong fileformats, file encodings, and trailing whitespace
 set statusline+=%#warningmsg#
 set statusline+=%{&fileformat!='unix'?'['.&fileformat.']':''}
 set statusline+=%{&fileencoding!='utf-8'?'['.&fileencoding.']':''}
+set statusline+=%{&bomb==1?'[BOM]':''}
 set statusline+=%{StatuslineTrailingSpaceWarning()}
 set statusline+=%*
 "
@@ -112,29 +113,35 @@ set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%{&paste?'[paste]':''}
 set statusline+=%*
 
-
-set statusline+=%r "read-only flag
-set statusline+=%m "modified flag
+set statusline+=%r " read-only flag
+set statusline+=%m " modified flag
 set statusline+=%w
 set statusline+=%{fugitive#statusline()}
 
 set statusline+=%= "left/right separator
 set statusline+=%{StatuslineCurrentHighlight()}
-set statusline+=[%l/%L,%v\ %P]
+set statusline+=%y
+set statusline+=%{&fileformat=='unix'?'['.&fileformat.']':''}
+set statusline+=%{&fileencoding=='utf-8'?'['.&fileencoding.']':''}
+set statusline+=[U+%04B]
+set statusline+=[%4l/%L,%3v][%P]
 
 set laststatus=2
 set report=0
 set complete=.,w,b,u,U,t,i,d
 set wildmenu
 set wildmode=list:longest
-set wildignore=*.o,*.obj,.git,*.rbc,*.rbo,*.class,.svn,*.gem,*.zip,*.tar.gz,*.tar.bz2,*.rar,*.tar.xz,*/vendor/gems/*,*/vendor/cache/*,*/.bundle/*,*/.sass-cache/*,*.swp,*~,._*
+set wildignore=*.o,*.obj,.git,*.rbc,*.rbo,*.class,.svn,*.gem,*.zip,*.tar.gz,*.tar.bz2,*.rar
+set wildignore+=,*.tar.xz,*/vendor/gems/*,*/vendor/cache/*,*/.bundle/*,*/.sass-cache/*,*.swp,*~,._*
 set infercase
 
 set diffopt=filler,vertical
 
 set previewheight=30
 
-let ruby_space_errors=1
+let ruby_space_errors = 1
+let ruby_operators = 1
+let ruby_minlines = 1000
 
 map ` :set fu!<cr>
 map <S-`> :ZoomWin<cr>
@@ -143,11 +150,11 @@ nnoremap <leader>ff :set fu!<cr>:ZoomWin<cr>
 
 cnoremap w!! %!sudo tee > /dev/null %
 
-nnoremap <leader>t  :set   expandtab tabstop=2 shiftwidth=2 softtabstop=2<CR>
-nnoremap <leader>t4 :set   expandtab tabstop=4 shiftwidth=4 softtabstop=4<CR>
-nnoremap <leader>T2 :set noexpandtab tabstop=2 shiftwidth=2 softtabstop=2<CR>
-nnoremap <leader>T4 :set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4<CR>
-nnoremap <leader>T8 :set noexpandtab tabstop=8 shiftwidth=8 softtabstop=8<CR>
+nnoremap <leader>t  :set   expandtab tabstop=2 shiftwidth=2 softtabstop=2<cr>
+nnoremap <leader>t4 :set   expandtab tabstop=4 shiftwidth=4 softtabstop=4<cr>
+nnoremap <leader>T2 :set noexpandtab tabstop=2 shiftwidth=2 softtabstop=2<cr>
+nnoremap <leader>T4 :set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4<cr>
+nnoremap <leader>T8 :set noexpandtab tabstop=8 shiftwidth=8 softtabstop=8<cr>
 
 " Markdown
 nnoremap <leader>1 yypVr=
@@ -202,9 +209,9 @@ vnoremap <tab> %
 
 nnoremap ; :
 
-nnoremap <leader>i :set list!<cr>
-nnoremap <leader>s :%s/\s\+$//e<cr>:let @/=''<cr>
-nnoremap <leader>a :Ack
+nnoremap <leader>i  :set list!<cr>
+nnoremap <leader>se :%s/\s\+$//e<cr>:let @/=''<cr>
+nnoremap <leader>a  :Ack
 
 " Re-hardwrap paragraph
 vnoremap <leader>q gq
@@ -235,6 +242,109 @@ nnoremap <C-l> <C-w>l
 
 iab RuL ----+----1----+----2----+----3----+----4----+----5----+----6----+----7----+----8----+----9----+----0
 
+"" Unicode
+
+" digraphs http://www.alecjacobson.com/weblog/?p=443
+"
+" superscript
+inoremap <leader>uS1 ¹
+inoremap <leader>uS2 ²
+inoremap <leader>uS3 ³
+inoremap <leader>uS4 ⁴
+inoremap <leader>uS5 ⁵
+inoremap <leader>uS6 ⁶
+inoremap <leader>uS7 ⁷
+inoremap <leader>uS8 ⁸
+inoremap <leader>uS9 ⁹
+inoremap <leader>uS( ⁽
+inoremap <leader>uS) ⁾
+inoremap <leader>uS- ⁻
+inoremap <leader>uS+ ⁺
+inoremap <leader>uS= ⁼
+inoremap <leader>uSi ⁱ
+inoremap <leader>uSn ⁿ
+
+" subscript
+inoremap <leader>us0 ₀
+inoremap <leader>us1 ₁
+inoremap <leader>us2 ₂
+inoremap <leader>us3 ₃
+inoremap <leader>us4 ₄
+inoremap <leader>us5 ₅
+inoremap <leader>us6 ₆
+inoremap <leader>us7 ₇
+inoremap <leader>us8 ₈
+inoremap <leader>us9 ₉
+inoremap <leader>us- ₋
+inoremap <leader>us+ ₊
+inoremap <leader>us= ₌
+inoremap <leader>us( ₍
+inoremap <leader>us) ₎
+
+inoremap <leader>usa ₐ
+inoremap <leader>use ₑ
+inoremap <leader>usi ᵢ
+inoremap <leader>usj ⱼ
+inoremap <leader>uso ₒ
+inoremap <leader>usr ᵣ
+inoremap <leader>usu ᵤ
+inoremap <leader>usv ᵥ
+inoremap <leader>usx ₓ
+
+inoremap <leader>usb* ᵦ
+inoremap <leader>usf* ᵩ
+inoremap <leader>usg* ᵧ
+inoremap <leader>usr* ᵨ
+inoremap <leader>usx* ᵪ
+
+" typography
+inoremap <leader>utn –
+inoremap <leader>utm —
+inoremap <leader>ut. ·
+inoremap <leader>uts §
+inoremap <leader>utp ¶
+
+" quotes
+inoremap <leader>uq' ‘
+inoremap <leader>uQ' ’
+inoremap <leader>uq" “
+inoremap <leader>uQ" ”
+
+inoremap <leader>u... …
+inoremap <leader>u*** ⁂
+
+" boolean
+inoremap <leader>ub+ ✓
+inoremap <leader>ub- ✗
+
+" arrows
+inoremap <leader>uan ↩
+inoremap <leader>uau ↑
+inoremap <leader>uad ↓
+inoremap <leader>uar →
+inoremap <leader>ual ←
+
+" math
+inoremap <leader>ums ∫
+inoremap <leader>umS ∬
+inoremap <leader>umE ∑
+inoremap <leader>u=- ±
+
+" U+2245 APPROXIMATELY EQUAL TO
+inoremap <leader>um?= ≅
+inoremap <leader>um?2 ≈
+inoremap <leader>um!= ≠
+inoremap <leader>um<= ≤
+inoremap <leader>um>= ≥
+inoremap <leader>um.  ⋅
+inoremap <leader>um-  −
+inoremap <leader>um/  ∕
+inoremap <leader>umd  ÷
+inoremap <leader>umx  ×
+inoremap <leader>um~  ∼
+
+" http://en.wikibooks.org/wiki/Unicode/List_of_useful_symbols
+
 " Drawing
 nnoremap <leader>dl a├─<space><esc>
 nnoremap <leader>dbl a└─<space><esc>
@@ -262,8 +372,31 @@ nnoremap <leader>am2 :Tabularize /<bar>/l1c1l1c1r1c1<cr>
 vnoremap <leader>am3 :Tabularize /<bar>/l1c1l1c1l1c1r1c1<cr>
 nnoremap <leader>am3 :Tabularize /<bar>/l1c1l1c1l1c1r1c1<cr>
 
-map <Leader>n  :NERDTreeToggle<CR>
-map <Leader>f :NERDTreeFind<CR>
+" NERDTree
+" Use split-explorer model
+" let NERDTreeHijackNetrw=1
+nnoremap <leader>b :Bookmark<space>
+nnoremap <leader>n :NERDTreeToggle<cr>
+nnoremap <leader>f :NERDTreeFind<cr>
+nnoremap - :NERDTreeFind<cr>
+
+let g:NERDTreeWinSize = 60
+
+" @todo simple todo list
+inoremap <leader>to <esc>O@todo:<space><esc>V:TComment<cr>A
+nnoremap <leader>to      O@todo:<space><esc>V:TComment<cr>A
+inoremap <leader>tl <esc>:grep --exclude=*~ -r todo * <cr> :copen <cr>
+nnoremap <leader>tl      :grep --exclude=*~ -r todo * <cr> :copen <cr>
+
+" brew install the_silver_searcher
+" http://robots.thoughtbot.com/faster-grepping-in-vim/
+if executable('ag')
+  set grepprg=ag\ --nogroup\ --nocolor
+
+  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+
+  let g:ctrlp_use_caching = 0
+endif
 
 " dbext
 let g:dbext_default_window_use_horiz = 1
@@ -276,7 +409,7 @@ let g:dbext_default_window_width = 120
 let g:dbext_default_window_increment = 120
 
 " auto-align cucumber tables using Tabularize
-inoremap <silent> <Bar>   <Bar><Esc>:call <SID>align()<CR>a
+inoremap <silent> <Bar>   <Bar><Esc>:call <SID>align()<cr>a
 function! s:align()
   let p = '^\s*|\s.*\s|\s*$'
   if exists(':Tabularize') && getline('.') =~# '^\s*|' && (getline(line('.')-1) =~# p || getline(line('.')+1) =~# p)
@@ -289,7 +422,7 @@ function! s:align()
 endfunction
 
 " auto-align = using Tabularize
-" inoremap <silent> = =<Esc>:call <SID>ealign()<CR>a
+" inoremap <silent> = =<Esc>:call <SID>ealign()<cr>a
 " function! s:ealign()
 "   let p = '^.*=\s.*$'
 "   if exists(':Tabularize') && getline('.') =~# '^.*=' && (getline(line('.')-1) =~# p || getline(line('.')+1) =~# p)
@@ -306,8 +439,15 @@ if has("autocmd")
   filetype indent on
   filetype plugin on
 
-  autocmd! BufWritePost .vimrc.before source %
-  autocmd! BufWritePost .vimrc.after  source %
+  augroup vim_config
+    autocmd!
+    autocmd BufWritePost .vimrc.before source %
+    autocmd BufWritePost .vimrc.before source ~/.vimrc.after
+    autocmd BufWritePost .vimrc.before source ~/.gvimrc.after
+
+    autocmd BufWritePost .vimrc.after  source %
+    autocmd BufWritePost .vimrc.after  source ~/.gvimrc.after
+  augroup END
 
   autocmd FileType ruby,haml,eruby,yaml,html,javascript,sass,cucumber setlocal autoindent ts=2 sts=2 sw=2 expandtab
   autocmd FileType python setlocal autoindent ts=4 sts=4 sw=4 expandtab
@@ -315,6 +455,7 @@ if has("autocmd")
   autocmd FileType make setlocal ts=8 sts=8 sw=8 noexpandtab
   autocmd FileType sql  setlocal ts=4 sts=4 sw=4 expandtab
 
+  autocmd BufNewFile,BufRead *.md,*.wd set wrap linebreak nolist textwidth=0 wrapmargin=0
   autocmd BufNewFile,BufRead *.sql syntax match Comment /\%^---\_.\{-}---$/ contains=@Yaml
   autocmd BufNewFile,BufRead psqlrc setlocal filetype=sql
   autocmd BufNewFile,BufRead {Gemfile,Rakefile,Thorfile,config.ru} setlocal filetype=ruby
@@ -344,6 +485,8 @@ set t_Co=256
 colorscheme jellybeans
 
 highlight ColorColumn guibg=#222222
+
+let g:markdown_github_languages = ['ruby', 'erb=eruby', 'sql']
 
 " recalculate the trailing whitespace warning when idle, and after saving
 autocmd cursorhold,bufwritepost * unlet! b:statusline_trailing_space_warning

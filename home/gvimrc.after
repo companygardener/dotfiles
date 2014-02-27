@@ -1,8 +1,9 @@
 set transparency=8
 set guioptions=acemg
-set guifont=inconsolata:h11
+set guifont=source_code_pro:h12
+set guifontwide=source_code_pro:h12
 set guicursor=n:blinkon0,v:blinkon0
-set lines=60 columns=120
+set lines=90 columns=160
 
 set cursorline
 set textwidth=120
@@ -18,9 +19,12 @@ set sidescrolloff=1
 
 set noballooneval
 
+nnoremap <leader>fd :set guifont=dejavu_sans_mono:h11w11<cr>
 nnoremap <leader>fe :set guifont=enova:h28<cr>
-nnoremap <leader>fi :set guifont=inconsolata:h28<cr>
+nnoremap <leader>fi :set guifont=inconsolata:h11<cr>
+nnoremap <leader>fl :set guifont=inconsolata:h28<cr>
 nnoremap <leader>fm :set guifont=monofur<cr>
+nnoremap <leader>fs :set guifont=source_code_pro:h14<cr>
 
 " function! TextEnableCodeSnip(filetype,start,end,textSnipHl) abort
 "   let ft=toupper(a:filetype)
@@ -51,8 +55,11 @@ nnoremap <leader>fm :set guifont=monofur<cr>
 " call TextEnableCodeSnip('sql',  '@begin=sql@',  '@end=sql@',  'SpecialComment')
 
 if has("autocmd")
-  autocmd! BufWritePost .gvimrc.before source %
-  autocmd! BufWritePost .gvimrc.after  source %
+  augroup gvim_config
+    autocmd!
+    autocmd BufWritePost .gvimrc.before source %
+    autocmd BufWritePost .gvimrc.after  source %
+  augroup END
 endif
 
 if has("gui_macvim")
