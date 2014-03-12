@@ -164,6 +164,7 @@
   type       = cat-file -t
   unassume   = update-index --no-assume-unchanged
   undo       = reset --soft HEAD@{1}
+  up         = !git remote update -p && git merge --ff-only @{u}
   wd         = diff --color-words
   wdb        = diff --color-words          --ignore-space-change
   wds        = diff --color-words --staged
