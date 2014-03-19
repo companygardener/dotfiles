@@ -1,4 +1,4 @@
- ~/bin/dotfiles/bash/colors
+. $DOTFILES/bash/colors
 
 # rvm-prompt (i)nterpreter (v)ersion (p)atchlevel
 # rvm-prompt i v p

@@ -1,14 +1,14 @@
 #!/usr/bin/env ruby
 
-Dir.chdir(File.expand_path "~/bin/dotfiles/home")
+dir = File.expand_path File.dirname(__FILE__)
+Dir.chdir("#{dir}/home")
+
 Dir["*"].each do |file|
   target = File.expand_path File.join("~", ".#{file}")
   puts "linking #{target}"
   `rm -rf #{target}`
   `ln -s #{File.expand_path file} #{target}`
 end
-
-`~/bin/dotfiles/install-bash`
 
 # git push on commit
 # `echo 'git push' > .git/hooks/post-commit`

@@ -10,7 +10,7 @@
 
 \set COMP_KEYWORD_CASE upper
 
-\set HISTFILE ~/.psql_history/ :HOST - :DBNAME
+\set HISTFILE ~/.psql_history/:HOST - :DBNAME
 \set HISTSIZE 10000
 \set HISTCONTROL ignoreboth
 
