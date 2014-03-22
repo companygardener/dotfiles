@@ -17,14 +17,22 @@ Bundle 'w0ng/vim-hybrid'
 " Languages
 Bundle 'cakebaker/scss-syntax.vim'
 Bundle 'chrisbra/csv.vim'
+Bundle 'depuracao/vim-rdoc'
 Bundle 'elixir-lang/vim-elixir'
 Bundle 'groenewege/vim-less'
+Bundle 'guns/vim-clojure-static'
+Bundle 'heartsentwined/vim-ember-script'
+Bundle 'heartsentwined/vim-emblem'
+Bundle 'jimenezrick/vimerl'
+Bundle 'jnwhiteh/vim-golang'
 Bundle 'kchmck/vim-coffee-script'
 Bundle 'mmalecki/vim-node.js'
 Bundle 'nono/vim-handlebars'
 Bundle 'pangloss/vim-javascript'
+Bundle 'rosstimson/scala-vim-support'
 Bundle 'skwp/vim-rspec'
 Bundle 'slim-template/vim-slim'
+Bundle 'sunaku/vim-ruby-minitest'
 Bundle 'tpope/vim-cucumber'
 Bundle 'tpope/vim-git'
 Bundle 'tpope/vim-haml'
@@ -32,20 +40,68 @@ Bundle 'tpope/vim-liquid'
 Bundle 'tpope/vim-markdown'
 Bundle 'tpope/vim-rails'
 Bundle 'vim-ruby/vim-ruby'
+Bundle 'wlangstroth/vim-haskell'
 
 " Tools
+Bundle 'airblade/vim-gitgutter'
+Bundle 'ap/vim-css-color'
+Bundle 'EvanDotPro/nerdtree-chmod'
+Bundle 'godlygeek/tabular'
+Bundle 'itspriddle/ZoomWin'
 Bundle 'majutsushi/tagbar'
+Bundle 'mikewest/vimroom'
 Bundle 'rizzatti/funcoo.vim'
 Bundle 'rizzatti/dash.vim'
 Bundle 'scrooloose/nerdcommenter'
 Bundle 'scrooloose/nerdtree'
 Bundle 'scrooloose/syntastic'
+Bundle 'tpope/vim-bundler'
 Bundle 'tpope/vim-dispatch'
 Bundle 'tpope/vim-fugitive'
+Bundle 'tpope/vim-rake'
 Bundle 'tpope/vim-repeat'
+Bundle 'tpope/vim-speeddating'
 Bundle 'tpope/vim-surround'
 Bundle 'tpope/vim-unimpaired'
+Bundle 'vim-scripts/Align'
+Bundle 'vim-scripts/dbext.vim'
 " Bundle 'vim-scripts/vimwiki'
+"
+" argtextobj.vim
+" autotag
+" tcomment_vim
+" vim-textobj-rubyblock
+" vim-textobj-user
+" https://github.com/dsawardekar/ember.vim
+" https://github.com/edsono/vim-matchit
+" https://github.com/ervandew/supertab
+" https://github.com/mileszs/ack.vim
+" https://github.com/sjl/gundo.vim
+" https://github.com/garbas/vim-snipmate
+" https://github.com/tomtom/tlib_vim
+" https://github.com/MarcWeber/vim-addon-mw-utils
+" https://github.com/michaeljsmith/vim-indent-object
+" https://github.com/tpope/vim-endwise
+" https://github.com/mattn/webapi-vim
+" https://github.com/mattn/gist-vim
+" https://github.com/vim-scripts/vimwiki
+" https://github.com/Lokaltog/vim-easymotion
+" https://github.com/chrisbra/NrrwRgn
+" https://github.com/jeetsukumaran/vim-buffergator
+" https://github.com/rgarver/Kwbd.vim
+" https://github.com/kien/ctrlp.vim
+" https://github.com/skalnik/vim-vroom
+" https://github.com/tpope/vim-eunuch
+" https://github.com/honza/vim-snippets
+" https://github.com/terryma/vim-multiple-cursors
+" https://github.com/thinca/vim-visualstar
+" https://github.com/bronson/vim-trailing-whitespace
+"
+" vim-scripts/Conque-Shell
+" skwp/vim-ruby-conque
+" rson/vim-conque
+" jistr/vim-nerdtree-tabs
+" tomtom/tplugin_vim
 
 filetype plugin indent on
 

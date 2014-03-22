@@ -181,6 +181,7 @@ nnoremap <leader>tr :botright :vsplit config/routes.rb<cr>
 nnoremap <leader>tg :botright :vsplit Gemfile<cr>
 
 nnoremap <leader>th :set hlsearch! hlsearch?<cr>
+nnoremap <leader>tv <plug>VimroomToggle
 nnoremap <leader>tw :set invwrap<cr>:set wrap?<cr>
 
 " clear search highlights
