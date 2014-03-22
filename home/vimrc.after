@@ -225,7 +225,7 @@ nnoremap ; :
 
 nnoremap <leader>i  :set list!<cr>
 nnoremap <leader>se :%s/\s\+$//e<cr>:let @/=''<cr>
-nnoremap <leader>a  :Ack
+" nnoremap <leader>a  :Ack
 
 " Re-hardwrap paragraph
 vnoremap <leader>q gq
