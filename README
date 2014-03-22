@@ -5,3 +5,5 @@
     vim +BundleInstall +qall
 
 # Resources
+
+* http://statico.github.io/vim2.html
