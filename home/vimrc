@@ -8,6 +8,7 @@ filetype off
 set runtimepath+=~/.vim/bundle/vundle/
 call vundle#rc()
 
+" Core
 Bundle 'gmarik/vundle'
 
 " Colors
@@ -50,6 +51,7 @@ Bundle 'godlygeek/tabular'
 Bundle 'itspriddle/ZoomWin'
 Bundle 'majutsushi/tagbar'
 Bundle 'mikewest/vimroom'
+Bundle 'rking/ag.vim'
 Bundle 'rizzatti/funcoo.vim'
 Bundle 'rizzatti/dash.vim'
 Bundle 'scrooloose/nerdcommenter'
@@ -64,13 +66,15 @@ Bundle 'tpope/vim-speeddating'
 Bundle 'tpope/vim-surround'
 Bundle 'tpope/vim-unimpaired'
 Bundle 'vim-scripts/dbext.vim'
-" Bundle 'vim-scripts/vimwiki'
-"
+
 " argtextobj.vim
 " autotag
+" powerline
 " tcomment_vim
 " vim-textobj-rubyblock
 " vim-textobj-user
+" vim-airline
+" vimwiki
 " https://github.com/dsawardekar/ember.vim
 " https://github.com/edsono/vim-matchit
 " https://github.com/ervandew/supertab
@@ -96,6 +100,7 @@ Bundle 'vim-scripts/dbext.vim'
 " https://github.com/thinca/vim-visualstar
 " https://github.com/bronson/vim-trailing-whitespace
 "
+" Lokaltog/powerline
 " vim-scripts/Conque-Shell
 " skwp/vim-ruby-conque
 " rson/vim-conque
