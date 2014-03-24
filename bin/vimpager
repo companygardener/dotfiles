@@ -1,4 +1,4 @@
 #!/bin/bash
 what=-
 test "$@" && what="$@"
-exec vim -u NONE -U NONE -R -S ~/bin/dotfiles/vim/less.vim -c Less $what
+exec vim -u NONE -U NONE -R -S $DOTFILES/vim/less.vim -c Less $what
