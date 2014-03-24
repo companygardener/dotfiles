@@ -394,7 +394,7 @@ nnoremap <leader>n :NERDTreeToggle<cr>
 nnoremap <leader>f :NERDTreeFind<cr>
 nnoremap - :NERDTreeFind<cr>
 
-let g:NERDTreeWinSize = 60
+let g:NERDTreeWinSize = 40
 
 " @todo simple todo list
 inoremap <leader>to <esc>O@todo:<space><esc>V:TComment<cr>A
@@ -602,10 +602,10 @@ function! StatuslineCurrentHighlight()
 endfunction
 
 " ruby-conque
-function! RunSingleConque(command)
-  try
-    exec "bdelete " . g:single_conque.buffer_name
-  catch
-  endtry
-  let g:single_conque = conque_term#open(a:command, ['botright vsplit'])
-endfunction
+" function! RunSingleConque(command)
+"   try
+"     exec "bdelete " . g:single_conque.buffer_name
+"   catch
+"   endtry
+"   let g:single_conque = conque_term#open(a:command, ['botright vsplit'])
+" endfunction
