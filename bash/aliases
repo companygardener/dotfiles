@@ -55,7 +55,7 @@ alias gh="git help"
 # Autocomplete for 'g' as well
 complete -o default -o nospace -F _git g
 
-alias dotfiles='cd ~/bin/dotfiles'
+alias dotfiles='cd $DOTFILES'
 
 alias psql='PAGER=vimpager psql'
 
