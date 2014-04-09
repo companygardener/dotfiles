@@ -125,7 +125,7 @@ set report=0
 set complete=.,w,b,u,U,t,i,d
 set wildmenu
 set wildmode=list:longest
-set wildignore=*.o,*.obj,.git,*.rbc,*.rbo,*.class,.svn,*.gem,*.zip,*.tar.gz,*.tar.bz2,*.rar
+set wildignore=*.o,*.so,*.obj,.git,*.rbc,*.rbo,*.class,.svn,*.gem,*.zip,*.tar.gz,*.tar.bz2,*.rar
 set wildignore+=*.tar.xz,*/vendor/gems/*,*/vendor/cache/*,*/.bundle/*,*/.sass-cache/*,*.swp,*~,._*
 set infercase
 
@@ -421,6 +421,8 @@ let g:dbext_default_buffer_lines = 30
 let g:dbext_default_window_use_right = 1
 let g:dbext_default_window_width = 120
 let g:dbext_default_window_increment = 120
+
+let g:ctrlp_map = '<c-p>'
 
 " auto-align cucumber tables using Tabularize
 inoremap <silent> <Bar>   <Bar><Esc>:call <SID>align()<cr>a
