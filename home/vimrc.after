@@ -498,7 +498,7 @@ if has("autocmd")
 endif
 
 set t_Co=256
-colorscheme hybrid
+silent! colorscheme hybrid
 " colorscheme jellybeans
 " highlight ColorColumn guibg=#222222
 
