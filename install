@@ -10,6 +10,12 @@ Dir["*"].each do |file|
   `ln -s #{File.expand_path file} #{target}`
 end
 
+unless File.exist?(File.expand_path "~/.vim/bundle/vundle")
+  puts %x[mkdir -p -v ~/.vim/bundle]
+  puts %x[git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle]
+  puts "run `vim +PluginInstall +qall`"
+end
+
 # git push on commit
 # `echo 'git push' > .git/hooks/post-commit`
 # `chmod 755 .git/hooks/post-commit`
