@@ -12,6 +12,7 @@ call vundle#rc()
 Bundle 'gmarik/vundle'
 
 " Colors
+Bundle 'altercation/vim-colors-solarized'
 Bundle 'nanotech/jellybeans.vim'
 Bundle 'w0ng/vim-hybrid'
 
@@ -41,6 +42,7 @@ Bundle 'tpope/vim-haml'
 Bundle 'tpope/vim-liquid'
 Bundle 'tpope/vim-markdown'
 Bundle 'tpope/vim-rails'
+Bundle 'vim-pandoc/vim-pandoc'
 Bundle 'vim-ruby/vim-ruby'
 Bundle 'wlangstroth/vim-haskell'
 
@@ -52,9 +54,9 @@ Bundle 'godlygeek/tabular'
 Bundle 'honza/vim-snippets'
 Bundle 'itspriddle/ZoomWin'
 Bundle 'kien/ctrlp.vim'
+Bundle 'junegunn/goyo.vim'
 Bundle 'majutsushi/tagbar'
 Bundle 'MarcWeber/vim-addon-mw-utils'
-Bundle 'mikewest/vimroom'
 Bundle 'rking/ag.vim'
 Bundle 'rizzatti/funcoo.vim'
 Bundle 'rizzatti/dash.vim'
@@ -81,6 +83,7 @@ Bundle 'vim-scripts/dbext.vim'
 " vim-textobj-user
 " vim-airline
 " vimwiki
+" mikewest/vimroom
 " https://github.com/dsawardekar/ember.vim
 " https://github.com/edsono/vim-matchit
 " https://github.com/ervandew/supertab

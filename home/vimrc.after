@@ -143,6 +143,8 @@ map <S-`> :ZoomWin<cr>
 nnoremap <leader>ff :set fu!<cr>:ZoomWin<cr>
 nnoremap <leader>= <C-w>=
 
+nnoremap <leader><leader> :Goyo<cr>
+
 " format entire file
 nnoremap <leader>fef :normal! gg=G``<cr>
 
@@ -170,6 +172,7 @@ nnoremap <leader>gs :Gstatus<cr>
 " Tagbar
 nnoremap <leader>rt :TagbarToggle<cr>
 
+
 " rails
 " nnoremap <leader>tv :CommandTFlush<cr><bar>:CommandT app/views<cr>
 " nnoremap <leader>tc :CommandTFlush<cr><bar>:CommandT app/controllers<cr>
@@ -181,7 +184,6 @@ nnoremap <leader>tr :botright :vsplit config/routes.rb<cr>
 nnoremap <leader>tg :botright :vsplit Gemfile<cr>
 
 nnoremap <leader>th :set hlsearch! hlsearch?<cr>
-nnoremap <leader>tv <plug>VimroomToggle
 nnoremap <leader>tw :set invwrap<cr>:set wrap?<cr>
 
 " clear search highlights
