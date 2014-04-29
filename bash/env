@@ -18,9 +18,9 @@ export HISTSIZE=100000
 
 ## PATH
 if [[ -f /etc/issue ]]; then
-  export PATH="~/bin:$DOTFILES/bin:/usr/local/bin:/opt/bin:/opt/local/bin:/cnu/bin:/usr/bin:/bin:/usr/local/sbin:/sbin:$PATH"
+  export PATH="$HOME/bin:$HOME/.cabal/bin:$DOTFILES/bin:/usr/local/bin:/opt/bin:/opt/local/bin:/usr/bin:/bin:/usr/local/sbin:/sbin:$PATH"
 else
-  export PATH="~/bin:$DOTFILES/bin:/usr/local/bin:/opt/bin:/opt/local/bin:/usr/local/sbin:$PATH"
+  export PATH="$HOME/bin:$HOME/.cabal/bin:$DOTFILES/bin:/usr/local/bin:/opt/bin:/opt/local/bin:/usr/local/sbin:$PATH"
 fi
 
 ## EDITOR
@@ -32,12 +32,6 @@ fi
 
 [[ -x /usr/bin/lesspipe ]] && eval "$(lesspipe)"
 [[ -x /usr/local/bin/lesspipe.sh ]] && eval "$(lesspipe.sh)"
-
-export RUBY_HEAP_FREE_MIN=5000
-export RUBY_GC_HEAP_INIT_SLOTS=1000000
-export RUBY_GC_MALLOC_LIMIT=100000000
-export RUBY_HEAP_SLOTS_GROWTH_FACTOR=1
-export RUBY_HEAP_SLOTS_INCREMENT=1000000
 
 ## Homebrew
 if [[ -n `which brew` ]]; then
