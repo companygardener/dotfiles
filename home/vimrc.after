@@ -186,6 +186,8 @@ nnoremap <leader>tg :botright :vsplit Gemfile<cr>
 nnoremap <leader>th :set hlsearch! hlsearch?<cr>
 nnoremap <leader>tw :set invwrap<cr>:set wrap?<cr>
 
+nnoremap <leader>ds :call SyntaxAttr()<cr>
+
 " clear search highlights
 nnoremap <silent> <leader><space> :nohlsearch<cr>
 

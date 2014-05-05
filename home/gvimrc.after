@@ -12,6 +12,7 @@ set linespace=1
 set fuoptions=maxvert
 
 colorscheme hybrid
+highlight lessVariable guifg=#81a2be
 " colorscheme jellybeans
 " highlight ColorColumn guibg=#222222
 

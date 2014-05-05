@@ -13,6 +13,7 @@ Bundle 'gmarik/vundle'
 
 " Colors
 Bundle 'altercation/vim-colors-solarized'
+Bundle 'jpo/vim-railscasts-theme'
 Bundle 'nanotech/jellybeans.vim'
 Bundle 'w0ng/vim-hybrid'
 
@@ -74,6 +75,7 @@ Bundle 'tpope/vim-speeddating'
 Bundle 'tpope/vim-surround'
 Bundle 'tpope/vim-unimpaired'
 Bundle 'vim-scripts/dbext.vim'
+Bundle 'vim-scripts/SyntaxAttr.vim'
 
 " argtextobj.vim
 " autotag
