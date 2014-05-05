@@ -143,6 +143,13 @@ map <S-`> :ZoomWin<cr>
 nnoremap <leader>ff :set fu!<cr>:ZoomWin<cr>
 nnoremap <leader>= <C-w>=
 
+" vundle
+nnoremap <leader>vc :PluginClean<cr>
+nnoremap <leader>vl :PluginList<cr>
+nnoremap <leader>vi :PluginInstall<cr>
+nnoremap <leader>vu :PluginInstall!<cr>
+nnoremap <leader>vs :PluginSearch<space>
+
 nnoremap <leader><leader> :Goyo<cr>
 
 " format entire file
