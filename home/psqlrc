@@ -4,9 +4,10 @@
 -- Partitioning
 -- http://www.if-not-true-then-false.com/2009/howto-create-postgresql-table-partitioning-part-1/
 
-\set QUIET 1
+-- \set QUIET 1
 
-\set AUTOCOMMIT off
+-- \set AUTOCOMMIT off
+-- \set VERBOSITY verbose
 
 \set COMP_KEYWORD_CASE upper
 
@@ -19,20 +20,19 @@
 \set PROMPT1 '[%`date +%H:%M:%S`] %n@%[%033[0;32m%]%m%[%033[0m%]/%~:%> %R%#%x '
 \set PROMPT2 '[more] %R%# '
 
-\set VERBOSITY verbose
-
 \pset pager always
 \pset null ¤
 
 \encoding unicode
 
-\echo
-\echo Started at `date  +"%Y-%m-%d %H:%M:%S"`
-\echo
+-- \echo
+-- \echo Started at `date  +"%Y-%m-%d %H:%M:%S"`
+-- \echo
 
-SET bytea_output TO escape; commit;
+-- ??
+-- SET bytea_output TO escape;
 
-\unset QUIET
+-- \unset QUIET
 
 \set unused_indexes     '( SELECT s.schemaname AS sch, s.relname AS rel, s.indexrelname AS idx, s.idx_scan AS scans, pg_size_pretty(pg_relation_size(s.relid)) AS ts, pg_size_pretty(pg_relation_size(s.indexrelid)) AS "is" FROM pg_stat_user_indexes s JOIN pg_index i ON i.indexrelid=s.indexrelid LEFT JOIN pg_constraint c ON i.indrelid=c.conrelid AND array_to_string(i.indkey, '' '') = array_to_string(c.conkey, '' '') WHERE i.indisunique IS FALSE AND pg_relation_size(s.relid) > 1000000 AND s.idx_scan < 100000 AND c.confrelid IS NULL ORDER BY s.idx_scan ASC, pg_relation_size(s.indexrelid) DESC )'
 \set missing_indexes    '( SELECT src_table, dst_table, fk_name, pg_size_pretty(s_size) AS s_size, pg_size_pretty(d_size) AS d_size, d FROM ( SELECT DISTINCT ON (1,2,3,4,5) textin(regclassout(c.conrelid)) AS src_table, textin(regclassout(c.confrelid)) AS dst_table, c.conname AS fk_name, pg_relation_size(c.conrelid) AS s_size, pg_relation_size(c.confrelid) AS d_size, array_upper(di.indkey::int[], 1) + 1 - array_upper(c.conkey::int[], 1) AS d FROM pg_constraint c LEFT JOIN pg_index di ON di.indrelid = c.conrelid AND array_to_string(di.indkey, '' '') ~ (''^'' || array_to_string(c.conkey, '' '') || ''( |$)'') JOIN pg_stat_user_tables st ON st.relid = c.conrelid WHERE c.contype = ''f'' ORDER BY 1,2,3,4,5,6 ASC) mfk WHERE mfk.d IS DISTINCT FROM 0 AND mfk.s_size > 1000000 ORDER BY mfk.s_size DESC, mfk.d DESC )'
@@ -76,5 +76,3 @@ SET bytea_output TO escape; commit;
 \set q '\\q'
 
 -- max_shared_locks = max_locks_per_transaction * (max_connections + max_prepared_transactions)
--- UK: 121920 = 64 * (1900 + 5)
--- US:  52800 = 64 * (825 + 0)
