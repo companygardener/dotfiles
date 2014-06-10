@@ -1,0 +1,30 @@
+install ag
+install bash-completion
+install beanstalk
+install cask
+install chruby
+install ctags
+install curl-ca-bundle
+install elixir
+install git
+install htop-osx
+install libyaml
+install macvim
+install memcached
+install node
+install par
+install redis
+install ruby-install
+install tree
+install wget
+
+tap caskroom/homebrew-cask
+
+cask install atom
+cask install dropbox
+cask install google-chrome
+cask install iterm2
+cask install onepassword
+cask install transmission
+
+linkapps
