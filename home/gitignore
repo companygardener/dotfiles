@@ -46,6 +46,7 @@ Icon?
 .*.sw[a-z]
 *.un~
 vim/backup/*
+vim/bundle
 vim/temp
 
 # Emacs
