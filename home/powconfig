@@ -1,5 +1,7 @@
 export POW_TIMEOUT=14400
 export POW_WORKERS=4
 
-eval $(rbenv init - --no-rehash)
-export PATH="$(rbenv root)/shims:$(rbenv prefix)/bin:$PATH"
+if command -v rbenv > /dev/null 2>&1; then
+  eval $(rbenv init - --no-rehash)
+  export PATH="$(rbenv root)/shims:$(rbenv prefix)/bin:$PATH"
+fi
