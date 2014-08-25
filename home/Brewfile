@@ -20,10 +20,10 @@ install wget
 tap caskroom/homebrew-cask
 
 cask install atom
-cask install dropbox
-cask install google-chrome
-cask install iterm2
-cask install onepassword
-cask install transmission
+# cask install dropbox
+# cask install google-chrome
+# cask install iterm2
+# cask install onepassword
+# cask install transmission
 
 linkapps
