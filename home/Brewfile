@@ -4,7 +4,6 @@ install beanstalk
 install cask
 install chruby
 install ctags
-install curl-ca-bundle
 install elixir
 install git
 install htop-osx
