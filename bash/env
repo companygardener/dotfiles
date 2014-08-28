@@ -25,9 +25,7 @@ PATH="/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin"
 [[ -d /usr/local/bin ]] && PATH="/usr/local/bin:$PATH"
 [[ -d $HOME/.cabal   ]] && PATH="$HOME/.cabal/bin:$PATH"
 
-PATH="$HOME/bin:$DOTFILES/bin:$PATH"
-
-export PATH
+export PATH="$HOME/bin:$DOTFILES/bin:$PATH"
 
 ## EDITOR
 if [[ -f /etc/issue ]]; then
@@ -36,7 +34,7 @@ else
   export EDITOR='mvim -f'
 fi
 
-[[ -x /usr/bin/lesspipe ]] && eval "$(lesspipe)"
+[[ -x /usr/bin/lesspipe ]]          && eval "$(lesspipe)"
 [[ -x /usr/local/bin/lesspipe.sh ]] && eval "$(lesspipe.sh)"
 
 ## Homebrew
