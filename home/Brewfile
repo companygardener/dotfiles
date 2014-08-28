@@ -14,12 +14,18 @@ install libyaml
 install macvim
 install memcached
 install node
+install openssl
+install ossp-uuid
 install par
 install postgresql
+install python
+install python3
 install readline
 install redis
 install ruby-install
+install ssh-copy-id
 install tree
+install vim
 install wget
 
 tap caskroom/homebrew-cask
