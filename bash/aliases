@@ -31,7 +31,7 @@ if [[ $(uname) = Darwin ]]; then
 
   alias mute="osascript -e 'set volume output muted true'"
   alias shout="osascript -e 'set volume 10'"
-  alias slime='open -a "Sublime Text"'
+  alias slime='open -a "Sublime Text 2"'
 
   alias soundfix="sudo pkill coreaudiod"
   alias uuid=uuidgen
