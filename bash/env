@@ -17,11 +17,17 @@ export HISTCONTROL=ignoreboth
 export HISTSIZE=100000
 
 ## PATH
-if [[ -f /etc/issue ]]; then
-  export PATH="$HOME/bin:$HOME/.cabal/bin:$DOTFILES/bin:/usr/local/bin:/opt/bin:/opt/local/bin:/usr/bin:/bin:/usr/local/sbin:/sbin:$PATH"
-else
-  export PATH="$HOME/bin:$HOME/.cabal/bin:$DOTFILES/bin:/usr/local/bin:/opt/bin:/opt/local/bin:/usr/local/sbin:$PATH"
-fi
+
+PATH="/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin"
+
+[[ -d /opt/bin       ]] && PATH="/opt/bin:$PATH"
+[[ -d /opt/local/bin ]] && PATH="/opt/local/bin:$PATH"
+[[ -d /usr/local/bin ]] && PATH="/usr/local/bin:$PATH"
+[[ -d $HOME/.cabal   ]] && PATH="$HOME/.cabal/bin:$PATH"
+
+PATH="$HOME/bin:$DOTFILES/bin:$PATH"
+
+export PATH
 
 ## EDITOR
 if [[ -f /etc/issue ]]; then
