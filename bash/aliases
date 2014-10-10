@@ -9,8 +9,11 @@ alias rb=rbenv
 
 alias dus='du -Psckx * | sort -nr'
 
+
 if [[ $(uname) = Darwin ]]; then
   is_darwin=1
+
+  alias deleted='lsof | grep "(deleted)$"'
 
   alias app='open -a'
 
@@ -42,6 +45,8 @@ else
 
   alias ll='ls -lah --color=auto'
   alias xgrep='grep -C2 -TEHIrns --color=auto'
+
+  alias deleted='sudo lsof | grep "(deleted)$"'
 
   alias code='cd /export/code; pwd'
 fi
