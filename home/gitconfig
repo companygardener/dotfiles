@@ -5,7 +5,7 @@
 
 [user]
   name  = Erik Peterson
-  email = thecompanygardener@gmail.com
+	email = erik.peterson@springleaf.com
 
 [advice]
   statushints = false
@@ -166,3 +166,7 @@
   wds        = diff --color-words --staged
   wdsb       = diff --color-words --staged --ignore-space-change
   who        = shortlog --numbered --summary --
+[filter "media"]
+	clean = git media clean %f
+	smudge = git media smudge %f
+	required = true
