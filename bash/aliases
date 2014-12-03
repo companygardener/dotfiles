@@ -40,6 +40,8 @@ if [[ $(uname) = Darwin ]]; then
   alias uuid=uuidgen
 
   alias mate="~/build/TextMate/Applications/mate/mate -w"
+
+  alias npmup="npm install -g npm"
 else
   is_darwin=0
 
