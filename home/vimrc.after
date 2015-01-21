@@ -90,19 +90,19 @@ if has("statusline")
   set laststatus=2
 
   set statusline=%.50f\ " space
-  set statusline+=%{StatuslineLongLineWarning()}
+  set statusline+=%{StatusLongLineWarning()}
 
   "display warnings for wrong fileformats, file encodings, and trailing whitespace
   set statusline+=%#warningmsg#
   set statusline+=%{&fileformat!='unix'?'['.&fileformat.']':''}
   set statusline+=%{&fileencoding!='utf-8'?'['.&fileencoding.']':''}
   set statusline+=%{&bomb==1?'[BOM]':''}
-  set statusline+=%{StatuslineTrailingSpaceWarning()}
+  set statusline+=%{StatusTrailingSpaceWarning()}
   set statusline+=%*
   "
   "display a warning if &et is wrong, or we have mixed-indenting
   set statusline+=%#error#
-  set statusline+=%{StatuslineTabWarning()}
+  set statusline+=%{StatusTabWarning()}
   set statusline+=%{SyntasticStatuslineFlag()}
   set statusline+=%{&paste?'[paste]':''}
   set statusline+=%*
@@ -113,7 +113,7 @@ if has("statusline")
   set statusline+=%{fugitive#statusline()}
 
   set statusline+=%= "left/right separator
-  set statusline+=%{StatuslineCurrentHighlight()}
+  set statusline+=%{StatusCurrentHighlight()}
   set statusline+=%y
   set statusline+=%{&fileformat=='unix'?'['.&fileformat.']':''}
   set statusline+=%{&fileencoding=='utf-8'?'['.&fileencoding.']':''}
