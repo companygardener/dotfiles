@@ -9,7 +9,6 @@ alias rb=rbenv
 
 alias dus='du -Psckx * | sort -nr'
 
-
 if [[ $(uname) = Darwin ]]; then
   is_darwin=1
 
@@ -82,6 +81,8 @@ alias myip='wget -nv -O - http://checkip.dyndns.org/ 2>&1'
 alias reload='source ~/.bashrc'
 
 alias screen="screen -U"
+
+alias gemdocs='yard server --gems --reload --port 8809'
 
 
 # alias ll='ls -la'

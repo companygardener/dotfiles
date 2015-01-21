@@ -180,7 +180,7 @@ nnoremap <leader>gs :Gstatus<cr>
 nnoremap <leader>rt :TagbarToggle<cr>
 
 
-" rails
+" Rails
 " nnoremap <leader>tv :CommandTFlush<cr><bar>:CommandT app/views<cr>
 " nnoremap <leader>tc :CommandTFlush<cr><bar>:CommandT app/controllers<cr>
 " nnoremap <leader>tm :CommandTFlush<cr><bar>:CommandT app/models<cr>
@@ -380,32 +380,52 @@ inoremap <leader>dbl └─<space>
 inoremap <leader>d- ─
 inoremap <leader>dj │<space><space>
 
-vnoremap <leader>a<bar> :Tabularize /<bar><cr>
-nnoremap <leader>a<bar> :Tabularize /<bar><cr>
+vnoremap <leader>a<bar> :Tab /<bar><cr>
+nnoremap <leader>a<bar> :Tab /<bar><cr>
 
-vnoremap <leader>a<space> :Tabularize /<space><cr>
-nnoremap <leader>a<space> :Tabularize /<space><cr>
+vnoremap <leader>a<space> :Tab /<space>\+\zs/l0l1<cr>
+nnoremap <leader>a<space> :Tab /<space>\+\zs/l0l1<cr>
 
-nnoremap <leader>a: :Tabularize /:\zs<cr>
-vnoremap <leader>a: :Tabularize /:\zs<cr>
-nnoremap <leader>a, :Tabularize /,\zs<cr>
-vnoremap <leader>a, :Tabularize /,\zs<cr>
+" foo: 1
+" foobar: 2
+nnoremap <leader>a: :Tab /\w:\zs/l0l1<cr>
+vnoremap <leader>a: :Tab /\w:\zs/l0l1<cr>
 
-vnoremap <leader>am2 :Tabularize /<bar>/l1c1l1c1r1c1<cr>
-nnoremap <leader>am2 :Tabularize /<bar>/l1c1l1c1r1c1<cr>
+"    foo: 1
+" foobar: 2
+nnoremap <leader>ar: :Tab /\w:\zs/r0l1<cr>
+vnoremap <leader>ar: :Tab /\w:\zs/r0l1<cr>
 
-vnoremap <leader>am3 :Tabularize /<bar>/l1c1l1c1l1c1r1c1<cr>
-nnoremap <leader>am3 :Tabularize /<bar>/l1c1l1c1l1c1r1c1<cr>
+nnoremap <leader>a, :Tab /,\zs<cr>
+vnoremap <leader>a, :Tab /,\zs<cr>
+
+nnoremap <leader>a= :Tab /=<cr>
+vnoremap <leader>a= :Tab /=<cr>
+
+" :foo    => 1
+" :foobar => 2
+nnoremap <leader>a> :Tab /=><cr>
+vnoremap <leader>a> :Tab /=><cr>
+
+vnoremap <leader>am2 :Tab /<bar>/l1c1l1c1r1c1<cr>
+nnoremap <leader>am2 :Tab /<bar>/l1c1l1c1r1c1<cr>
+
+vnoremap <leader>am3 :Tab /<bar>/l1c1l1c1l1c1r1c1<cr>
+nnoremap <leader>am3 :Tab /<bar>/l1c1l1c1l1c1r1c1<cr>
 
 " NERDTree
+"
 " Use split-explorer model
-" let NERDTreeHijackNetrw=1
+let NERDTreeHijackNetrw = 1
+let NERDTreeQuitOnOpen  = 0
+let NERDTreeMinimalUI   = 1
+let g:NERDTreeWinSize   = 40
+
 nnoremap <leader>b :Bookmark<space>
-nnoremap <leader>n :NERDTreeToggle<cr>
+nnoremap <leader>n :let NERDTreeQuitOnOpen = 0<bar>NERDTreeToggle<cr>
+nnoremap <leader>N :let NERDTreeQuitOnOpen = 1<bar>NERDTreeToggle<cr>
 nnoremap <leader>f :NERDTreeFind<cr>
 nnoremap - :NERDTreeFind<cr>
-
-let g:NERDTreeWinSize = 40
 
 " @todo simple todo list
 inoremap <leader>to <esc>O@todo:<space><esc>V:TComment<cr>A
@@ -436,13 +456,13 @@ let g:dbext_default_window_increment = 120
 let g:ctrlp_map = '<c-p>'
 
 " auto-align cucumber tables using Tabularize
-inoremap <silent> <Bar>   <Bar><Esc>:call <SID>align()<cr>a
+inoremap <silent> <bar>   <bar><esc>:call <SID>align()<cr>a
 function! s:align()
   let p = '^\s*|\s.*\s|\s*$'
-  if exists(':Tabularize') && getline('.') =~# '^\s*|' && (getline(line('.')-1) =~# p || getline(line('.')+1) =~# p)
+  if exists(':Tab') && getline('.') =~# '^\s*|' && (getline(line('.')-1) =~# p || getline(line('.')+1) =~# p)
     let column = strlen(substitute(getline('.')[0:col('.')],'[^|]','','g'))
     let position = strlen(matchstr(getline('.')[0:col('.')],'.*|\s*\zs.*'))
-    Tabularize/|/l1
+    Tab /|/l1
     normal! 0
     call search(repeat('[^|]*|',column).'\s\{-\}'.repeat('.',position),'ce',line('.'))
   endif
@@ -516,61 +536,61 @@ silent! colorscheme hybrid
 let g:markdown_github_languages = ['ruby', 'erb=eruby', 'sql']
 
 " recalculate the trailing whitespace warning when idle, and after saving
-autocmd cursorhold,bufwritepost * unlet! b:statusline_trailing_space_warning
+autocmd cursorhold,bufwritepost * unlet! b:status_trailing_space_warning
 
-function! StatuslineTrailingSpaceWarning()
-  if !exists("b:statusline_trailing_space_warning")
+function! StatusTrailingSpaceWarning()
+  if !exists("b:status_trailing_space_warning")
     if search('\s\+$', 'nw') != 0
-      let b:statusline_trailing_space_warning = '[whitespace]'
+      let b:status_trailing_space_warning = '[whitespace]'
     else
-      let b:statusline_trailing_space_warning = ''
+      let b:status_trailing_space_warning = ''
     endif
   endif
 
-  return b:statusline_trailing_space_warning
+  return b:status_trailing_space_warning
 endfunction
 
-"recalculate the tab warning flag when idle and after writing
-autocmd cursorhold,bufwritepost * unlet! b:statusline_tab_warning
+" recalculate the tab warning flag when idle and after writing
+autocmd cursorhold,bufwritepost * unlet! b:status_tab_warning
 
-function! StatuslineTabWarning()
-  if !exists("b:statusline_tab_warning")
+function! StatusTabWarning()
+  if !exists("b:status_tab_warning")
     let tabs   = search('^\t', 'nw') != 0
     let spaces = search('^ ', 'nw')  != 0
 
     if tabs && spaces
-      let b:statusline_tab_warning = '[mixed-indenting]'
+      let b:status_tab_warning = '[mixed-indenting]'
     elseif (spaces && !&et) || (tabs && &et)
-      let b:statusline_tab_warning = '[expandtab]'
+      let b:status_tab_warning = '[expandtab]'
     else
-      let b:statusline_tab_warning = ''
+      let b:status_tab_warning = ''
     endif
   endif
 
-  return b:statusline_tab_warning
+  return b:status_tab_warning
 endfunction
 
-"recalculate the long line warnings when idle and after saving
-autocmd cursorhold,bufwritepost * unlet! b:statusline_long_line_warning
+" recalculate the long line warnings when idle and after saving
+autocmd cursorhold,bufwritepost * unlet! b:status_long_line_warning
 
-function! StatuslineLongLineWarning()
-  if !exists("b:statusline_long_line_warning")
+function! StatusLongLineWarning()
+  if !exists("b:status_long_line_warning")
     let long_line_lengths = s:LongLines()
 
     if len(long_line_lengths) > 0
-      let b:statusline_long_line_warning = "[" .
+      let b:status_long_line_warning = "[" .
             \ '#' . len(long_line_lengths) . "," .
             \ 'm' . s:Median(long_line_lengths) . "," .
             \ '$' . max(long_line_lengths) . "]"
     else
-      let b:statusline_long_line_warning = ""
+      let b:status_long_line_warning = ""
     endif
   endif
 
-  return b:statusline_long_line_warning
+  return b:status_long_line_warning
 endfunction
 
-"return a list containing the lengths of the long lines in this buffer
+" return a list containing the lengths of the long lines in this buffer
 function! s:LongLines()
   let threshold = (&textwidth ? &textwidth : 120)
   let spaces = repeat(" ", &ts)
@@ -591,7 +611,7 @@ function! s:LongLines()
   return long_line_lengths
 endfunction
 
-"find the median of the given array of numbers
+" find the median of the given array of numbers
 function! s:Median(nums)
   let nums = sort(a:nums)
   let l = len(nums)
@@ -605,7 +625,7 @@ function! s:Median(nums)
 endfunction
 
 "return the syntax highlight group under the cursor
-function! StatuslineCurrentHighlight()
+function! StatusCurrentHighlight()
   let name = synIDattr(synID(line('.'),col('.'),1),'name')
   if name == ''
     return ''
