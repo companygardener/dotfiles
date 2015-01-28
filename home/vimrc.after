@@ -383,8 +383,8 @@ inoremap <leader>dj │<space><space>
 vnoremap <leader>a<bar> :Tab /<bar><cr>
 nnoremap <leader>a<bar> :Tab /<bar><cr>
 
-vnoremap <leader>a<space> :Tab /<space>\+\zs/l0l1<cr>
-nnoremap <leader>a<space> :Tab /<space>\+\zs/l0l1<cr>
+vnoremap <leader>a<space> :Tab /[^ ]<space>\+\zs/l0l1<cr>
+nnoremap <leader>a<space> :Tab /[^ ]<space>\+\zs/l0l1<cr>
 
 " foo: 1
 " foobar: 2
