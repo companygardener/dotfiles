@@ -16,7 +16,8 @@ if [[ $(uname) = Darwin ]]; then
 
   alias app='open -a'
 
-  alias ll='ls -lahG'
+  alias ll='ls -flahG'
+  alias lld='gls -lah --color=auto --group-directories-first'
   alias xgrep='grep -C2 -EHIrns --color=auto'
 
   alias code='cd ~/code; pwd'
