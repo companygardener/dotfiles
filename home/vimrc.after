@@ -18,6 +18,8 @@ set novisualbell
 set noerrorbells
 set t_vb=
 
+set foldlevelstart=99
+
 set mouse=a
 set mousehide
 set mousemodel=popup
