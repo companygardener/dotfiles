@@ -1,7 +1,7 @@
 set transparency=8
 set guioptions=acemg
-set guifont=source_code_pro:h12
-set guifontwide=source_code_pro:h12
+set guifont=source_code_pro:h10
+set guifontwide=source_code_pro:h10
 set guicursor=n:blinkon0,v:blinkon0
 set lines=90 columns=160
 
