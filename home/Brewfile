@@ -33,6 +33,7 @@ tap caskroom/homebrew-cask
 cask install atom
 cask install dropbox
 cask install iterm2
+cask install xquartz
 
 # cask install google-chrome
 # cask install transmission
