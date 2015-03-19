@@ -168,7 +168,7 @@ nnoremap <leader>T8 :set noexpandtab tabstop=8 shiftwidth=8 softtabstop=8<cr>
 " Markdown
 nnoremap <leader>1 yypVr=
 nnoremap <leader>2 yypVr-
-nnoremap <silent> <leader>md :! open -a Marked %:p<cr><cr>
+nnoremap <silent> <leader>md :! open -a Marked\ 2 %:p<cr><cr>
 
 " Fugitive
 nnoremap <leader>gb :Gblame<cr>
@@ -213,7 +213,7 @@ nnoremap <leader>pp :setlocal paste!<cr>:set paste?<cr>
 nnoremap <leader>.. :cd ..<cr>
 
 " Spelling
-noremap <leader>s! :setlocal spell!<cr>
+noremap <leader>st :setlocal spell!<cr>
 noremap <leader>sn ]s
 noremap <leader>sp [s
 noremap <leader>sa zg
@@ -325,6 +325,8 @@ inoremap <leader>usr* ᵨ
 inoremap <leader>usx* ᵪ
 
 " typography
+inoremap <leader>ut<space>  
+inoremap <leader>ut- ‑
 inoremap <leader>utn –
 inoremap <leader>utm —
 inoremap <leader>ut. ·
@@ -374,11 +376,11 @@ inoremap <leader>um~  ∼
 
 " Drawing
 nnoremap <leader>dl a├─<space><esc>
-nnoremap <leader>dbl a└─<space><esc>
+nnoremap <leader>df a└─<space><esc>
 nnoremap <leader>d- a─<esc>
 nnoremap <leader>dj a│<space><space><esc>
 inoremap <leader>dl ├─<space>
-inoremap <leader>dbl └─<space>
+inoremap <leader>df └─<space>
 inoremap <leader>d- ─
 inoremap <leader>dj │<space><space>
 

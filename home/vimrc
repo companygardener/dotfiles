@@ -42,9 +42,7 @@ Plugin 'tpope/vim-cucumber'
 Plugin 'tpope/vim-git'
 Plugin 'tpope/vim-haml'
 Plugin 'tpope/vim-liquid'
-Plugin 'tpope/vim-markdown'
 Plugin 'tpope/vim-rails'
-Plugin 'vim-pandoc/vim-pandoc'
 Plugin 'vim-ruby/vim-ruby'
 Plugin 'wlangstroth/vim-haskell'
 
@@ -78,6 +76,14 @@ Plugin 'tpope/vim-unimpaired'
 Plugin 'vim-scripts/dbext.vim'
 Plugin 'vim-scripts/SyntaxAttr.vim'
 
+" Markdown
+" Plugin 'plasticboy/vim-markdown'
+" Plugin 'gabrielelana/vim-markdown'
+" Plugin 'jtratner/vim-flavored-markdown'
+" Plugin 'tpope/vim-markdown'
+Plugin 'vim-pandoc/vim-pandoc'
+Plugin 'vim-pandoc/vim-pandoc-syntax'
+"
 " argtextobj.vim
 " autotag
 " powerline
@@ -85,7 +91,6 @@ Plugin 'vim-scripts/SyntaxAttr.vim'
 " vim-textobj-rubyblock
 " vim-textobj-user
 " vim-airline
-" vimwiki
 " mikewest/vimroom
 " https://github.com/dsawardekar/ember.vim
 " https://github.com/edsono/vim-matchit
@@ -136,8 +141,10 @@ if has("autocmd")
 
   au BufRead,BufNewFile *.json set ft=javascript
 
-  au BufRead,BufNewFile *.{md,markdown,txt} setf markdown
+  au BufRead,BufNewFile *.{md,markdown,txt} setlocal ft=markdown spell
   au FileType markdown call s:wrap()
+
+  au BufRead,BufNewFile .psqlrc setlocal ft=sql
 
   au FileType python setlocal softtabstop=4 tabstop=4 shiftwidth=4
 

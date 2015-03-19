@@ -1,38 +1,64 @@
 -- Postgres Tips
 -- http://www.manniwood.com/postgresql_stuff/index.html
+-- http://arjanvandergaag.nl/blog/working-with-postgresql-on-the-command-line.html
+-- http://i-dba.blogspot.se/2014/02/colorizing-psql-prompt-guide.html
+-- http://petereisentraut.blogspot.com/2009/09/how-to-set-xterm-titles-in-psql.html
+-- http://opensourcedbms.com/dbms/psqlrc-psql-startup-file-for-postgres/
 --
 -- Partitioning
 -- http://www.if-not-true-then-false.com/2009/howto-create-postgresql-table-partitioning-part-1/
 
--- \set QUIET 1
-
 -- \set AUTOCOMMIT off
--- \set VERBOSITY verbose
 
+\set QUIET 1
+
+-- lower, upper, preserve-lower, preserve-upper
 \set COMP_KEYWORD_CASE upper
 
 \set HISTFILE ~/.psql_history/:HOST - :DBNAME
 \set HISTSIZE 10000
+
+-- ignorespace, ignoredups, ignoreboth
 \set HISTCONTROL ignoreboth
 
+\set IGNOREEOF 1
+
+-- on, interactive, off
 \set ON_ERROR_ROLLBACK interactive
 
-\set PROMPT1 '[%`date +%H:%M:%S`] %n@%[%033[0;32m%]%m%[%033[0m%]/%~:%> %R%#%x '
-\set PROMPT2 '[more] %R%# '
+-- Prompt1 / Prompt2 / Prompt3
+-- %M : server
+-- %m : host name
+-- %> : port
+-- %n : user
+-- %/ : current database
+-- %~ : like %/ but ~ for default database
+-- %# : '#' if superuser, '>' otherwise
+-- %R
+-- %x
+-- %[...%] : terminal control characters
 
-\pset pager always
-\pset null ¤
+\set PROMPT1 '%[%033]0;%/%007%]%[%033[1;35m%][%`date +%H:%M:%S`]%[%033[0m%] %[%033[34m%]%n %[%033[32m%]%m %[%033[33m%]%~ %[%033[0;40m%]%[%033[K%]%[%033[0m%]\n\n%[%033[0m%]%R%x%# %[%033[0m%]'
+\set PROMPT2 '%[%033[30m%]%R%x%# %[%033[0m%]'
+
+-- default, verbose, terse
+\set VERBOSITY verbose
+
+-- auto (>= 9.2), on, off
+\x auto
+
+\set paste
+
+\pset pager  always
+\pset null   ¤
+\pset border 1
+
+-- ascii, old-ascii, unicode
+\pset linestyle unicode
 
 \encoding unicode
 
--- \echo
--- \echo Started at `date  +"%Y-%m-%d %H:%M:%S"`
--- \echo
-
--- ??
 -- SET bytea_output TO escape;
-
--- \unset QUIET
 
 \set unused_indexes     '( SELECT s.schemaname AS sch, s.relname AS rel, s.indexrelname AS idx, s.idx_scan AS scans, pg_size_pretty(pg_relation_size(s.relid)) AS ts, pg_size_pretty(pg_relation_size(s.indexrelid)) AS "is" FROM pg_stat_user_indexes s JOIN pg_index i ON i.indexrelid=s.indexrelid LEFT JOIN pg_constraint c ON i.indrelid=c.conrelid AND array_to_string(i.indkey, '' '') = array_to_string(c.conkey, '' '') WHERE i.indisunique IS FALSE AND pg_relation_size(s.relid) > 1000000 AND s.idx_scan < 100000 AND c.confrelid IS NULL ORDER BY s.idx_scan ASC, pg_relation_size(s.indexrelid) DESC )'
 \set missing_indexes    '( SELECT src_table, dst_table, fk_name, pg_size_pretty(s_size) AS s_size, pg_size_pretty(d_size) AS d_size, d FROM ( SELECT DISTINCT ON (1,2,3,4,5) textin(regclassout(c.conrelid)) AS src_table, textin(regclassout(c.confrelid)) AS dst_table, c.conname AS fk_name, pg_relation_size(c.conrelid) AS s_size, pg_relation_size(c.confrelid) AS d_size, array_upper(di.indkey::int[], 1) + 1 - array_upper(c.conkey::int[], 1) AS d FROM pg_constraint c LEFT JOIN pg_index di ON di.indrelid = c.conrelid AND array_to_string(di.indkey, '' '') ~ (''^'' || array_to_string(c.conkey, '' '') || ''( |$)'') JOIN pg_stat_user_tables st ON st.relid = c.conrelid WHERE c.contype = ''f'' ORDER BY 1,2,3,4,5,6 ASC) mfk WHERE mfk.d IS DISTINCT FROM 0 AND mfk.s_size > 1000000 ORDER BY mfk.s_size DESC, mfk.d DESC )'
@@ -43,36 +69,42 @@
 
 \set size_of 'SELECT * FROM :pretty_table_size s WHERE rel like '
 
-\set current_queries '(SELECT usename, to_char(NOW() - xact_start, \'FMDD:HH24:MI:SS\') AS xtime, to_char(NOW() - query_start, \'FMDD:HH24:MI:SS\') AS qtime, SUBSTR(current_query, 0, 70) AS query, procpid, datname, client_addr AS ip, client_port AS port, (SELECT COUNT(*) FROM pg_locks WHERE pid = a.procpid) AS locks, (SELECT COUNT(*) FROM pg_locks WHERE pid = a.procpid AND granted = FALSE) AS waits FROM pg_stat_activity a WHERE current_query <> \'<IDLE>\' and datname LIKE \'%_prod%\' ORDER BY qtime DESC, xtime DESC)'
-\set current_queries9 '(SELECT usename, to_char(NOW() - xact_start, \'FMDD:HH24:MI:SS\') AS xtime, to_char(NOW() - query_start, \'FMDD:HH24:MI:SS\') AS qtime, SUBSTR(current_query, 0, 70) AS query, procpid, datname, client_addr AS ip, regexp_replace(client_hostname, \'\.cashnetusa\.com\', \'\', \'g\') AS hostname, client_port AS port, (SELECT COUNT(*) FROM pg_locks WHERE pid = a.procpid) AS locks, (SELECT COUNT(*) FROM pg_locks WHERE pid = a.procpid AND granted = FALSE) AS waits FROM pg_stat_activity a WHERE current_query <> \'<IDLE>\' and datname LIKE \'%_prod%\' ORDER BY qtime DESC, xtime DESC)'
+-- regexp_replace(client_hostname, \'\.example\.com\', \'\', \'g\') AS hostname
 
-\set current 'SELECT * FROM :current_queries cq;'
-\set current9 'SELECT * FROM :current_queries9 cq;'
+\set full_queries    `cat ~/.psqlrc_aliases/full_queries.sql`
+\set current_queries `cat ~/.psqlrc_aliases/current_queries.sql`
 
-\set full_queries '(SELECT usename, to_char(NOW() - xact_start, \'FMDD:HH24:MI:SS\') AS xtime, to_char(NOW() - query_start, \'FMDD:HH24:MI:SS\') AS qtime, current_query, procpid, datname, client_addr AS ip, client_port AS port, (SELECT COUNT(*) FROM pg_locks WHERE pid = a.procpid) AS locks, (SELECT COUNT(*) FROM pg_locks WHERE pid = a.procpid AND granted = FALSE) AS waits FROM pg_stat_activity a WHERE current_query <> \'<IDLE>\' and datname LIKE \'%_prod%\' ORDER BY qtime DESC, xtime DESC)'
-
-\set full 'SELECT * FROM :full_queries cq;'
-
-\set idle    'SELECT * FROM :current_queries cq WHERE query = \'<IDLE> in transaction\';'
-\set connections 'SELECT usename, COUNT(*) FROM pg_stat_activity GROUP BY 1 ORDER BY 2 DESC;'
-
-\set health '((SELECT \'locks\' AS name, COUNT(*) AS n, 8000 AS warn FROM pg_locks UNION ALL SELECT \'waits\' AS name, COUNT(*) AS n, 10 AS warn FROM pg_locks WHERE granted = false) UNION ALL SELECT \'connections\' AS name, COUNT(*) AS n, 1800 AS warn FROM pg_stat_activity) UNION ALL SELECT \'queries\' AS name, COUNT(*) AS n, 100 AS warn FROM pg_stat_activity WHERE current_query <> \'<IDLE>\';'
-
-\set lag 'SELECT consumer_name, to_char(lag, \'FMDD:HH24:MI:SS\') AS lag, to_char(last_seen, \'FMDD:HH24:MI:SS\') AS last_seen FROM pgq.get_consumer_info();'
-
-\set bg_stats 'SELECT buffers_checkpoint/buffers_clean AS checkpoint_spike, ROUND(100.0*buffers_checkpoint/(buffers_checkpoint + buffers_clean + buffers_backend),2) AS checkpoint_percentage, ROUND(100.0*buffers_clean/(buffers_checkpoint + buffers_clean + buffers_backend),2) AS pg_writer_percentage, ROUND(100.0*buffers_backend/(buffers_checkpoint + buffers_clean + buffers_backend),2) AS backend_percentage FROM pg_stat_bgwriter;'
-
-\set batchdata '(select id, config_name, created_on::date, to_char(created_on, \'HH12:MIam\') AS "time", to_char(created_on, \'Dy\') AS day, status_cd, to_char((SELECT MIN(created_on) FROM batchruns WHERE parent_id = b.id) - created_on, \'FMDD:HH24:MI:SS\') AS qtime, to_char(finished_on - started_on, \'FMDD:HH24:MI:SS\') AS "runtime", units_to_process AS units, units_processed AS good, (units_to_process - units_processed) AS fail, (SELECT COUNT(*) FROM batchruns WHERE parent_id = b.id) AS kids, to_char((SELECT SUM(started_on - created_on) FROM batchruns WHERE parent_id = b.id), \'FMDD:HH24:MI:SS\') AS queue_time, to_char((SELECT SUM(COALESCE(finished_on, started_on) - started_on) FROM batchruns WHERE parent_id = b.id), \'FMDD:HH24:MI:SS\') AS child_time, (CASE WHEN finished_on IS NOT NULL AND finished_on <> started_on AND units_processed <> 0 THEN units_processed / extract(\'epoch\' from (finished_on - started_on))::integer ELSE NULL END) AS velocity, exceptions from batchruns b where parent_id IS NULL ORDER BY id) b'
+\set eav         'EXPLAIN ANALYZE VERBOSE'
+\set full        'SELECT * FROM :full_queries fq;'
+\set current     'SELECT * FROM :current_queries cq;'
+\set idle        'SELECT * FROM :current_queries cq WHERE query = \'<IDLE> in transaction\';'
+\set kill_idle   'SELECT COUNT(pg_terminate_backend(pid)) AS killed_count FROM pg_stat_activity WHERE query = \'<IDLE> in transaction\' and NOW() - query_start > \'10 min\';'
+\set connections 'SELECT usename, count(*) FROM pg_stat_activity GROUP BY 1 ORDER BY 2 DESC;'
+\set health      '((SELECT \'locks\' AS name, COUNT(*) AS n, 8000 AS warn FROM pg_locks UNION ALL SELECT \'waits\' AS name, COUNT(*) AS n, 10 AS warn FROM pg_locks WHERE granted = false) UNION ALL SELECT \'connections\' AS name, COUNT(*) AS n, 1800 AS warn FROM pg_stat_activity) UNION ALL SELECT \'queries\' AS name, COUNT(*) AS n, 100 AS warn FROM pg_stat_activity WHERE query <> \'<IDLE>\';'
+\set lag         'SELECT consumer_name, to_char(lag, \'FMDD:HH24:MI:SS\') AS lag, to_char(last_seen, \'FMDD:HH24:MI:SS\') AS last_seen FROM pgq.get_consumer_info();'
+\set locks       'SELECT bl.pid AS blocked_pid, a.usename AS blocked_user, kl.pid AS blocking_pid, ka.usename AS blocking_user, a.query AS blocked_statement FROM pg_locks bl JOIN pg_stat_activity a ON bl.pid = a.pid JOIN pg_locks kl JOIN pg_stat_activity ka ON kl.pid = ka.pid ON bl.transactionid = kl.transactionid AND bl.pid != kl.pid WHERE NOT bl.granted;'
+\set settings    'SELECT name, setting, unit, context, short_desc FROM pg_settings;'
+\set slow        'SELECT (total_time / 1000 / 60) AS total_minutes, (total_time / calls) AS average_time, query FROM pg_catalog.pg_stat_statements ORDER BY 1 DESC LIMIT 100;'
+\set uptime      'SELECT DATE_TRUNC(\'second\', current_timestamp - pg_postmaster_start_time()) AS uptime;'
+\set uselesscol  'SELECT nspname, relname, attname, typname, (stanullfrac*100)::int AS null_percent, case when stadistinct >= 0 then stadistinct else abs(stadistinct)*reltuples end AS \"distinct\", case 1 when stakind1 then stavalues1 when stakind2 then stavalues2 end AS \"values\" FROM pg_class c JOIN pg_namespace ns ON (ns.oid=relnamespace) JOIN pg_attribute ON (c.oid=attrelid) JOIN pg_type t ON (t.oid=atttypid) JOIN pg_statistic ON (c.oid=starelid AND staattnum=attnum) WHERE nspname NOT LIKE E\'pg\\\\_%\' AND nspname != \'information_schema\' AND relkind=\'r\' AND NOT attisdropped AND attstattarget != 0 AND reltuples >= 100 AND stadistinct BETWEEN 0 AND 1 ORDER BY nspname, relname, attname;'
 
 \set seq_tuples 'SELECT schemaname, relname, (case when seq_scan > 0 then seq_tup_read / seq_scan end) AS "tup/scan", seq_scan, idx_scan, seq_tup_read, idx_tup_fetch, seq_tup_read + idx_tup_fetch AS total, last_vacuum::date, last_autovacuum::date, last_autoanalyze::date FROM pg_stat_all_tables ORDER BY seq_tup_read DESC;'
-
-\set nc_payments 'SELECT p.payment_id, (SELECT account_id FROM loans WHERE loan_id = p.loan_id) AS account_id, p.loan_id, p.effective_date, p.amount, repayment_method, (CASE WHEN is_outgoing = false AND due_date is null THEN \'extra\' END) AS "extra?", payment_status, (CASE is_outgoing WHEN true THEN \'FUND\' WHEN false THEN \'PAYMENT\' END) AS direction, (CASE WHEN a.activity_id IS NOT NULL THEN \'✔\' ELSE \'\' END) AS "recorded?" FROM payments p NATURAL JOIN payment_statuses LEFT JOIN scheduled_payments USING (scheduled_payment_id) NATURAL JOIN repayment_methods LEFT JOIN accounting.activities a ON p.loan_id = a.source_id AND p.amount = a.activity_amount AND p.effective_date = a.effective_date ORDER BY effective_date ASC, is_outgoing DESC, repayment_method ASC, payment_status ASC, loan_id ASC;'
 
 \set hits 'SELECT SUM(heap_blks_read) as heap_read, SUM(heap_blks_hit) as heap_hit, TO_CHAR((SUM(heap_blks_hit) - SUM(heap_blks_read)) / SUM(heap_blks_hit) * 100, \'999D99%\') AS rate FROM pg_statio_user_tables;'
 \set table_stats 'SELECT relname AS table, SUM(heap_blks_read) as heap_read, SUM(heap_blks_hit) as heap_hit, TO_CHAR((SUM(heap_blks_hit) - SUM(heap_blks_read)) / (SUM(heap_blks_hit) + 1) * 100, \'999D99%\') AS rate, (SELECT 100 * idx_scan / (seq_scan + idx_scan) FROM pg_stat_user_tables WHERE relname = s.relname) AS idx_rate FROM pg_statio_user_tables s GROUP BY relname ORDER BY (SUM(heap_blks_hit) - SUM(heap_blks_read)) / (SUM(heap_blks_hit) + 1) ASC;'
 
-\set slow_queries 'SELECT (total_time / 1000 / 60) AS total_minutes, (total_time / calls) AS average_time, query FROM pg_catalog.pg_stat_statements ORDER BY 1 DESC LIMIT 100;'
 
 \set q '\\q'
 
+\set cd 'SET search_path='
+\set ls 'SHOW search_path;'
+
+\set ll    '\\! -lrt;'
+\set clear '\\! clear;'
+
+\set QUIET 0
+
+\echo '\nServer Time: '`date` '\n'
+
+-- (CASE WHEN field IS NOT NULL THEN \'✔\' ELSE \'\' END) AS "complete?"
 -- max_shared_locks = max_locks_per_transaction * (max_connections + max_prepared_transactions)
