@@ -72,6 +72,8 @@ alias p4c='p4 change'
 alias p4e='p4 edit'
 alias p4i='p4 integrate'
 
+alias pd='powder'
+
 alias df='df -h'
 alias h='history | grep -i '
 
