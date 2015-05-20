@@ -102,9 +102,9 @@
 \set ll    '\\! -lrt;'
 \set clear '\\! clear;'
 
-\set QUIET 0
+\set QUIET 1
 
-\echo '\nServer Time: '`date` '\n'
+-- \echo '\nServer Time: '`date` '\n'
 
 -- (CASE WHEN field IS NOT NULL THEN \'✔\' ELSE \'\' END) AS "complete?"
 -- max_shared_locks = max_locks_per_transaction * (max_connections + max_prepared_transactions)
