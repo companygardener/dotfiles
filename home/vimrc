@@ -14,6 +14,7 @@ Plugin 'gmarik/vundle'
 
 " Colors
 Plugin 'altercation/vim-colors-solarized'
+Plugin 'companygardener/vim-tungsten'
 Plugin 'jpo/vim-railscasts-theme'
 Plugin 'nanotech/jellybeans.vim'
 Plugin 'vim-scripts/vanzan_color'
@@ -47,8 +48,6 @@ Plugin 'tpope/vim-liquid'
 Plugin 'tpope/vim-rails'
 Plugin 'vim-ruby/vim-ruby'
 Plugin 'wlangstroth/vim-haskell'
-
-Plugin '/Users/erik/code/languages/tungsten-lang/vim-tungsten/.git'
 
 " Tools
 Plugin 'airblade/vim-gitgutter'
