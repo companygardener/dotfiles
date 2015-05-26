@@ -533,7 +533,7 @@ if has("autocmd")
 endif
 
 set t_Co=256
-silent! colorscheme hybrid
+silent! colorscheme tungsten
 " colorscheme jellybeans
 " highlight ColorColumn guibg=#222222
 
