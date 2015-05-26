@@ -1,1 +1,7 @@
 Pry.config.theme = "twilight"
+
+class BigDecimal
+  def inspect
+    to_s "F"
+  end
+end
