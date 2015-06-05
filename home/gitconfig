@@ -119,6 +119,8 @@
   ds         = diff --staged
   dt         = difftool
   dump       = cat-file -p
+  gn         = "!sh -c 'git log --reverse --pretty=%H master | awk \"/$(git rev-parse HEAD)/{getline;print}\" | xargs git checkout'"
+  gp         = checkout HEAD^1
   graphviz   = "!f() { echo 'digraph git {' ; git log --pretty='format:  %h -> { %p }' \"$@\" | sed 's/[0-9a-f][0-9a-f]*/\"&\"/g' ; echo '}'; }; f"
   h          = help
   irb        = rebase --interactive
