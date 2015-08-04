@@ -104,7 +104,10 @@
   bib        = bisect bad
   big        = bisect good
   bis        = bisect skip
-  bm         = branch --merged
+  bm         = !git branch --color          --merged | grep -v 'master\\|^\\*'
+  bmr        = !git branch --color --remote --merged | grep -v 'master\\|^\\*'
+  bno        = branch          --no-merged
+  bnor       = branch --remote --no-merged
   c          = commit
   ca         = commit --amend
   changes    = diff --name-status -r
@@ -113,7 +116,8 @@
   co         = checkout
   conflicts  = grep --name-only --full-name '<<<<<<< HEAD'
   d          = diff
-  dbm        = !git branch --merged | grep -v 'master\\|^\\*' | xargs git branch --delete
+  dbm        = !git branch          --merged | grep -v 'master\\|^\\*'                       | xargs -n 1 git branch --delete
+  dbmr       = !git branch --remote --merged | grep -v 'master\\|^\\*' | sed 's/origin\\///' | xargs -n 1 git push --delete origin
   dc         = diff --cached
   # div        = git-divergence
   ds         = diff --staged
@@ -137,7 +141,6 @@
   p          = cherry-pick --signoff
   pick       = cherry-pick
   pr         = "!f() { git fetch origin refs/pull/$1/head:pr/$1; } ; f"
-  prune      = "!for remote in `git remote`; do git remote prune $remote; done"
   r          = remote
   rb         = rebase
   rba        = rebase --abort
@@ -170,6 +173,6 @@
   who        = shortlog --numbered --summary --
 
 [filter "media"]
-	clean = git media clean %f
-	smudge = git media smudge %f
-	required = true
+  clean = git media clean %f
+  smudge = git media smudge %f
+  required = true
