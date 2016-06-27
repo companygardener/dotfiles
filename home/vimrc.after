@@ -85,7 +85,7 @@ if exists("g:enable_mvim_shift_arrow")
 endif
 
 set list
-set listchars=tab:»·,trail:·,eol:¬,extends:#,nbsp:%,precedes:<
+set listchars=tab:▸\ ,trail:·,eol:¬,extends:#,nbsp:¤,precedes:◂
 set ambiwidth=single
 
 if has("statusline")
@@ -274,6 +274,7 @@ iab RuL ----+----1----+----2----+----3----+----4----+----5----+----6----+----7--
 " digraphs http://www.alecjacobson.com/weblog/?p=443
 "
 " superscript
+inoremap <leader>uS0 ⁰
 inoremap <leader>uS1 ¹
 inoremap <leader>uS2 ²
 inoremap <leader>uS3 ³
@@ -376,11 +377,12 @@ inoremap <leader>um~  ∼
 
 " Drawing
 nnoremap <leader>dl a├─<space><esc>
-nnoremap <leader>df a└─<space><esc>
+nnoremap <leader>dk a└─<space><esc>
 nnoremap <leader>d- a─<esc>
 nnoremap <leader>dj a│<space><space><esc>
+
 inoremap <leader>dl ├─<space>
-inoremap <leader>df └─<space>
+inoremap <leader>dk └─<space>
 inoremap <leader>d- ─
 inoremap <leader>dj │<space><space>
 

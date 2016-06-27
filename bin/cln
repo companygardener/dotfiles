@@ -1,0 +1,893 @@
+#!/usr/bin/env ruby
+
+# Would be nice to add:
+#   don't print color if piping into another process
+#   real groups
+
+class CommandLineNotes
+
+  Color1  = "\e[37m"
+  Color2  = "\e[32m"
+  NoColor = "\e[0m"
+
+  class Binary
+    attr_accessor :notes, :argv
+    def initialize(notes, argv)
+      self.notes, self.argv = notes, argv
+    end
+
+    def call
+      if argv == ['-h'] || argv == ['--help']
+        @stdout = help_screen
+      else
+        @stdout = map_with_index(notes_to_print) { |note, note_index|
+                    format_note note, note_index
+                  }.join("\n") << NoColor
+      end
+    end
+
+    def stdout
+      call
+      @stdout
+    end
+
+    private
+
+    def help_screen
+      "Usage: #{$0} [filters]\n"\
+      "\n"\
+      "#{notes.description}"
+    end
+
+    def notes_to_print
+      @notes_to_print ||= notes.notes.
+                                select { |values|
+                                 filters.all? { |filter|
+                                   values.any? { |value| value =~ filter }
+                                  }
+                                }
+    end
+
+    def format_note(note, note_index)
+      key         = note[0]
+      value       = note[1]
+      map_with_index(value.each_line) { |value_line, line_index|
+        if line_index.zero?
+          "#{note_index % 2== 0 ? Color1 : Color2}#{key.ljust offset_to_value}  #{value_line.chomp}"
+        else
+          "#{' '*offset_to_value}  #{value_line.chomp}"
+        end
+      }.join("\n")
+    end
+
+    def offset_to_value
+      @offset ||= notes_to_print.map(&:first).max_by(&:size).size
+    end
+
+    def filters
+      @filters ||= argv.map { |arg| Regexp.new arg, Regexp::IGNORECASE }
+    end
+
+    # 1.8 doesn't have .with_index
+    def map_with_index(collection, &block)
+      index = -1
+      collection.map do |element|
+        index += 1
+        block.call element, index
+      end
+    end
+  end
+
+  attr_accessor :description, :notes
+
+  def initialize
+    @notes = []
+    yield self
+  end
+
+  def note(key, value, *tags)
+    leading_whitespace = value[/\A */]
+    value = value.gsub(/^#{leading_whitespace}/, '')
+    notes << [key, value, *tags]
+  end
+end
+
+
+# define and invoke the specific notes
+if $0 =~ /rspec/
+  RSpec.configure do |c|
+    c.disable_monkey_patching!
+  end
+
+  RSpec.describe CommandLineNotes do
+    def bin(notes, argv)
+      CommandLineNotes::Binary.new notes, argv
+    end
+
+    it 'prints the description if you give it -h' do
+      notes = CommandLineNotes.new { |cln| cln.description = 'mah description' }
+      expect(bin(notes, ['-h']).stdout).to include 'mah description'
+      expect(bin(notes, ['--help']).stdout).to include 'mah description'
+    end
+
+    it 'prints all notes by default' do
+      notes = CommandLineNotes.new do |cln|
+        cln.note 'key1', 'value1'
+        cln.note 'key2', 'value2'
+      end
+      expect(bin(notes, []).stdout).to include 'key1'
+      expect(bin(notes, []).stdout).to include 'key2'
+    end
+
+    it 'selects notes whose key matches when given an arg' do
+      notes = CommandLineNotes.new do |cln|
+        cln.note 'key1', 'value1'
+        cln.note 'key2', 'value2'
+      end
+      expect(bin(notes, ['key1']).stdout).to include 'key1'
+    end
+
+    it 'selects notes whose value matches when given an arg' do
+      notes = CommandLineNotes.new do |cln|
+        cln.note 'key1', 'value1'
+        cln.note 'key2', 'value2'
+      end
+      expect(bin(notes, ['value1']).stdout).to include 'key1'
+    end
+
+    it 'selects notes whose tags match when given an arg' do
+      notes = CommandLineNotes.new do |cln|
+        cln.note 'key1', 'value1', 'tag1'
+        cln.note 'key2', 'value2', 'tag2'
+      end
+      expect(bin(notes, ['tag1']).stdout).to include 'key1'
+    end
+
+    it 'treats multiple arguments as successive filters' do
+      notes = CommandLineNotes.new do |cln|
+        cln.note 'key1', 'value1', 'tag1'
+        cln.note 'key2', 'value2', 'tag1', 'tag2'
+      end
+      expect(bin(notes, ['tag1', 'tag2']).stdout).to_not include 'key1'
+      expect(bin(notes, ['tag1', 'tag2']).stdout).to include 'key2'
+    end
+
+    it 'does not print the tags' do
+      notes = CommandLineNotes.new do |cln|
+        cln.note 'key1', 'value1', 'tag1'
+      end
+      expect(bin(notes, []).stdout).to_not include 'tag1'
+    end
+
+    it 'aligns the notes such that values line up' do
+      notes = CommandLineNotes.new do |cln|
+        cln.note 'k',   'value1'
+        cln.note 'key', 'value2'
+      end
+      spacing1, spacing2, *other_spacing = bin(notes, []).stdout.scan(/ +/)
+      expect(other_spacing).to eq []
+      expect(spacing1.size).to eq spacing2.size + 2
+    end
+
+    def no_ansi(string)
+      string.gsub(/\e\[.*?m/, '')
+    end
+
+    it 'prints notes whose value has multiple lines on multiple lines (aligned)' do
+      notes = CommandLineNotes.new do |cln|
+        cln.note 'k',   'value1'
+        cln.note 'key', <<-VALUE
+          value2.1  # should be at same indentation as value1
+           value2.2 # should be 1 space deeper than value 2.1
+        VALUE
+      end
+      line1, line2, line3, *other_lines = no_ansi(bin(notes, []).stdout).scan(/^.*?v/)
+      expect(other_lines).to eq []
+      expect(line1.size ).to eq line2.size
+      expect(line3.size ).to eq line2.size.next
+    end
+
+    it 'prints every other line coloured' do
+      notes = CommandLineNotes.new do |cln|
+        cln.note 'key1', 'value1'
+        cln.note 'key2', 'value2'
+        cln.note 'key3', "value3.1\nalue3.2"
+      end
+      line1, line2, line3, line4, *rest = bin(notes, []).stdout.each_line.to_a
+      expect(rest).to eq []
+      expect(line1).to     start_with CommandLineNotes::Color1
+      expect(line2).to     start_with CommandLineNotes::Color2
+      expect(line3).to     start_with CommandLineNotes::Color1
+      expect(line4).to_not start_with CommandLineNotes::Color2 # b/c it's part of note3
+      expect(line4).to     end_with   CommandLineNotes::NoColor
+    end
+  end
+else
+
+  # THE NOTES!
+  notes = CommandLineNotes.new do |cln|
+    cln.description = 'Command Line Notes'
+
+    # life
+    cln.note 'drivers license info',       'http://www.cyberdriveillinois.com/publications/pdf_publications/dsd_x173.pdf', 'licenses', 'illinois', 'ids', 'identification', 'cards'
+    cln.note 'overcoming procrastination', <<-GOALS
+      set goals
+      schedule your time
+      gather your resources
+      visualize the process
+      commit to stay focused
+      when you fail, move on to other related work that still moves you forward towards your goals.
+    GOALS
+    cln.note '20 hours to learn anything', <<-TWENTYHOURS, 'life'
+    https://plus.google.com/104757475552569715504/posts/UTj41SEE77y
+    TED Talk by Josh Kaufman
+    1. Deconstruct the skill          - know what you want to achieve, and break the skill down into smaller pieces that will get you there
+    2. Learn enough to self-correct   - get feedback as you go, so you can fix things you're doing wrong and don't build on false foundations
+    3. Remove practice barriers       - tv, twitter, etc
+    4. Practice for at least 20 hours - ignore your stupidity, achieve this commitment
+    The major barrier to learning something new isn't intellectual, it's emotional.
+    TWENTYHOURS
+    cln.note "Chad Fowler's 4 rules (I think for being happy)", <<-RULES, 'Nordic Ruby 2013'
+      1. Bad things are going to happen
+      2. You get to decide how you feel about them - facts are facts, you choose how you interpret them
+      3. It is possible that you're just going to choose to be happy
+      4. Important things require training and thought - train yourself to remember rule 3
+      Meditation is training for perception
+    RULES
+    cln.note 'store your keys in the cloud', 'https://www.keyme.net/app'
+    cln.note 'terminal keynote',             'https://github.com/fxn/tkn'
+    cln.note 'accounting equation, credits and debits', 'http://www.youtube.com/watch?v=gaZiAiETW_Y'
+    cln.note 'RSA videos', 'https://www.youtube.com/user/theRSAorg/playlists'
+    cln.note '256 color mode in the terminal', 'def prgb(msg,r:0,g:0,b:0) puts "\e[38;5;#{r*36+g*6+b+16}m#{msg}\e[39m" end', 'shell'
+    cln.note 'Box characters', '┘ ┐ ┌ └ ┼ ─ ├ ┤ ┴ ┬ │ This could be useful, too: ruby -e \'p (9472..9532).map { |n| n.chr(Encoding::UTF_8) }\'', 'terminal', 'table'
+
+    # Browsers
+    cln.note 'Measure how fast browser javascript is', 'https://www.webkit.org/perf/sunspider-1.0.2/sunspider-1.0.2', 'measuring', 'js'
+
+    # Chrome
+    cln.note 'Chrome see passwords',  'chrome://settings/passwords', 'wtf', 'browser'
+    cln.note 'Chrome internal links', 'chrome://about', 'browser'
+
+    # Opera
+    cln.note 'Opera: Things I installed (e.g. 1pass)', 'opera://extensions/', 'plugins', 'browser'
+    cln.note 'Opera: Official things (e.g. Flash',     'opera://plugins/',    'extensions', 'browser'
+    cln.note 'Opera: Settings (apple comma)',          'opera://settings/', 'browser'
+    cln.note 'Opera: About',                           'opera:about', 'browser'
+    cln.note 'Opera: Downloads',                       'opera:downloads', 'browser'
+    cln.note 'Opera: Themes',                          'opera:themes', 'browser'
+    cln.note 'Opera: History',                         'opera:history', 'browser'
+    cln.note 'Opera: Experiments',                     'opera:flags', 'browser'
+    cln.note 'Opera: Gpu Summary',                     'opera:gpu', 'browser'
+    cln.note 'Opera: Histograms',                      'opera:histograms', 'browser'
+    cln.note 'Opera: Remote Debugging',                'opera:remote-debugging', 'browser'
+
+    # Slack
+    cln.note 'Slack: Previous Channel',                          'Option + Up',           'channels', 'dms', 'direct messages'
+    cln.note 'Slack: Next Channel',                              'Option + Down',         'channels', 'dms', 'direct messages'
+    cln.note 'Slack: Previous Channel with Unread',              'Option + Shift + Up',   'channels', 'dms', 'direct messages'
+    cln.note 'Slack: Next Channel with Unread',                  'Option + Shift + Down', 'channels', 'dms', 'direct messages'
+    cln.note 'Slack: Mark as read',                              'Esc',                   'channels', 'dms', 'direct messages'
+    cln.note 'Slack: Mark all as read',                          'Shift + Esc',           'channels', 'dms', 'direct messages'
+    cln.note 'Slack: Quick Switcher',                            'Cmd + t',               'channels', 'dms', 'direct messages'
+    cln.note 'Slack: Autocomplete username',                     '"@..."',                'messaging'
+    cln.note 'Slack: Autocomplete channels',                     '"#..."',                'messaging'
+    cln.note 'Slack: Autocomplete emoji',                        ':...',                  'messaging'
+    cln.note 'Slack: Toggle Flexpane',                           'Command + .'
+    cln.note 'Slack: Paste Snippet',                             'Shift + Command + v'
+    cln.note 'Slack: Help on commands',                          '/commands'
+    cln.note 'Slack: Say "omg hi" to slackbot from any channel', '/msg slackbot omg hi'
+    cln.note 'Slack: Get more specific help',                    '/help'
+    cln.note 'Slack: Set yourself as AFK',                       '/away', 'away from keyboard'
+    cln.note 'Slack: No longer AFK',                             '/active', 'away from keyboard', 'back', 'returned'
+    cln.note 'Slack: Remove yourself from a channel',            'Go to channel, type "/close"'
+    cln.note 'Slack: Send a message to Slack support',           '/feedback [message]'
+    cln.note 'Slack: Hug slack-bot',                             '/me hugs slackbot', 'actions', 'verbs'
+    cln.note 'Slack: Remind me to go to lunch',                  '/remind me in 1 hour to go to lunch'
+    cln.note 'Slack: Search for "SalesEngine" from the bar',     '/s SalesEngine'
+    cln.note 'Slack: Set the currently open channel\'s topic',   '/topic Discuss non-programming things'
+
+    # Firefox
+    cln.note 'Firefox something or other',             'about:about', 'browser'
+
+    # Gmail
+    cln.note 'Link to a gmail thread', 'https://mail.google.com/mail/u/0/#all/threadid - important part is the #all in place of the tag it shows (e.g. #inbox)'
+
+
+
+    # Chicago
+    cln.note 'Make a reservation at the Aviary', 'https://www.theaviary.com/user/login', 'bar', 'speakeasy'
+
+    # American vs English
+    cln.note 'cookie',       'biscuit',      'american', 'english'
+    cln.note 'band-aid',     'plaster',      'american', 'english'
+    cln.note 'chips',        'crisps',       'american', 'english'
+    cln.note 'french fries', 'chips',        'american', 'english'
+    cln.note 'soccer',       'football',     'american', 'english'
+    cln.note 'sneakers',     'trainers',     'american', 'english'
+    cln.note 'sweater',      'jumper',       'american', 'english'
+    cln.note 'pants',        'trousers',     'american', 'english'
+    cln.note 'underpants',   'pants',        'american', 'english'
+    cln.note 'cell phone',   'mobile phone', 'american', 'english'
+
+
+    # css
+    # ids are worth 100 points, classes are worth 10, and elements are worth 1
+    # rfc: 'http://tools.ietf.org/html/rfc2318'
+    # cln.note 'position'
+    # fixed -> that place on the window
+    # absolute -> that place on the page
+    # when containing div is absolute, things inside can be positioned absolutely, and will be relative to the containing div
+    # when floating an element, it comes out above the container
+    #   things below can be fixed using clear
+    #   the container can be fixed using a clear fix (which means you don't have to fix the elements below it)
+    cln.note "internal styles",           '<head><style type="text/css">h1 { color: #000; }</style></head>', 'css', 'cascading style sheets'
+    cln.note "external styles",           '<head><link rel="stylesheet" type="text/css" href="/style.css"></head>', 'css', 'cascading style sheets'
+    cln.note "import other style sheets", '@import', 'css', 'cascading style sheets', 'load', 'require', 'include'
+    cln.note "xpath cheatsheet",          "sh -c curl\\ http://cheat.errtheblog.com/y/xpath\\ 2\\>/dev/null\\ \\|\\ ruby\\ -ryaml\\ -e\\ \\'puts\\ YAML.load\\(\\$stdin.read\\)\\[\\\"xpath\\\"\\]\\'"
+
+    cln.note "pallettes of coulours", "http://0to255.com", "websites", "urls", "designs"
+
+    # fish
+    cln.note "fish: Command abbreviation",                   "set -U fish_user_abbreviations 'gco=git checkout'", 'shells', 'shorthand', 'expansion'
+    cln.note "fish: Static tab-completion",                  "http://fishshell.com/docs/2.0/index.html#completion-own", "shells"
+    cln.note "fish: Dynamic tab-completion",                 "https://github.com/fish-shell/fish-shell/issues/1217#issuecomment-31441757", "shells"
+    cln.note "fish: cycle through args in prev command",     "M-<up>",                     "shells", "!$", "$1", "$2"
+    cln.note "fish: accept an autosuggestion",               "C-f",                        "shells"
+    cln.note "fish: set a variable",                         "set varname value",          "shells"
+    cln.note "fish: export a variable",                      "set -x varname value",       "shells"
+    cln.note "fish: erase a variable",                       "set -e varname value",       "shells"
+    cln.note "fish: exit status",                            "$status",                    "shells", "$?"
+    cln.note "fish: length of a list",                       "count $PATH",                "shells", "lists", "size"
+    cln.note "fish: slice a list",                           "echo $PATH[1..2]",           "shells", "lists", "sublists", "indexes"
+    cln.note "fish: command substitutions with parentheses", "set this_dir (ls)",          "shells", "backticks", "``"
+    cln.note "fish: and/or/not",                             "cp f1 f2; and echo success", "shell", "conditionals", "logic", "control flow"
+    cln.note "fish: if/else",                                <<-FISH,                      "shell", "conditionals", "logic", "control flow"
+      if grep fish /etc/shells
+        echo Found fish
+      else if grep bash /etc/shells
+        echo Found bash
+      else
+        echo Got nothing
+      end
+    FISH
+    cln.note "fish: switch",                                 <<-FISH,                      "shell", "conditionals", "logic", "control flow"
+      switch (uname)
+        case Linux
+          echo Hi Tux!
+        case Darwin
+          echo Hi Hexley!
+        case FreeBSD NetBSD DragonFly
+          echo Hi Beastie!
+        case '*'
+          echo Hi, stranger!
+      end
+    FISH
+    cln.note "fish: loops", <<-FISH, "shell", "logic", "control flow"
+      while true
+        echo "Loop forever"
+      end
+      for file in *.txt
+        cp $file $file.bak
+      end
+      for x in (seq 5)
+        touch file_$x.txt
+      end
+    FISH
+    cln.note "fish: define a function",                      <<-FISH,                      "shell", "functions"
+      > function say_hello
+          echo Hello $argv
+        end
+      > say_hello
+      Hello
+      > say_hello everybody!
+      Hello everybody!
+    FISH
+    cln.note "fish: arguments",                          "$argv",                      "shell", "$1", "$2", "$3", "$4", "$5", "$6", "$7", "$8", "$9", "variables"
+    cln.note "fish: list all functions",                 "functions # it's a keyword", "shell"
+    cln.note "fish: see the source of a function",       "functions ls",               "shell"
+    cln.note "fish: colours can be names or RGB values", <<-FISH,                      "shell"
+      set_color purple
+      date "+%m/%d/%y"
+      set_color FF0
+      echo (pwd) '>'
+      set_color normal
+    FISH
+    cln.note "fish: config file",                        "~/.config/fish/config.fish",          "shell", ".bashrc", ".bash_profile"
+    cln.note "fish: functions directory",                "~/.config/fish/functions",            "shell", "autoloading"
+    cln.note "fish: completions path",                   "$fish_complete_path",                 "shell", "variables"
+    cln.note "fish: docs",                               "open http://fishshell.com/docs/2.0/", "shell", "documentation", "documents"
+
+    # readline
+    cln.note "notation",                        "https://www.gnu.org/software/bash/manual/html_node/Introduction-and-Notation.html#Introduction-and-Notation", "readline", "keybindings", "C-k", "M-k"
+    cln.note "beginning of history",            "M-<",   "readline", "keybindings"
+    cln.note "end of history",                  "M->",   "readline", "keybindings"
+    cln.note "forward search history",          "C-s",   "readline", "keybindings"
+    cln.note "yank last arg (iteratively)",     "M-.",   "readline", "keybindings"
+    cln.note "yank last arg (iteratively)",     "M-.",   "readline", "keybindings"
+    cln.note "delete right",                    "C-d",   "readline", "keybindings"
+    cln.note "transpose words",                 "M-t",   "readline", "keybindings"
+    cln.note "upcase word",                     "M-u",   "readline", "keybindings", "capitalize", "uppercase", "capitalization"
+    cln.note "downcase word",                   "M-l",   "readline", "keybindings", "lowercase", "capitalization"
+    cln.note "delete next word",                "M-d",   "readline", "keybindings"
+    cln.note "show possible completions",       "M-?",   "readline", "keybindings"
+    cln.note "insert all possible completions", "M-*",   "readline", "keybindings", "expand", "expansions"
+    cln.note "start keyboard macro",            "C-x (", "readline", "keybindings", "begin"
+    cln.note "end keyboard macro",              "C-x )", "readline", "keybindings", "stop"
+    cln.note "execute keyboard macro",          "C-x e", "readline", "keybindings", "run"
+    cln.note "incremental undo",                "C-_",   "readline", "keybindings"
+    cln.note "tilde expand",                    "M-&",   "readline", "keybindings", "expansion"
+
+    # apis
+    cln.note 'play with apis', 'https://apigee.com/console', 'spotify', 'instagram'
+
+
+    # haskell
+      # binaries
+      cln.note "interpret as script",           "runhaskell", "hs"
+      cln.note "interactive haskell",           "ghci", "glaskow", "haskell", "compiler", "hs"
+      cln.note "compile haskell",               "ghc" , "glaskow", "haskell", "compiler", "hs"
+
+      # language
+      cln.note "hello world",                   %Q'#!/usrb/bin/env runhaskell\nmain = do\n  putStrLn "hello, world!"', "haskell", "hs"
+      cln.note "signature",                     "functionName :: InputType -> OutputType", "haskell", "hs"
+      cln.note "signature",                     "functionName :: (SomeTypeClass a, SomeOtherTypeClass b) => a -> b -> a", "haskell", "hs"
+      cln.note "create a type",                 "data MyTypeName = Constructor1 | Constructor2", "haskell", "hs"
+      cln.note "create a type whose value is a container for an int", "data MyTypeName = Constructor Integer", "haskell", "hs"
+      cln.note "create an agnostic type",       "data List a = Cons a (List a) | Nil", "hs"
+      cln.note "numeric concrete types",        "Integer, Double, Float", "haskell", "hs"
+
+      # ghci
+      cln.note "identify the type",             ':t 1', "haskell", "hs", "ghci"
+
+      # general
+      cln.note "Add a package to dependencies",                "put it build-depens in name.cabal, then\n$ cabal-dev install", "haskell", "hs"
+      cln.note "Build the package",                            "$ cabal-dev install", "haskell", "hs"
+      cln.note "Latency numbers every programmer should know", "https://gist.github.com/hellerbarde/2843375#file-latency_humanized-markdown", "ms", "ns", "milliseconds", "nanoseconds", "microseconds", "durations", "time", "developer"
+      cln.note 'accounting equation, credits and debits',      "http://www.youtube.com/watch?v=gaZiAiETW_Y"
+      cln.note 'terminal keynote',                             "https://github.com/fxn/tkn"
+
+    # git
+    cln.note 'set the remote tracking branch to origin/master',       'git branch --set-upstream-to origin/master', 'branches'
+    cln.note 'search git log for commits where diff matches pattern', 'git log -Gversion_requirements -p lib/rubygems/dependency.rb', 'grep'
+    cln.note 'figure out which branches contain a commit',    'git branch -a --contains SHA', 'includes'
+    cln.note '5 lines of context on a diff',                  'git diff -U5'
+    cln.note 'alternative diff algorithm',                    'cd martini_at_zoo; git show 0599a52c3ced58480e3b18ec5c366f0b83a69e2c --patience'
+    cln.note 'Show only filenames in diff',                   'git diff --name-only'
+    cln.note 'Only look in cwd subtree',                      'git diff --relative'
+    cln.note 'list unmerged files',                           'git ls-files -u', 'dirs'
+    cln.note 'list uncommitted files',                        'git ls-files -o', 'working', 'dirs'
+    cln.note 'delete stale remote tracking branches',         'git remote prune origin'
+    cln.note 'contentless commit (e.g. to force sha update)', 'git commit -m "whatever" --allow-empty'
+    cln.note 'show last commit that matches the string',      'git show :/query'
+    cln.note 'show branches merged into current branch',      'git branch --merged'
+    cln.note 'show branches not merged into current branch',  'git branch --no-merged'
+    cln.note "copy other branch's version of a file into wd", 'git checkout BRANCH -- path/to/file'
+    cln.note "show commits in A that aren't in B",            'git log A ^B'
+    cln.note "blame the oiginal commit, not the move commit", <<-GIT
+      git blame -M   # moved within file
+                -C   # moved within commit
+                -CC  # where line was created
+                -CCC # look at all commits
+    GIT
+    cln.note "count how many commits each person made",       'git shortlog -sn'
+    cln.note "git format",                                    'git@github.com:JoshCheek/seeing_is_believing.git'
+    cln.note "log that says the parents",                     'git log --pretty=raw', 'revert', 'merge'
+    cln.note "revert a merge commit",                         'git revert -m 1 HEAD'
+    cln.note 'Most recent common ancestor of two branches',   'git merge-base branch1 branch2'
+
+    # github
+    cln.note 'github: Languages supported by github flavored markdown', 'https://github.com/github/linguist/blob/master/lib/linguist/languages.yml', 'gfm'
+    cln.note 'github: See all your pull requests',              'https://github.com/search?utf8=✓&q=is%3Apr+author%3AJoshCheek', 'query', 'search', 'gh'
+    cln.note 'github: Search an archive of their info w/ sql',  'http://ghtorrent.org/dblite/', 'gh'
+    cln.note 'github: Reference commit in another repository',  'JumpstartLab/asquared#123', 'gh'
+    cln.note 'github: suppress trailing whitespace',            '?w=1 (add to the end of any diff url)', 'gh'
+    cln.note 'github: octocat index',                           'http://octodex.github.com/', 'github', 'gh'
+    cln.note 'github: get a file finder',                       't', 'gh'
+    cln.note 'github: swap the branch name for the sha',        'y', 'gh'
+    cln.note 'github: find all the commands on a given page',   '?', 'gh'
+    cln.note 'github: scope commit history to specific author', '?author=josh_cheek', 'gh'
+    cln.note 'github: emoji cheat sheet',                       'http://www.emoji-cheat-sheet.com/', 'emoticons', 'smileys', 'gh'
+    cln.note 'github: how to use issues',                       'https://guides.github.com/features/issues/index.html', 'github', 'milestones', 'gh'
+    cln.note 'github: advanced search',                         'https://github.com/search/advanced?q=sidebar&ref=reposearch&state=open&type=Issues', 'gh'
+    cln.note 'github: compare view',                            <<-EOS, 'gh'
+      github.com/user/repo/compare/{range}
+        where {range} is a branch name, sha, 1.day.ago, yesterday, 2012-12-30
+    EOS
+
+    # Java
+      cln.note "Execute a jar", "java -jar HelloWorld.jar"
+
+    # C programming (cc)
+      cln.note "Figure out what some arcane type signature means in the C language", "http://cdecl.org/", "cc", "programming"
+
+    # ruby
+      cln.note "How to compile MRI", <<-CODE, 'ruby', 'source', 'build'
+        cd /Users/josh/ref/ruby/ruby \\
+          && ./configure \\
+               --prefix="/Users/josh/ref/ruby/ruby/dev" \\
+               --with-opt-dir="$(brew --prefix openssl):$(brew --prefix readline):$(brew --prefix libyaml):$(brew --prefix gdbm)" \\
+          && make \\
+          && make install
+      CODE
+      cln.note "Places rubygems will look for gems", "GEM_PATH", "rvm", "rbenv", "chruby", "rubygems"
+      cln.note "Where gems get installed to", "GEM_HOME", "rvm", "rbenv", "chruby", "rubygems"
+      cln.note "MRI sexp", "Ripper.sexp('1+1')", "ruby", "s-expressions", "parse", "parsing"
+      cln.note "MRI iseq", "RubyVM::InstructionSequence.compile('1+1').disasm", "ruby", "instructions", "parsing", "parse", "compile", "compiling", "bytecode"
+      cln.note "Display all rake tasks (even those w/o descriptions)", "rake -T -A", "ruby"
+      cln.note "Ruby's regex lib", 'http://www.geocities.jp/kosako3/oniguruma/', 'regexp', 'regular expressions'
+      cln.note "Ruby's regex lib", 'https://github.com/k-takata/Onigmo', 'regex', 'regular expressions'
+      cln.note 'Serve current dir', 'ruby -run -e httpd . -p5000', 'ruby', 'server'
+      cln.note 'ARGF', '$<', 'globals', 'variables', 'ruby'
+      cln.note 'The DSL uses this session:', 'Capybara.session', 'capybara', 'testing', 'ruby'
+      cln.note 'Find the current path', 'session.current_path', 'capybara', 'testing', 'ruby', 'url'
+      cln.note 'Ruby configuration variables', 'RbConfig::CONFIG', 'hash'
+      cln.note 'Strftime format strings', <<-STRFTIME, 'ruby'
+        %a - The abbreviated weekday name (Sun)
+        %A - The full weekday name (Sunday)
+        %b - The abbreviated month name (Jan)
+        %B - The full month name (January)
+        %d - Day of the month (01..31)
+        %e - Day of the month (1..31)
+        %H - Hour of the day, 24-hour clock (00..23)
+        %I - Hour of the day, 12-hour clock (01..12)
+        %l - Hour of the day (01..12)
+        %j - Day of the year (001..366)
+        %m - Month of the year (01..12)
+        %M - Minute of the hour (00..59)
+        %p - Meridian indicator (AM or PM)
+        %S - Second of the minute (00..60)
+        %w - Day of the week (Sunday is 0, 0..6)
+        %y - Year without a century (00..99)
+        %Y - Year with century
+        %Z - Time zone name
+        %% - Literal % character
+      STRFTIME
+
+      cln.note "building kisses and hugs ruby", <<-KISSES_AND_HUGS, 'custom'
+        $ export CFLAGS=-Wno-error=shorten-64-to-32
+        $ vim version.h
+        $ vim . && git diff
+            diff --git a/lib/rubygems/version.rb b/lib/rubygems/version.rb
+            index e983751..7468dbe 100644
+            --- a/lib/rubygems/version.rb
+            +++ b/lib/rubygems/version.rb
+            @@ -147,7 +147,7 @@ class Gem::Version
+
+               # FIX: These are only used once, in .correct?. Do they deserve to be
+               # constants?
+            -  VERSION_PATTERN = '[0-9]+(\.[0-9a-zA-Z]+)*' # :nodoc:
+            +  VERSION_PATTERN = '[0-9]+(\.[-0-9a-zA-Z]+)*' # :nodoc:
+               ANCHORED_VERSION_PATTERN = /\A\s*(\#{VERSION_PATTERN})*\s*\z/ # :nodoc:
+
+               ##
+            diff --git a/version.h b/version.h
+            index 5091817..8b2ddd8 100644
+            --- a/version.h
+            +++ b/version.h
+            @@ -1,4 +1,4 @@
+            -#define RUBY_VERSION "2.0.0"
+            +#define RUBY_VERSION "2.0.0.kisses-and-hugs"
+             #define RUBY_RELEASE_DATE "2013-05-20"
+             #define RUBY_PATCHLEVEL 197
+
+            @@ -17,7 +17,7 @@
+             #endif
+
+             #if RUBY_PATCHLEVEL == -1
+            -#define RUBY_PATCHLEVEL_STR "dev"
+            +#define RUBY_PATCHLEVEL_STR "kisses-and-hugs"
+             #else
+             #define RUBY_PATCHLEVEL_STR "p"STRINGIZE(RUBY_PATCHLEVEL)
+             #endif
+        $ ./config.status
+        $ ./configure --prefix="$HOME/.rbenv/versions/kisses-and-hugs" --with-openssl-dir=`brew --prefix openssl` --with-readline-dir=`brew --prefix readline`
+        $ make
+        $ make install
+      KISSES_AND_HUGS
+    cln.note 'Get the size of the console', "require 'io/console'; height, width = $stdout.winsize", 'terminal', 'ansi', 'escape', 'sequences'
+
+    # Assembly
+    cln.note 'Descriptions of the registers', 'http://www.swansontec.com/sregisters.html', 'assembly', 'intel', 'asm', 'att', 'at&t', 'hardware'
+
+    # homebrew
+    cln.note "homebrew binaries are in", "/usr/local/bin"
+    cln.note "homebew has a man page!!!", "man brew"
+    cln.note "fix homebrew when permissions get fucked, e.g. '/usr/local/include is not writable'", "https://gist.github.com/rpavlik/768518"
+
+    # gpg
+    cln.note "how to use gpg", "http://www.madboa.com/geek/gpg-quickstart/", "pgp", "encryption", "encrypted"
+
+    # postgresql
+    cln.note 'postgresql: quit',                            '\q',       'pg', 'meta', 'exit', 'C-c'
+    cln.note 'postgresql: display users',                   '\du',      'pg', 'meta'
+    cln.note 'postgresql: show permissions',                '\z',       'pg', 'meta'
+    cln.note 'postgresql: show table names',                '\z',       'pg', 'meta'
+    cln.note 'postgresql: show table names in a namespace', '\z rbf.*', 'pg', 'meta'
+    cln.note 'postgresql: find the list of pids connected', 'SELECT procpid, application_name from pg_stat_activity;', 'pg', 'meta'
+    cln.note 'postgresql: get a list of all the dbs',       'psql -l',  'pg', 'meta'
+    cln.note 'postgresql: view the query plan',             'explain analyze <query>', 'pg', 'meta'
+    cln.note 'postgresql: start pg in the bg',              'pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start'
+
+    cln.note 'mysql: start', 'mysql.server start'
+    cln.note 'mysql: stop', 'mysql.server stop'
+
+    # sql
+    cln.note 'Visual explanation of SQL joins', 'http://blog.codinghorror.com/a-visual-explanation-of-sql-joins/'
+
+    # vim
+    cln.note 'Vim ctags: find reference to class',                     ':tag ClassName'
+    cln.note 'vim ctags: shows the list',                              ':tselect or :ts'
+    cln.note 'vim ctags: goes to the next tag in that list',           ':tnext   or :tn'
+    cln.note 'vim ctags: goes to the previous tag in that list',       ':tprev   or :tp'
+    cln.note 'vim ctags: goes to the first tag of the list',           ':tfirst  or :tf'
+    cln.note 'vim ctags: goes to the last tag of the list',            ':tlast   or :tl'
+    cln.note 'to most recent change',                                  '`.', 'movement', 'navigation'
+    cln.note 'cycle through recent changes',                           'g;', 'movement', 'navigation'
+    cln.note 'vim: copy line nums to current position',                     '5,10co .'
+    cln.note 'vim: yank line nums',                                    '5,10y'
+    cln.note 'vim: delete line nums',                                  '5,10d'
+    cln.note 'vim: perform an action upto a location',                 'g~$', 'invert'
+    cln.note 'vim: set filetype to language',                          ':set ft=ruby', 'syntax'
+    cln.note 'vim: run a command at launch',                           'vim -c NERDTree'    # really, -c and + seem to be the same thing: whatever follows is run in command-line mode.
+    cln.note 'vim: open a file at line 10',                            'vim +10', 'numbers' # This explains all three of these
+    cln.note 'vim: open a file and start at a given search position',  'vim +/pattern', 'position', 'match'
+    cln.note 'vim: set window width to 50 chars',                      'C-w 50 |'
+    cln.note 'vim: Jump to prev and next method definitions',          '[m and ]m', 'text', 'objects'
+    cln.note 'vim: surround.vim yank line into a surrounding h1 tag',  'yssth1', 'text', 'objects'
+    cln.note 'vim: surround.vim change surrounding: tag -> h1 tag',    'cstth1', 'text', 'objects'
+    cln.note 'vim: surround.vim change surrounding: quotes -> h2 tag', 'cs"th2', 'text', 'objects'
+    cln.note 'vim: visually highlight ever expanding html tags',       'vatatatatatatat', 'text', 'objects'
+    cln.note 'vim: mark the current line "a"',                         ':ka'
+    cln.note 'vim: jump to mark a',                                    '`a'
+
+    # emacs
+        cln.note "Kyle's emacs installation notes",      'https://gist.github.com/pd/c202a5cec79595a1199b'
+      # FIXES
+        cln.note 'turn on region highlighting',          'M-x transient-mark-mode', 'emacs', 'fixes'
+        cln.note 'change major-mode to Ruby',            'M-x ruby-mode', 'emacs', 'fixes'
+      # MINOR MODES
+        cln.note 'left screen follows right screen',     'M-x follow-mode', 'emacs', 'minor', 'modes'
+      # BUILTINS
+        cln.note 'tutorial',                             'C-h t', 'emacs', 'builtins'
+        cln.note 'document key combo',                   'C-h k <key combo>', 'emacs', 'builtins'
+        cln.note 'document function',                    'C-h f', 'emacs', 'builtins'
+        cln.note 'document variable',                    'C-h v', 'emacs', 'builtins'
+        cln.note 'Apropos (document similar)',           'C-h a', 'emacs', 'builtins'
+        cln.note 'Man pages',                            'M-x man', 'emacs', 'builtins'
+        cln.note 'get rid of help-buffer & window',      'q', 'emacs', 'builtins'
+        cln.note 'get rid of help-buffer ~ window',      'C-x k', 'emacs', 'builtins'
+        cln.note 'start shell',                          'M-x eshell', 'emacs', 'builtins'
+      # MOVEMENT
+        cln.note 'repeat',                               'C-u # command, eg: C-u 8 C-f', 'emacs', 'movement', 'moving', 'navigation'
+        cln.note 'forward 1 sentence',                   'M-a', 'emacs', 'movement', 'moving', 'navigation'
+        cln.note 'back one sentence',                    'M-e', 'emacs', 'movement', 'moving', 'navigation'
+        cln.note 'beginning of line',                    'C-a', 'emacs', 'movement', 'moving', 'navigation'
+        cln.note 'end of line',                          'C-e', 'emacs', 'movement', 'moving', 'navigation'
+        cln.note 'back 1 word',                          'M-b', 'emacs', 'movement', 'moving', 'navigation'
+        cln.note 'forward 1 word',                       'M-f', 'emacs', 'movement', 'moving', 'navigation'
+        cln.note 'back 1 char',                          'C-b', 'emacs', 'movement', 'moving', 'navigation'
+        cln.note 'forward 1 char',                       'C-f', 'emacs', 'movement', 'moving', 'navigation'
+        cln.note 'down 1 line',                          'C-n', 'emacs', 'movement', 'moving', 'navigation'
+        cln.note 'up 1 line',                            'C-p', 'emacs', 'movement', 'moving', 'navigation'
+        cln.note 'down 1 screen',                        'M-v', 'emacs', 'movement', 'moving', 'navigation'
+        cln.note 'up 1 screen',                          'C-v', 'emacs', 'movement', 'moving', 'navigation'
+        cln.note 'beginning of doc',                     'M-<', 'emacs', 'movement', 'moving', 'navigation'
+        cln.note 'end of doc',                           'M->', 'emacs', 'movement', 'moving', 'navigation'
+        cln.note 'realign cursor to middle of screen',   'C-l', 'emacs', 'movement', 'moving', 'navigation'
+      # BUFFERS
+        cln.note 'list buffers',                         'C-x C-b', 'emacs', 'buffers'
+        cln.note 'visit buffer',                         'C-x b', 'emacs', 'buffers'
+        cln.note 'Cancel EVERYTHING!',                   'C-g', 'emacs', 'buffers', 'search'
+        cln.note 'last buffer',                          'C-x b return', 'emacs', 'buffers'
+        cln.note 'send buffer to end of list',           'C-y', 'emacs', 'buffers'
+      # WINDOWS/FRAMES
+        cln.note 'Close current frame',                  'C-x 0', 'emacs', 'windows', 'frames'
+        cln.note 'Use only one frame',                   'C-x 1', 'emacs', 'windows', 'frames'
+        cln.note 'Split frame in half vertically',       'C-x 2', 'emacs', 'windows', 'frames'
+        cln.note 'Split frame in half horizontally',     'C-x 3', 'emacs', 'windows', 'frames'
+        cln.note 'Jump between frames',                  'C-x o', 'emacs', 'windows', 'frames'
+      # SEARCH
+        cln.note 'Start a forward search',               'C-s', 'emacs', 'searching', 'searches'
+        cln.note 'Next item in forward search',          'C-s', 'emacs', 'searching', 'searches'
+        cln.note 'Start a backward search',              'C-r', 'emacs', 'searching', 'searches'
+        cln.note 'Next item in backward search',         'C-r', 'emacs', 'searching', 'searches'
+        cln.note 'Cancel search',                        'C-g', 'emacs', 'searching', 'searches'
+        cln.note 'Move to this search location',         'return', 'emacs', 'searching', 'searches'
+        cln.note 'Search through function definitions',  'C-x C-i', 'emacs', 'searching', 'searches'
+      # FILES
+        cln.note 'open',                                 'C-x C-f', 'emacs', 'files', 'edit'
+        cln.note 'revert to disk',                       'C-c r',   'emacs', 'files'
+        cln.note 'save the file',                        'C-x C-s', 'emacs', 'files', 'write'
+      # EDITING
+        cln.note 'undo',                                 'C-_', 'emacs', 'editing'
+        cln.note 'delete char after cursor',             'C-d', 'emacs', 'editing'
+        cln.note 'kill word before cursor',              'M-<Delback>', 'emacs', 'editing'
+        cln.note 'kill word after the cursor',           'M-d', 'emacs', 'editing'
+        cln.note 'kill from cursor to end of line',      'C-k', 'emacs', 'editing'
+        cln.note 'kill to end of current sentence',      'M-k', 'emacs', 'editing'
+        cln.note 'set mark',                             'C-<space> since that is taken, use C-@', 'emacs', 'editing'
+        cln.note 'kill from mark to cursor',             'C-w', 'emacs', 'editing'
+        cln.note 'yank text back',                       'C-y', 'emacs', 'editing'
+        cln.note 'cycle through kill ring',              'M-y', 'emacs', 'editing'
+        cln.note 'evaluate lisp',                        'M-S-:', 'emacs', 'editing'
+
+    # code examples
+    cln.note 'Floating point imprecision',   'ruby -e "p 7.01 - 7.00" # => 0.009999999999999787', 'arithmetic', 'math', 'code', 'examples'
+    cln.note 'Floating point imprecision 2', 'ruby -e "p 0.1 + 0.2 == 0.3" # => false', 'arithetic', 'ieee', 'math', 'code', 'examples'
+    cln.note 'Ripper', <<-RIPPER, 'ruby', 'parsing', 'parsers', 'lexing', 'lexers', 'code', 'examples'
+      require 'ripper'
+
+      class DemoBuilder < Ripper::SexpBuilder
+        instance_methods.each do |meth_name|
+          next unless meth_name =~ /^on_/
+          super_meth = instance_method meth_name
+          define_method meth_name do |*args|
+            super_meth.bind(self).call(*args).tap do |result|
+              puts "\#{meth_name}(\#{args.map(&:inspect).join(', ')})".ljust(30) << " #> \#{result.inspect}"
+            end
+          end
+        end
+      end
+
+      src = %(1 # i am a comment)
+      DemoBuilder.new(src).parse
+      # >> on_int("1")                    #> [:@int, "1", [1, 0]]
+      # >> on_sp(" ")                     #> [:@sp, " ", [1, 1]]
+      # >> on_comment("# i am a comment") #> [:@comment, "# i am a comment", [1, 2]]
+      # >> on_stmts_new()                 #> [:stmts_new]
+      # >> on_stmts_add([:stmts_new], [:@int, "1", [1, 0]]) #> [:stmts_add, [:stmts_new], [:@int, "1", [1, 0]]]
+      # >> on_program([:stmts_add, [:stmts_new], [:@int, "1", [1, 0]]]) #> [:program, [:stmts_add, [:stmts_new], [:@int, "1", [1, 0]]]]
+    RIPPER
+
+    # mac
+      cln.note "Turn mirroring on and off (mac)",             'Command + f1', 'mac', 'osx', 'screen', 'sharing', 'displays'
+      cln.note 'shut down processes that are not responding', 'Command + Option + Escape', 'shut-down', 'mac', 'osx' # not sure if this actually works
+      cln.note 'find using spotlight',                        'mdfind -name somename', 'unix', 'mac', 'osx'
+      cln.note 'animated gif screenshots',                    'http://www.cockos.com/licecap/', 'atom', 'editor', 'mac', 'windows', 'screencapture'
+      cln.note 'location of file from spotlight',             'mouse over file, hold command and option', 'mac', 'osx'
+      cln.note 'open a file\'s information from spotlight',   'command+i', 'mac', 'osx'
+
+    # unix utils
+
+      # misc
+      cln.note "The Filesystem Hierarchy Standard",               "http://www.pathname.com/fhs/pub/fhs-2.3.html", "unix", "fhs", "postmodern", "/usr/tmp/etc/"
+      cln.note "List of directories that can be in /opt",         "http://www.lanana.org/lsbreg/providers/providers.txt", "unix", "file system", "/opt/"
+      cln.note "How to place xargs argument anywhere in command", "xargs -I {} echo Directory: {}", "unix"
+      cln.note "Extract human readable strings from a binary",    "strings path/to/binary", "angeleah"
+      cln.note "See tables of ascii values",                      "man ascii", "unix"
+      cln.note "See tables of BRE and Extended regexes",          "man re_format", "unix", 'regular expressions', 'basic', 'extended', 'sed', 'awk'
+      cln.note "File system hierarchy",                           "man hier", "unix", "/usr/", "/var/", "/bin/", "/dev/", "/etc/", "/sbin/", "/tmp/"
+      cln.note "Search the whatis database for tty",              "apropos tty", "unix"
+      cln.note "add a new user",                                  "sudo adduser josh"
+      cln.note "switch user",                                     "su josh"
+      cln.note "change user and group to be readable",            "chmod ug+r filename"
+      cln.note "change owner",                                    "chown josh filename"
+      cln.note "change owner and group",                          "chown josh:groupname filename"
+      cln.note "locate a man page",                               "man -w ls"
+      cln.note "flush dns (apparently this is extreme)",          "dscacheutil -flushcache"
+      cln.note "the file name of the path",                       "basename `pwd`", "dirname", "filename", "fname"
+      cln.note "explains shell invocations",                      "http://explainshell.com"
+      cln.note "transfer remote files with scp",                  "scp [options] username1@source_host:directory1/filename1 username2@destination_host:directory2/filename2"
+      cln.note "evaluate backspaces (\\b)to fix output",          "col -b", 'unix', 'man', 'pages', 'troff', 'nroff'
+      cln.note "meanings of the man page section numbers", <<-MANPAGES, "pages"
+        1 User Commands
+        2 System Calls
+        3 C Library Functions
+        4 Devices and Special Files
+        5 File Formats and Conventions
+        6 Games et. Al.
+        7 Miscellanea
+        8 System Administration tools and Deamons
+      MANPAGES
+      cln.note 'print a plist',                     'plutil -p path-to-plist', 'json', 'mac', 'apple'
+      cln.note 'see list of defaults you can edit', 'defaults domains', 'mac', 'apple'
+      cln.note 'see the defaults for a domain',     'defaults read com.apple.iTunes', 'mac', 'apple'
+      cln.note 'see the global defaults',           'defaults read -g', 'mac', 'apple'
+      cln.note 'write a new default',               <<-WRITE, 'mac', 'apple'
+        defaults write KeyRepeat -int 1
+        defaults write InitialKeyRepeat -int 1
+      WRITE
+      cln.note 'Find the encoding type of a file', 'file filename -I', 'unix'
+      cln.note 'see a file byte by byte',          'od -bc filename', 'unix', 'hexadecimal', 'octal', 'decimal', 'human', 'readable'
+      cln.note 'Directory stack', <<-STACK
+        pushd newdir # cd to newdir
+        popd         # return to previous location `cd -`
+        dirs         # see list of locations'
+      STACK
+
+      # grep
+      cln.note "show lines after when grepping",  "grep -A n pattern"
+      cln.note "show lines before when grepping", "grep -B n pattern"
+      cln.note "show lines around when grepping", "grep -C n pattern"
+
+      # ack
+      cln.note "Ack: List filetypes",                           "ack --help=type"
+      cln.note "Ack: Search C files for RObject",               "ack --type=cc RObject"
+      cln.note "Ack: See 2 lines of context around each match", "ack -C 2 target"
+
+      # ag
+      cln.note "gg: Search for parse for filenamse matching .hx$, starting in parent dir", "ag arse .. -G '\\.hx$'"
+      cln.note "ag: Search with case sensitivity",                                         "ag -s query"
+
+      # ln
+      cln.note "ln", "ln -s /existing/file /new/symbolic/link # relative links in /existing/file are not expanded >.<", 'soft links'
+
+      # ssh and servers and shit
+      cln.note 'generate an ssh key',             'ssh-keygen -t rsa -C "josh.cheek@gmail.com"'
+      cln.note 'moving public key to ssh server', 'ssh-copy-id # can be installed via homebrew', 'servers', 'remote'
+      cln.note 'who is logged in?',               'w', 'users', 'signed', 'names', 'servers', 'remote'
+      cln.note 'what server am I on?',            'hostname', 'servers', 'remote', 'computers'
+
+      # less
+      cln.note 'less: go to next buffer', ':n'
+      cln.note 'less: go to previous buffer', ':p'
+
+      # tar
+      cln.note 'tar: list what will be extracted before extracting', 'tar -tf zip-2.0.2.gem', 'archive'
+
+      # bash
+      cln.note 'see bash shell options',                             'shopt'
+      cln.note 'starts a bash shell with extglob option set',        'bash -O extglob', 'shopt', 'options'
+      cln.note 'list of bash shell options and their meanings',      'http://wiki.bash-hackers.org/internals/shell_options', 'shopt'
+      cln.note 'PS1 escape sequences',                               'http://tldp.org/HOWTO/Bash-Prompt-HOWTO/bash-prompt-escape-sequences.html', 'bash', 'shells'
+      cln.note 'check for interactive shell',                        'if [[ $- == *i* ]]; then echo yes; fi', 'bash', 'shells', 'logins'
+      cln.note 'replace with the nth argument of the previous line', '!!:n',                                  'bash', 'shells', 'logins'
+      cln.note 'last argument of previous line',                     '!$',                                    'bash', 'shells', 'logins'
+      cln.note 'all arguments of previous line',                     '!*',                                    'bash', 'shells', 'logins'
+      cln.note 'Run the script from script directory',               'cd "$(dirname "$0")"',                  'bash', 'shells'
+      cln.note 'Find all bash functions',                            'declare -f', 'unix', 'bash'
+      cln.note 'Bash case statement',                                <<-EOF, 'bash', 'shells', 'switch'
+        # case statements use bash pattern matching
+        var=c;
+        case "$var" in
+          a|b) echo a;;
+          c)   echo c;;
+          *)   echo "unrecognized!" >&2
+               exit 1
+               ;;
+        esac
+      EOF
+
+      # systemsetup
+      cln.note 'set system time',                   "systemsetup -setusingnetworktime off -setdate '04:20:2012'", 'clocks'
+      cln.note 'revert system time to actual time', "systemsetup -setusingnetworktime on", 'clocks'
+
+      # netcat
+      cln.note 'start a server that records http requests', 'nc -l 8889', 'netcat'
+
+      # curl
+      cln.note 'Post a form with curl -- typically they use key/value pairs', 'curl https://example.com -d some_key=some_value', 'website'
+
+
+    # HTTP status codes, from http://murmurings.herokuapp.com/blog/2014/09/06/hypertext-transfer-protocol/
+      cln.note 'HTTP status code categories', <<-CODES, '100s', '200s', '300s', '400s', '500s'
+        https://pbs.twimg.com/media/B50dCAKIEAAP0NQ.jpg:large
+        1xx: Informational   "Hold on"       | request received but is continuing process
+        2xx: Success         "Here you go"   | successfulle received, understood, and accepted by the server
+        3xx: Redirection     "Go away"       | further action must be taken in order to complete the request
+        4xx: Client Error    "You fucked up" | request contains bad syntax or cannot be fulfilled
+        5xx: Server Error    "I fucked up"   | server failed to fulfill valid request
+      CODES
+
+      cln.note 'Common HTTP status codes', <<-CODES
+        Code  Reason Phrase          Description
+        ---------------------------------------------------------------------------------------------------------------------------------
+        200   OK                     Everything worked out. Server finds the page and returns it to your computer along with this status
+        301   Moved Permanently      Returned by the server when the requested page has moved somewhere else
+        303   See Other              Returned by the server in response to a POST (or PUT/DELETE). Server has received the data.
+        400   Bad Request            Server equivalent of WTF. Returned by the server when it can't understand what you're asking for.
+        403   Forbidden              Typically only seen if you're trying to break some rules. Tisk Tisk.
+        404   Not Found              Returned by the server when it can't find the page that you're looking for
+        500   Internal Server Error  Generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+                                     Equivalent of a Server crying out for help because something's broken.
+      CODES
+
+    # website tricks
+    cln.note 'Start a youtube video at 1 minute and 30 seconds', 'www.youtube.com/watch?v=AZPdIY9oAbM#t=1m30s', 'specific', 'time', 'yt'
+    cln.note 'Start a vimeo video at 27 minute and 28 seconds',  'https://vimeo.com/79899786#t=27m28s', 'specific', 'time'
+
+    # hardware
+    cln.note 'Buy circuits off Amazon', 'http://www.amazon.com/b/ref=dp_brw_link?ie=UTF8&node=306843011', 'hardware', 'component', 'IC', 'transistors', 'capacitors', 'integrated circuits'
+  end
+  puts CommandLineNotes::Binary.new(notes, ARGV).stdout
+end

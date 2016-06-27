@@ -1,0 +1,14 @@
+OPTIONS=role:Wizard
+OPTIONS=race:Human
+OPTIONS=align:neutral
+OPTIONS=gender:male
+
+OPTIONS=name:Ariqor
+
+OPTIONS=catname:Rascal
+OPTIONS=dogname:Sheba
+OPTIONS=horsename:Neighbor
+
+OPTIONS=color
+OPTIONS=autodig
+OPTIONS=noautopickup
