@@ -246,7 +246,7 @@ nnoremap <leader>q gqip
 
 nnoremap <leader>v V`]
 
-inoremap ii <esc>
+inoremap jk <esc>
 inoremap vv <esc>V
 inoremap vq <esc>Vgq
 
