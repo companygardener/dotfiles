@@ -1,9 +1,10 @@
 {
     "__meta__": {
-        "about": "HTTPie configuration file", 
-        "help": "https://github.com/jkbr/httpie#config", 
-        "httpie": "0.8.0"
-    }, 
-    "default_options": ["--style=vim"], 
-    "implicit_content_type": "json"
+        "about": "HTTPie configuration file",
+        "help": "https://github.com/jkbrzt/httpie#config",
+        "httpie": "0.9.6"
+    },
+    "default_options": [
+        "--style=vim"
+    ]
 }
