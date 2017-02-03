@@ -26,6 +26,9 @@ if [[ $(uname) = Darwin ]]; then
 
   alias m.='mvim .'
 
+  alias ipv6off='networksetup -setv6off Wi-Fi'
+  alias ipv6on='networksetup -setv6automatic Wi-Fi'
+
   alias flushdns="dscacheutil -flushcache"
   alias sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
 
