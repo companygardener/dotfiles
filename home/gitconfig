@@ -128,7 +128,8 @@
   graphviz   = "!f() { echo 'digraph git {' ; git log --pretty='format:  %h -> { %p }' \"$@\" | sed 's/[0-9a-f][0-9a-f]*/\"&\"/g' ; echo '}'; }; f"
   h          = help
   irb        = rebase --interactive
-  l          = "!git log --date=short --pretty='%C(bold magenta)%h	%C(reset)%C(green)%cd	%C(bold green)%cN	%C(reset)%s%C(yellow)%d' $* | column -t -s '\t' | less -FXRS"
+  l          = "!git log --date=short --pretty='%C(bold magenta)%h	%C(reset)%C(green)%cd	%C(bold green)%aN	%C(reset)%s%C(yellow)%d' $* | column -t -s '\t' | less -FXRS"
+  lc         = "!git log --date=short --pretty='%C(bold magenta)%h	%C(reset)%C(green)%cd	%C(bold green)%cN	%C(reset)%s%C(yellow)%d' $* | column -t -s '\t' | less -FXRS"
   lg         = log --graph --abbrev-commit --pretty='%C(bold magenta)%h %C(reset)%C(green)[%cr] %C(reset)%s %C(bold green)%an%C(reset)%C(yellow)%d'
   lga        = "!git log --graph --pretty='	%C(bold magenta)%h	%C(reset)%C(green)%cr	%C(reset)%s %C(bold green)%an%C(reset)%C(yellow)%d' $* | column -t -s '\t' | less -FXRS"
   lr         = log --graph --abbrev-commit --pretty='%C(bold magenta)%h %C(reset)%C(green)[%cr] %C(reset)%s %C(bold green)%an%C(reset)%C(yellow)%d' -20
