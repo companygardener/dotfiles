@@ -32,6 +32,8 @@ if [[ $(uname) = Darwin ]]; then
   alias flushdns="dscacheutil -flushcache"
   alias sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
 
+  alias stripcr="sed -i $'s/\r//'"
+
   for method in GET HEAD POST PUT DELETE TRACE OPTIONS; do alias "$method"="lwp-request -m '$method'"; done
 
   alias pstree='pstree -g2 -w'
