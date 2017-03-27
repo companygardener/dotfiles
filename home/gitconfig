@@ -112,6 +112,7 @@
   ca         = commit --amend
   changes    = diff --name-status -r
   check      = diff --check
+  ci         = check-ignore -v
   cm         = commit --message
   co         = checkout
   conflicts  = grep --name-only --full-name '<<<<<<< HEAD'
