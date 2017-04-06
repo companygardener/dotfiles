@@ -4,8 +4,8 @@
 # gem install github git-pulls
 
 [user]
+  email = erik.peterson@springleaf.com
   name  = Erik Peterson
-	email = erik.peterson@springleaf.com
 
 [advice]
   statushints = false
@@ -57,9 +57,10 @@
   helper = osxkeychain
 
 [diff]
-	algorithm = histogram
+  algorithm = histogram
   renames   = copies
   mnemonicprefix = true
+  tool = icdiff
 
 [diff "pdf-html"]
   textconv=pdf2htmlex
@@ -67,27 +68,39 @@
 [difftool]
   prompt = false
 
+[difftool "icdiff"]
+  cmd = /usr/local/bin/icdiff --line-numbers $LOCAL $REMOTE
+
 [github]
   user = companygardener
 
 [merge]
   keepbackup = false
+  conflictstyle = diff3
   stat       = true
   tool       = vimdiff
   defaulttoupstream = true
+
+[pager]
+  difftool = true
 
 [pull]
   default = upstream
   rebase  = true
 
 [push]
-	default = simple
+  default = simple
+
+  followtags = true
 
 [rebase]
   default = master
 
 [rerere]
   enabled = true
+
+[status]
+  showuntrackedfiles = all
 
 [alias]
   assume     = update-index --assume-unchanged
@@ -116,12 +129,16 @@
   cm         = commit --message
   co         = checkout
   conflicts  = grep --name-only --full-name '<<<<<<< HEAD'
-  d          = diff
+  d          = difftool
   dbm        = !git branch          --merged | grep -v 'master\\|^\\*'                       | xargs -n 1 git branch --delete
   dbmr       = !git branch --remote --merged | grep -v 'master\\|^\\*' | sed 's/origin\\///' | xargs -n 1 git push --delete origin
-  dc         = diff --cached
+  dc         = difftool --cached
+  dct        = difftool --cached
+  di         = diff
+  dci        = diff --cached
   # div        = git-divergence
-  ds         = diff --staged
+  ds         = difftool --staged
+  dsi        = diff --staged
   dt         = difftool
   dump       = cat-file -p
   gn         = "!sh -c 'git log --reverse --pretty=%H master | awk \"/$(git rev-parse HEAD)/{getline;print}\" | xargs git checkout'"
@@ -143,6 +160,7 @@
   p          = cherry-pick --signoff
   pick       = cherry-pick
   pr         = "!f() { git fetch origin refs/pull/$1/head:pr/$1; } ; f"
+  prune      = fetch --prune
   r          = remote
   rb         = rebase
   rba        = rebase --abort
@@ -151,6 +169,8 @@
   rh         = reset --hard
   ru         = remote update --prune
   s          = status --short --branch
+  save       = stash save --include-untracked
+  showtool   = "!f() { git difftool $1^ $1; }; f"
   si         = status --short --branch --ignored
   sign       = commit --amend --signoff --reuse-message HEAD
   sl         = shortlog
