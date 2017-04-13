@@ -44,7 +44,7 @@ insert-dock-space-right() {
 
 add-alias() {
   local name=$1 value="$2"
-  echo "alias $name='$value'" >> ~/bin/dotfiles/bash/aliases
+  echo "alias $name='$value'" >> ~/.dotfiles/companygardener/bash/aliases
   eval "alias $name='$value'"
   alias $name
 }
