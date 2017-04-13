@@ -1,6 +1,8 @@
 # TODO: http://stackoverflow.com/questions/6127328/how-can-i-delete-all-git-branches-which-are-already-merged
 # TODO: http://mroth.github.io/lolcommits/
 #
+# https://blog.scottnonnenberg.com/better-git-configuration/
+#
 # gem install github git-pulls
 
 [user]
