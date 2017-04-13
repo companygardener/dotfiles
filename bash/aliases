@@ -118,3 +118,4 @@ alias gemdocs='yard server --gems --reload --port 8809'
 
 alias pgreset='lunchy stop postgres && rm -rf /usr/local/var/postgres && initdb /usr/local/var/postgres && lunchy start postgres && createdb epeterson && createuser -s dummy && be rake db:create'
 alias mini='cd ~/code/work/enova/tools/miniraiser'
+alias fig='figlet'
