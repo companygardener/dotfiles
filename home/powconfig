@@ -1,5 +1,5 @@
-export POW_TIMEOUT=14400
-export POW_WORKERS=4
+export POW_TIMEOUT=14400 # 4 hours
+export POW_WORKERS=4     # 4 workers per app
 
 if command -v rbenv > /dev/null 2>&1; then
   eval $(rbenv init - --no-rehash)
