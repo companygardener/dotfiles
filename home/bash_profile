@@ -7,6 +7,3 @@ export LC_COLLATE="en_US.UTF-8"
 export LANG="en_US.UTF-8"
 
 [ -f ~/.bashrc ] && source ~/.bashrc
-
-# added by Anaconda3 2.5.0 installer
-# export PATH="/Users/erik/anaconda/bin:$PATH"
