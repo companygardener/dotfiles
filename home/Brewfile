@@ -2,40 +2,65 @@ install ag
 install bash-completion
 install beanstalk
 install brew-cask
+install brew-cask-completion
+install chromedriver
 install chruby
 install ctags
 install elixir
 install gdbm
+install gem-completion
 install git
+install go
+install gnu-sed
+install heroku
 install htop-osx
+install httpie
+install hub
+install icdiff
+install jq
 install libffi
 install libxml2
 install libyaml
 install macvim
 install memcached
+install n
 install node
 install openssl
 install ossp-uuid
 install par
+install pip-completion
+install pngcrush
 install postgresql
+install pow
 install python
 install python3
 install readline
 install redis
+install rails-completion
+install ruby-build
 install ruby-install
 install ssh-copy-id
 install tree
 install vim
 install wget
+install yarn
 
 tap caskroom/homebrew-cask
 
+cask install 1password
+cask install anaconda
 cask install atom
+cask install cleanmymac
 cask install dropbox
+cask install google-chrome
 cask install iterm2
+cask install slack
+cask install spotify
+cask install steam
+cask install transmission
+cask install transmit
+cask install tunnelblick
 cask install xquartz
-
-# cask install google-chrome
-# cask install transmission
+cask install vlc
 
 linkapps
