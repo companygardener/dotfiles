@@ -1,0 +1,10 @@
+attributes:
+- primary_keys
+- foreign_keys
+- inheritance
+- content
+- timestamps
+
+disconnected: true
+notation: bachman
+polymorphism: true

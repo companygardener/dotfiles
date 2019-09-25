@@ -49,7 +49,7 @@
 
 \set paste
 
-\pset pager  always
+-- \pset pager  always
 \pset null   ¤
 \pset border 1
 
