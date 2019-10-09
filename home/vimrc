@@ -49,6 +49,7 @@ Plugin 'tpope/vim-rails'
 Plugin 'vim-ruby/vim-ruby'
 Plugin 'yalesov/vim-emblem'
 Plugin 'wlangstroth/vim-haskell'
+Plugin 'ziglang/zig.vim'
 
 " Tools
 Plugin 'airblade/vim-gitgutter'
