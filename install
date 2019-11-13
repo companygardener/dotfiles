@@ -19,3 +19,11 @@ end
 # git push on commit
 # `echo 'git push' > .git/hooks/post-commit`
 # `chmod 755 .git/hooks/post-commit`
+
+# https://alexpearce.me/2014/05/italics-in-iterm2-vim-tmux/
+`tic ../terminfo/xterm-256color-italic.terminfo`
+
+`tic -o ~/.terminfo ../terminfo/tmux.terminfo`
+`tic -o ~/.terminfo ../terminfo/tmux-256color.terminfo`
+
+`tic -o ~/.terminfo ../terminfo/xterm-256color.terminfo`

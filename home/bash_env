@@ -1,0 +1,12 @@
+# ~/.bash_env
+# This file is read for all types of shells, if BASH_ENV is set correctly
+
+# Variables share with zsh
+[[ -e ~/.env ]] && source ~/.env || true
+
+# Bash-specific variables
+
+# Local bash-specific variables
+[[ -e ~/.bash_env.local ]] && source ~/.bash_env.local || true
+
+# vim: ft=sh

@@ -1,0 +1,13 @@
+# /.zshenv
+# This file is read first (after /etc/zshenv) for all types of shells
+# (login/non-login, interactive/non-interactive).
+
+# Variables shared with bash
+[[ -e ~/.env ]] && source ~/.env || true
+
+# Zsh-specific variables
+
+# Local zsh-specific variables
+[[ -e ~/.zshenv.local ]] && source ~/.zshenv.local || true
+
+# vim: ft=zsh

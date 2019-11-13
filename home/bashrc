@@ -3,6 +3,8 @@
 
 export DOTFILES="$HOME/.dotfiles/companygardener"
 
+. $DOTFILES/sh/aliases
+
 . $DOTFILES/bash/env
 . $DOTFILES/bash/colors
 . $DOTFILES/bash/git
@@ -12,8 +14,9 @@ export DOTFILES="$HOME/.dotfiles/companygardener"
 
 . $DOTFILES/bash/scripts
 
-shopt -s histappend
 shopt -s checkwinsize
+shopt -s cmdhist
+shopt -s histappend
 
 if [[ -f "$HOME/.bashrc.local" ]]; then
   . "$HOME/.bashrc.local"

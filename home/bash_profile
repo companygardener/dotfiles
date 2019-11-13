@@ -1,9 +1,18 @@
-export ARCHFLAGS="-arch x86_64"
-export TERM="xterm-256color"
+# ~/.bash_profile
+# This file is read for login shells.
 
-export LC_CTYPE="en_US.UTF-8"
-export LC_MESSAGES="en_US.UTF-8"
-export LC_COLLATE="en_US.UTF-8"
-export LANG="en_US.UTF-8"
+# Environment variables
+[[ -e ~/.bash_env ]] && source ~/.bash_env || true
 
-[ -f ~/.bashrc ] && source ~/.bashrc
+# Initialization shared with zsh
+[[ -e ~/.profile ]] && source ~/.profile || true
+
+# Bash-specific initialization
+
+# Local bash-specific variables
+[[ -e ~/.bash_profile.local ]] && source ~/.bash_profile.local || true
+
+# Also source bashrc if we're interactive
+[[ -n $PS1 ]] && [[ -e ~/.bashrc ]] && source ~/.bashrc
+
+# vim: ft=sh

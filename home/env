@@ -1,0 +1,87 @@
+# ~/.env
+# This file is read by bash and zsh (and maybe other shells).
+#
+# https://github.com/mika-fischer/dotfiles/blob/master/sh/env
+
+# Environment variables
+export EDITOR=vim
+export VISUAL=vim
+
+export DOTFILES="$HOME/.dotfiles/companygardener"
+
+export FULLNAME="Erik Peterson"
+export EMAIL="thecompanygardener@gmail.com"
+
+export LANG="en_US.UTF-8"
+
+export LC_COLLATE="en_US.UTF-8"
+export LC_CTYPE="en_US.UTF-8"
+export LC_MESSAGES="en_US.UTF-8"
+
+# Compilation flags
+export ARCHFLAGS="-arch x86_64"
+
+# Help bash a bit
+export ENV=~/.env
+export BASH_ENV=~/.bash_env
+
+# Try to set $TERM correctly
+if [ "$TERM" = "xterm" ]; then
+  if [ -z "$COLORTERM" ]; then
+    if [ -z "$XTERM_VERSION" ]; then
+      echo "Warning: Termianl wrongly calling itself 'xterm'."
+    else
+      case "$XTERM_VERSION" in
+        XTerm\(88\)) export TERM="xterm-88color"  ;;
+        XTerm\(*\))  export TERM="xterm-256color" ;;
+        XTerm) ;;
+        *)
+          echo "Warning: Unrecognized XTERM_VERSION: $XTERM_VERSION"
+          ;;
+      esac
+    fi
+  else
+    case "$COLORTERM" in
+      gnome-terminal)
+        # Those crafty Gnome folks require you to check COLORTERM,
+        # but don't allow you to just *favor* the setting over TERM.
+        # Instead you need to compare it and perform some guesses
+        # based upon the value. This is, perhaps, too simplistic.
+        export TERM="gnome-256color"
+        ;;
+      *)
+        echo "Warning: Unrecognized COLORTERM: $COLORTERM"
+        ;;
+    esac
+  fi
+fi
+
+# Helper functions
+append_path() {
+  if [[ -d "$1" ]]; then
+    export PATH="$PATH:$1"
+  fi
+}
+
+prepend_path() {
+  if [[ -d "$1" ]]; then
+    export PATH="$1:$PATH"
+  fi
+}
+
+append_path_var() {
+  if [[ -d "$2" ]]; then
+    eval export $1="\$$1:$2"
+  fi
+}
+
+prepend_path_var() {
+  if [[ -d "$2" ]]; then
+    eval export $1="$2:\$$1"
+  fi
+}
+
+# Local variables
+[[ -e ~/.env.local ]] && source ~/.env.local || true
+
+# vim: ft=sh

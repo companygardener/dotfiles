@@ -1,3 +1,8 @@
+# Shared aliases
+[[ -e $DOTFILES/sh/aliases ]] && source $DOTFILES/sh/aliases || true
+
+# Bash-specific aliases
+
 alias ..='cd ..'
 alias ..2='..;..'
 alias ..3='..;..;..'
@@ -8,55 +13,19 @@ alias be='bundle exec'
 alias eg='ember generate'
 alias rb=rbenv
 
-alias dus='du -Psckx * | sort -nr'
-
 if [[ $(uname) = Darwin ]]; then
   is_darwin=1
-
-  alias deleted='lsof | grep "(deleted)$"'
-
-  alias app='open -a'
-
-  alias ll='ls -lahG'
-  alias lld='gls -lah --color=auto --group-directories-first'
-  alias xgrep='grep -C2 -EHIrns --color=auto'
 
   alias code='cd ~/code; pwd'
   alias p="cd ~/code/projects"
 
   alias m.='mvim .'
 
-  alias ipv6off='networksetup -setv6off Wi-Fi'
-  alias ipv6on='networksetup -setv6automatic Wi-Fi'
-
-  alias flushdns="dscacheutil -flushcache"
-  alias sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
-
-  alias stripcr="sed -i $'s/\r//'"
-
   for method in GET HEAD POST PUT DELETE TRACE OPTIONS; do alias "$method"="lwp-request -m '$method'"; done
 
-  alias pstree='pstree -g2 -w'
-
-  alias mute="osascript -e 'set volume output muted true'"
-  alias shout="osascript -e 'set volume 10'"
-  alias slime='open -a "Sublime Text 2"'
-
-  alias soundfix="sudo pkill coreaudiod"
-  alias uuid=uuidgen
-
   alias mate="~/build/TextMate/Applications/mate/mate -w"
-
-  alias npmup="npm install -g npm"
 else
   is_darwin=0
-
-  alias ll='ls -lah --color=auto'
-  alias xgrep='grep -C2 -TEHIrns --color=auto'
-
-  alias deleted='sudo lsof | grep "(deleted)$"'
-
-  alias code='cd /export/code; pwd'
 fi
 
 alias g=git
@@ -68,10 +37,6 @@ alias gs="git s"
 
 # Autocomplete for 'g' as well
 complete -o default -o nospace -F _git g
-
-alias dotfiles='cd $DOTFILES'
-
-alias psql='PAGER=vimpager psql'
 
 alias p4s='p4 sync'
 alias p4c='p4 change'
@@ -85,14 +50,7 @@ alias h='history | grep -i '
 
 alias rvmpow='rvm env . -- --env > .powenv'
 
-alias myip='wget -nv -O - http://checkip.dyndns.org/ 2>&1'
-
 alias reload='source ~/.bashrc'
-
-alias screen="screen -U"
-
-alias gemdocs='yard server --gems --reload --port 8809'
-
 
 # alias ll='ls -la'
 # alias lt='ls -ltra'
@@ -116,6 +74,4 @@ alias gemdocs='yard server --gems --reload --port 8809'
 # alias run='psql -q'
 # alias pgkill='sudo -u postgres kill $1'
 
-alias pgreset='lunchy stop postgres && rm -rf /usr/local/var/postgres && initdb /usr/local/var/postgres && lunchy start postgres && createdb epeterson && createuser -s dummy && be rake db:create'
-alias mini='cd ~/code/work/enova/tools/miniraiser'
 alias fig='figlet'

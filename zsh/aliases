@@ -1,0 +1,14 @@
+# zsh/aliases
+# Note: many zsh aliases are installed by oh-my-zsh plugins
+#
+# Shared aliases
+[[ -e $DOTFILES/sh/aliases ]] && source $DOTFILES/sh/aliases || true
+
+# zsh global aliases
+alias -g gp='| grep -i'
+
+# zsh suffix aliases (when extension is ... open with ...)
+alias -s rb=$EDITOR
+alias -s w=$EDITOR
+
+alias reload='source ~/.zshrc'

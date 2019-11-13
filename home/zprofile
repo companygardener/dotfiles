@@ -1,0 +1,12 @@
+# ~/.zprofile
+# This file is read after ~/.zshenv for login shells
+
+# Initialization shared with bash
+[[ -e ~/.profile ]] && source ~/.profile || true
+
+# Zsh-specific initialization
+
+# Local zsh-specific variables
+[[ -e ~/.zprofile.local ]] && source ~/.zprofile.local || true
+
+# vim: ft=zsh

@@ -1,0 +1,59 @@
+# Aliases shared by bash and zsh
+
+if [[ $(uname) = Darwin ]]; then
+  is_darwin=1
+
+  alias app='open -a'
+
+  alias ls='ls -G'
+  alias ll='ls -lahG'
+  alias lld='gls -lah --color=auto --group-directories-first'
+
+  alias deleted='lsof | grep "(deleted)$"'
+
+  alias pstree='pstree -g2 -w'
+
+  alias stripcr="sed -i $'s/\r//'"
+
+  alias mute="osascript -e 'set volume output muted true'"
+  alias shout="osascript -e 'set volume 10'"
+  alias slime='open -a "Sublime Text 2"'
+
+  alias soundfix="sudo pkill coreaudiod"
+
+  alias xgrep='grep -C2 -EHIrns --color=auto'
+
+  alias ipv6off='networksetup -setv6off Wi-Fi'
+  alias ipv6on='networksetup -setv6automatic Wi-Fi'
+
+  alias flushdns="dscacheutil -flushcache"
+  alias sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
+
+  alias uuid=uuidgen
+
+  alias npmup="npm install -g npm"
+else
+  is_darwin=0
+
+  alias ls='ls --color=auto'
+  alias ll='ls -lah --color=auto'
+
+  alias xgrep='grep -C2 -TEHIrns --color=auto'
+
+  alias deleted='sudo lsof | grep "(deleted)$"'
+fi
+
+# For xterm-256color-italic
+alias ssh="TERM=exterm-256color ssh"
+
+alias dus='du -Psckx * | sort -nr'
+alias dotfiles='cd $DOTFILES'
+
+alias gemdocs='yard server --gems --reload --port 8809'
+
+alias myip='wget -nv -O - http://checkip.dyndns.org/ 2>&1'
+alias psql='PAGER=vimpager psql'
+
+alias screen="screen -U"
+
+# vim: ft=sh
