@@ -502,7 +502,7 @@ if has("autocmd")
     autocmd BufWritePost .vimrc.after  source ~/.gvimrc.after
   augroup END
 
-  autocmd FileType ruby,haml,eruby,yaml,html,javascript,sass,cucumber setlocal autoindent ts=2 sts=2 sw=2 expandtab
+  autocmd FileType ruby,haml,eruby,yaml,html,javascript,sass,cucumber setlocal autoindent ts=2 sts=2 sw=2 expandtab nospell
   autocmd FileType python setlocal autoindent ts=4 sts=4 sw=4 expandtab
 
   autocmd FileType make setlocal ts=2 sts=2 sw=2 noexpandtab
