@@ -508,6 +508,8 @@ if has("autocmd")
   autocmd FileType make setlocal ts=2 sts=2 sw=2 noexpandtab
   autocmd FileType sql  setlocal ts=4 sts=4 sw=4 expandtab
 
+  autocmd FileType mail setlocal noautoindent nosmartindent textwidth=72 nonumber spell spelllang=en_us
+
   autocmd BufNewFile,BufRead *.md,*.wd set wrap linebreak nolist textwidth=0 wrapmargin=0
   autocmd BufNewFile,BufRead *.sql syntax match Comment /\%^---\_.\{-}---$/ contains=@Yaml
   autocmd BufNewFile,BufRead psqlrc setlocal filetype=sql
