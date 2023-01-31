@@ -1,5 +1,17 @@
 Pry.config.theme = "twilight"
 
+begin
+  require 'pry-doc'
+rescue LoadError
+  puts "pry-doc not installed"
+end
+
+begin
+  require 'pry-nav'
+rescue LoadError
+  puts "pry-nav not installed"
+end
+
 require 'bigdecimal'
 require 'date'
 
