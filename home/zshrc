@@ -131,3 +131,4 @@ fi
 [[ -e ~/.zshrc.local ]] && source ~/.zshrc.local || true
 
 # vim: ft=zsh
+source /Users/erik/.config/op/plugins.sh
