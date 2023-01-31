@@ -50,6 +50,7 @@
   editor              = vim -pc ':normal gg'
   eol                 = native
   excludesfile        = ~/.gitignore
+  filemode            = false
   pager               = less -FXR
   preloadindex        = true
   symlinks            = true
