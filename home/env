@@ -18,9 +18,6 @@ export LC_COLLATE="en_US.UTF-8"
 export LC_CTYPE="en_US.UTF-8"
 export LC_MESSAGES="en_US.UTF-8"
 
-# Compilation flags
-export ARCHFLAGS="-arch x86_64"
-
 # Help bash a bit
 export ENV=~/.env
 export BASH_ENV=~/.bash_env
