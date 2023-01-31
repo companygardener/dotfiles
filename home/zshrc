@@ -87,6 +87,7 @@ plugins=(
   chruby
   command-not-found
   extract
+  heroku
   gem
   git
   github
@@ -130,5 +131,22 @@ fi
 # Local zsh initialization
 [[ -e ~/.zshrc.local ]] && source ~/.zshrc.local || true
 
+source ~/.config/op/plugins.sh
+
+export PATH="/usr/local/opt/postgresql@14/bin:$PATH"
+
+# export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@1.1)"
+# export PATH="/usr/local/opt/llvm/bin:$PATH"
+
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+
+# eval "$(pyenv virtualenv-init -)"
+eval "$(pyenv init --path)"
+
+export NODE_ROOT="$HOME/node_modules"
+export PATH="$NODE_ROOT/.bin:$PATH"
+
+export PATH="$HOME/bin:$PATH"
+
 # vim: ft=zsh
-source /Users/erik/.config/op/plugins.sh
