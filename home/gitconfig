@@ -130,6 +130,7 @@
   ca         = commit --amend
   changes    = diff --name-status -r
   check      = diff --check
+  child-sha  = !git rev-list HEAD..master | tail -n 1
   ci         = check-ignore -v
   cm         = commit --message
   co         = checkout
@@ -146,9 +147,9 @@
   dsi        = diff --staged
   dt         = difftool
   dump       = cat-file -p
+  first-sha  = !git rev-list --all | tail -n 1
+  first      = "!git checkout $(git first-sha)"
   gca        = gc --aggressive
-  gn         = "!sh -c 'git log --reverse --pretty=%H master | awk \"/$(git rev-parse HEAD)/{getline;print}\" | xargs git checkout'"
-  gp         = checkout HEAD^1
   graphviz   = "!f() { echo 'digraph git {' ; git log --pretty='format:  %h -> { %p }' \"$@\" | sed 's/[0-9a-f][0-9a-f]*/\"&\"/g' ; echo '}'; }; f"
   h          = help
   irb        = rebase --interactive
@@ -163,9 +164,12 @@
   master     = checkout master
   mm         = merge --no-ff
   news       = log --patch HEAD@{1}..HEAD@{0}
+  # next       = "!sh -c 'git log --reverse --pretty=%H master | awk \"/$(git rev-parse HEAD)/{getline;print}\" | xargs git checkout'"
+  next       = !git checkout $(git child-sha)
   p          = cherry-pick --signoff
   pick       = cherry-pick
   pr         = "!f() { git fetch origin refs/pull/$1/head:pr/$1; } ; f"
+  prev       = !git checkout HEAD^1
   prune      = fetch --prune
   r          = remote
   rb         = rebase
