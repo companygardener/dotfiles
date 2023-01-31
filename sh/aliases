@@ -52,7 +52,7 @@ alias dotfiles='cd $DOTFILES'
 alias gemdocs='yard server --gems --reload --port 8809'
 
 alias myip='wget -nv -O - http://checkip.dyndns.org/ 2>&1'
-alias psql='PAGER=vimpager psql'
+alias psql='PAGER=~/bin/vimpager psql'
 
 alias screen="screen -U"
 
