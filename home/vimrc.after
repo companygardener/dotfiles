@@ -75,7 +75,7 @@ set expandtab
 set nowrap
 set nolinebreak
 set formatoptions=rolqn12
-set formatprg=par\ -w120req
+set formatprg=par\ -w100req
 set whichwrap+=<,>,h,l
 
 set backspace=eol,start,indent
@@ -600,7 +600,7 @@ endfunction
 
 " return a list containing the lengths of the long lines in this buffer
 function! s:LongLines()
-  let threshold = (&textwidth ? &textwidth : 120)
+  let threshold = (&textwidth ? &textwidth : 100)
   let spaces = repeat(" ", &ts)
 
   let long_line_lengths = []
