@@ -5,12 +5,12 @@ endif
 set nocompatible
 filetype off
 
-set runtimepath+=~/.vim/bundle/vundle/
+set runtimepath+=~/.vim/bundle/Vundle.vim/
 
 call vundle#begin()
 
 " Core
-Plugin 'gmarik/vundle'
+Plugin 'VundleVim/Vundle.vim'
 
 " Colors
 Plugin 'altercation/vim-colors-solarized'

@@ -10,9 +10,9 @@ Dir["*"].each do |file|
   `ln -s #{File.expand_path file} #{target}`
 end
 
-unless File.exist?(File.expand_path "~/.vim/bundle/vundle")
+unless File.exist?(File.expand_path "~/.vim/bundle/Vundle.vim")
   puts %x[mkdir -p -v ~/.vim/bundle]
-  puts %x[git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle]
+  puts %x[git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim]
   puts "run `vim +PluginInstall +qall`"
 end
 
