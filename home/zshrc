@@ -149,4 +149,6 @@ export PATH="$NODE_ROOT/.bin:$PATH"
 
 export PATH="$HOME/bin:$PATH"
 
+chruby ruby-3.2.2
+
 # vim: ft=zsh
