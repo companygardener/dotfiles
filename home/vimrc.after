@@ -3,13 +3,15 @@
 "
 " shoutout
 " http://spf13.com/post/perfect-vimrc-vim-config-file
+"
+" https://gist.github.com/seven1m/438eb9b483472405137b12787ae7817d
 
 " Environment
 behave xterm
 syntax enable
 
-set nocompatible
 set background=dark
+set nocompatible
 
 " General
 set title
@@ -50,6 +52,7 @@ set cmdheight=3
 set showmode
 set showcmd
 set more
+set notimeout " disable timeout for finishing a mapping sequence
 
 set showmatch
 set ttyfast
@@ -60,8 +63,8 @@ set fileformat=unix
 
 set incsearch
 set hlsearch
-set ignorecase
-set smartcase
+set ignorecase " search case-insensitive
+set smartcase  " unless uppercase chars are used
 
 set autoindent
 set smartindent
@@ -171,12 +174,14 @@ nnoremap <leader>2 yypVr-
 nnoremap <silent> <leader>md :! open -a Marked\ 2 %:p<cr><cr>
 
 " Fugitive
-nnoremap <leader>gb :Gblame<cr>
-nnoremap <leader>gc :Gcommit<cr>
-nnoremap <leader>gd :Gdiff<cr>
-nnoremap <leader>gl :Glog<cr>
+nnoremap <leader>gb :Git blame<cr>
+nnoremap <leader>gc :Git commit<cr>
+nnoremap <leader>gd :Git diff<cr>
+nnoremap <leader>gl :Git log<cr>
 nnoremap <leader>gp :Git push<cr>
-nnoremap <leader>gs :Gstatus<cr>
+nnoremap <leader>gs :Git status<cr>
+
+autocmd FileType fugitiveblame nmap <buffer> q gq
 
 " Tagbar
 nnoremap <leader>rt :TagbarToggle<cr>
