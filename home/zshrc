@@ -135,6 +135,7 @@ source ~/.config/op/plugins.sh
 
 export PATH="/usr/local/opt/postgresql@14/bin:$PATH"
 
+# ruby-install ruby-3.2.2 -- --with-openssl-dir=$(brew --prefix openssl@1.1)
 # export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@1.1)"
 # export PATH="/usr/local/opt/llvm/bin:$PATH"
 
