@@ -80,7 +80,6 @@ COMPLETION_WAITING_DOTS="true"
 # need to evaluate: ansible autoenv aws colorize common-aliases docker
 plugins=(
   1password
-  ag
   alias-finder
   brew
   bundler
