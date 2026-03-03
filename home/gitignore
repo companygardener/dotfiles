@@ -1,8 +1,9 @@
 .powenv
 
+.claude/settings.local.json
+
 # OS X
 .DS_Store
-Icon?
 
 # Thumbnails
 ._*
