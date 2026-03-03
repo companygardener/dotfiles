@@ -16,3 +16,6 @@
 [[ -n $PS1 ]] && [[ -e ~/.bashrc ]] && source ~/.bashrc
 
 # vim: ft=sh
+
+# Added by LM Studio CLI tool (lms)
+export PATH="$PATH:/Users/erik/.lmstudio/bin"

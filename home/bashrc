@@ -23,3 +23,6 @@ if [[ -f "$HOME/.bashrc.local" ]]; then
 fi
 
 . $DOTFILES/bash/config
+
+# Added by LM Studio CLI tool (lms)
+export PATH="$PATH:/Users/erik/.lmstudio/bin"

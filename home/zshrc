@@ -95,6 +95,7 @@ plugins=(
   rails
   ruby
   z
+  zsh-syntax-highlighting
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -130,12 +131,17 @@ fi
 # Local zsh initialization
 [[ -e ~/.zshrc.local ]] && source ~/.zshrc.local || true
 
-source ~/.config/op/plugins.sh
-
 export PATH="/usr/local/opt/postgresql@14/bin:$PATH"
 
+# THIS WORKS
 # ruby-install ruby-3.2.2 -- --with-openssl-dir=$(brew --prefix openssl@1.1)
+#
+#
+# DID NOT WORK
+# export RUBY_CONFIGURE_OPTS="--with-zlib-dir=$(brew --prefix zlib) --with-openssl-dir=$(brew --prefix openssl@1.1) --with-readline-dir=$(brew --prefix readline) --with-libyaml-dir=$(brew --prefix libyaml) --with-gdbm-dir=$(brew --prefix gdbm)"
 # export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@1.1)"
+
+
 # export PATH="/usr/local/opt/llvm/bin:$PATH"
 
 export PYENV_ROOT="$HOME/.pyenv"
@@ -149,6 +155,16 @@ export PATH="$NODE_ROOT/.bin:$PATH"
 
 export PATH="$HOME/bin:$PATH"
 
-chruby ruby-3.2.2
+chruby ruby-4.0.1
+export RUBY_YJIT_ENABLE=1
 
 # vim: ft=zsh
+export PATH="$(brew --prefix node)/bin:$PATH"
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
+
+# OpenClaw Completion
+source "/Users/erik/.openclaw/completions/openclaw.zsh"
+
+# Added by LM Studio CLI tool (lms)
+export PATH="$PATH:/Users/erik/.lmstudio/bin"
