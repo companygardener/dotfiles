@@ -1,11 +1,11 @@
+set nocompatible
 if filereadable(expand("~/.vimrc.before"))
   source ~/.vimrc.before
 endif
 
-set nocompatible
 filetype off
 
-set runtimepath+=~/.vim/bundle/Vundle.vim/
+set runtimepath+=~/.vim/bundle/Vundle.vim
 
 call vundle#begin()
 
@@ -21,6 +21,7 @@ Plugin 'vim-scripts/vanzan_color'
 Plugin 'w0ng/vim-hybrid'
 
 " Languages
+Plugin 'rhysd/vim-llvm'
 Plugin 'cakebaker/scss-syntax.vim'
 Plugin 'chrisbra/csv.vim'
 Plugin 'depuracao/vim-rdoc'
@@ -28,7 +29,7 @@ Plugin 'elixir-lang/vim-elixir'
 Plugin 'groenewege/vim-less'
 Plugin 'guns/vim-clojure-static'
 Plugin 'jimenezrick/vimerl'
-Plugin 'jnwhiteh/vim-golang'
+Plugin 'fatih/vim-go'
 Plugin 'JuliaLang/julia-vim'
 Plugin 'kchmck/vim-coffee-script'
 Plugin 'mmalecki/vim-node.js'
@@ -56,16 +57,15 @@ Plugin 'ap/vim-css-color'
 Plugin 'godlygeek/tabular'
 Plugin 'honza/vim-snippets'
 Plugin 'itspriddle/ZoomWin'
-Plugin 'kien/ctrlp.vim'
+Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'junegunn/goyo.vim'
 Plugin 'majutsushi/tagbar'
 Plugin 'MarcWeber/vim-addon-mw-utils'
-Plugin 'rking/ag.vim'
 Plugin 'rizzatti/funcoo.vim'
 Plugin 'rizzatti/dash.vim'
-Plugin 'scrooloose/nerdcommenter'
-Plugin 'scrooloose/nerdtree'
-Plugin 'scrooloose/syntastic'
+Plugin 'preservim/nerdcommenter'
+Plugin 'preservim/nerdtree'
+Plugin 'preservim/syntastic'
 Plugin 'tomtom/tlib_vim'
 Plugin 'tpope/vim-bundler'
 Plugin 'tpope/vim-dispatch'
@@ -80,48 +80,11 @@ Plugin 'tpope/vim-unimpaired'
 Plugin 'vim-scripts/dbext.vim'
 Plugin 'vim-scripts/SyntaxAttr.vim'
 
-" Markdown
-" Plugin 'plasticboy/vim-markdown'
-" Plugin 'gabrielelana/vim-markdown'
-" Plugin 'jtratner/vim-flavored-markdown'
-" Plugin 'tpope/vim-markdown'
-Plugin 'vim-pandoc/vim-pandoc'
-Plugin 'vim-pandoc/vim-pandoc-syntax'
-"
-" argtextobj.vim
-" autotag
-" powerline
-" tcomment_vim
-" vim-textobj-rubyblock
-" vim-textobj-user
-" vim-airline
-" mikewest/vimroom
-" https://github.com/dsawardekar/ember.vim
-" https://github.com/edsono/vim-matchit
-" https://github.com/ervandew/supertab
-" https://github.com/mileszs/ack.vim
-" https://github.com/sjl/gundo.vim
-" https://github.com/michaeljsmith/vim-indent-object
-" https://github.com/mattn/webapi-vim
-" https://github.com/mattn/gist-vim
-" https://github.com/vim-scripts/vimwiki
-" https://github.com/Lokaltog/vim-easymotion
-" https://github.com/chrisbra/NrrwRgn
-" https://github.com/jeetsukumaran/vim-buffergator
-" https://github.com/rgarver/Kwbd.vim
-" https://github.com/kien/ctrlp.vim
-" https://github.com/skalnik/vim-vroom
 " https://github.com/tpope/vim-eunuch
-" https://github.com/terryma/vim-multiple-cursors
-" https://github.com/thinca/vim-visualstar
-" https://github.com/bronson/vim-trailing-whitespace
+" https://github.com/michaeljsmith/vim-indent-object
 "
-" Lokaltog/powerline
-" vim-scripts/Conque-Shell
-" skwp/vim-ruby-conque
-" rson/vim-conque
-" jistr/vim-nerdtree-tabs
-" tomtom/tplugin_vim
+" packadd matchit
+" https://github.com/edsono/vim-matchit
 
 call vundle#end()
 
@@ -141,17 +104,6 @@ function! s:wrap()
 endfunction
 
 if has("autocmd")
-  au Filetype make setlocal noexpandtab
-
-  au BufRead,BufNewFile *.json set ft=javascript
-
-  au BufRead,BufNewFile *.{md,markdown,txt} setlocal ft=markdown spell
-  au FileType markdown call s:wrap()
-
-  au BufRead,BufNewFile .psqlrc setlocal ft=sql
-
-  au FileType python setlocal softtabstop=4 tabstop=4 shiftwidth=4
-
   au BufReadPost * if &filetype !~ '^git\c' && line("'\"") > 0 && line("'\"") <= line("$")
     \| exe "normal! g`\"" | endif
 endif

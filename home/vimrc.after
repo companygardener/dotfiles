@@ -146,7 +146,6 @@ map ` :set fu!<cr>
 map <S-`> :ZoomWin<cr>
 
 nnoremap <leader>ff :set fu!<cr>:ZoomWin<cr>
-nnoremap <leader>= <C-w>=
 
 " vundle
 nnoremap <leader>vc :PluginClean<cr>
@@ -171,7 +170,7 @@ nnoremap <leader>T8 :set noexpandtab tabstop=8 shiftwidth=8 softtabstop=8<cr>
 " Markdown
 nnoremap <leader>1 yypVr=
 nnoremap <leader>2 yypVr-
-nnoremap <silent> <leader>md :! open -a Marked\ 2 %:p<cr><cr>
+nnoremap <leader>md :!open -a "Marked 2" "%:p"<cr>
 
 " Fugitive
 nnoremap <leader>gb :Git blame<cr>
@@ -228,7 +227,7 @@ noremap <leader>s? z=
 nnoremap <leader>rh :%s/\([^[:alnum:]:]\):\([[:alnum:]_]*\)\s\=\(\s*\)=>/\1\2:\3/g<cr>
 vnoremap <leader>rh  :s/\([^[:alnum:]:]\):\([[:alnum:]_]*\)\s\=\(\s*\)=>/\1\2:\3/g<cr>
 
-inoremap <C-l> <space>=><space>
+inoremap <C-l> <space>-><space>
 
 iabbrev xd <c-r>=strftime("%m/%d/%Y")<cr>
 iabbrev xt <c-r>=strftime("%m/%d/%Y %H:%M:%S")<cr>
@@ -418,11 +417,11 @@ vnoremap <leader>a= :Tab /=<cr>
 nnoremap <leader>a> :Tab /=><cr>
 vnoremap <leader>a> :Tab /=><cr>
 
-vnoremap <leader>am2 :Tab /<bar>/l1c1l1c1r1c1<cr>
-nnoremap <leader>am2 :Tab /<bar>/l1c1l1c1r1c1<cr>
+vnoremap <leader>am2 :Tab /<bar>/l0c1l1c1r1c1<cr>
+nnoremap <leader>am2 :Tab /<bar>/l0c1l1c1r1c1<cr>
 
-vnoremap <leader>am3 :Tab /<bar>/l1c1l1c1l1c1r1c1<cr>
-nnoremap <leader>am3 :Tab /<bar>/l1c1l1c1l1c1r1c1<cr>
+vnoremap <leader>am3 :Tab /<bar>/l0c1l1c1l1c1r1c1<cr>
+nnoremap <leader>am3 :Tab /<bar>/l0c1l1c1l1c1r1c1<cr>
 
 " NERDTree
 "
@@ -469,28 +468,16 @@ let g:ctrlp_map = '<c-p>'
 " auto-align cucumber tables using Tabularize
 inoremap <silent> <bar>   <bar><esc>:call <SID>align()<cr>a
 function! s:align()
-  let p = '^\s*|\s.*\s|\s*$'
+  let p = '^\s*|\s*.*\s*|\s*'
   if exists(':Tab') && getline('.') =~# '^\s*|' && (getline(line('.')-1) =~# p || getline(line('.')+1) =~# p)
     let column = strlen(substitute(getline('.')[0:col('.')],'[^|]','','g'))
     let position = strlen(matchstr(getline('.')[0:col('.')],'.*|\s*\zs.*'))
     Tab /|/l1
+    execute '''{,''}s/^ \ze\s*|//e'
     normal! 0
     call search(repeat('[^|]*|',column).'\s\{-\}'.repeat('.',position),'ce',line('.'))
   endif
 endfunction
-
-" auto-align = using Tabularize
-" inoremap <silent> = =<Esc>:call <SID>ealign()<cr>a
-" function! s:ealign()
-"   let p = '^.*=\s.*$'
-"   if exists(':Tabularize') && getline('.') =~# '^.*=' && (getline(line('.')-1) =~# p || getline(line('.')+1) =~# p)
-"     let column = strlen(substitute(getline('.')[0:col('.')],'[^=]','','g'))
-"     let position = strlen(matchstr(getline('.')[0:col('.')],'.*=\s*\zs.*'))
-"     Tabularize/=/l1
-"     normal! 0
-"     call search(repeat('[^=]*=',column).'\s\{-\}'.repeat('.',position),'ce',line('.'))
-"   endif
-" endfunction
 
 if has("autocmd")
   filetype on
@@ -508,33 +495,25 @@ if has("autocmd")
   augroup END
 
   autocmd FileType ruby,haml,eruby,yaml,html,javascript,sass,cucumber setlocal autoindent ts=2 sts=2 sw=2 expandtab nospell
-  autocmd FileType python setlocal autoindent ts=4 sts=4 sw=4 expandtab
+  autocmd FileType python setlocal autoindent tabstop=4 softtabstop=4 shiftwidth=4 expandtab
 
   autocmd FileType make setlocal ts=2 sts=2 sw=2 noexpandtab
   autocmd FileType sql  setlocal ts=4 sts=4 sw=4 expandtab
 
   autocmd FileType mail setlocal noautoindent nosmartindent textwidth=72 nonumber spell spelllang=en_us
 
-  autocmd BufNewFile,BufRead *.md,*.wd set wrap linebreak nolist textwidth=0 wrapmargin=0
+  autocmd BufNewFile,BufRead *.{md,wd,markdown,txt} setlocal ft=markdown wrap linebreak nolist spell textwidth=0 wrapmargin=0
   autocmd BufNewFile,BufRead *.sql syntax match Comment /\%^---\_.\{-}---$/ contains=@Yaml
   autocmd BufNewFile,BufRead psqlrc setlocal filetype=sql
   autocmd BufNewFile,BufRead {Gemfile,Rakefile,Thorfile,config.ru} setlocal filetype=ruby
 
   autocmd BufWinLeave * call clearmatches()
-  autocmd BufRead * call s:set_hidden()
+  autocmd BufRead     * call s:set_hidden()
   function! s:set_hidden()
-    if empty(&buftype) "most explorer plugins have buftype=nofile
+    if empty(&buftype) " most explorer plugins have buftype=nofile
       setlocal bufhidden=delete
     endif
   endfunction
-
-  " autocmd BufNewFile,BufRead * call yaml:frontmatter()
-
-  " function! yaml:frontmatter()
-  "   unlet b:current_syntax
-  "   syntax include @Yaml syntax/yaml.vim
-  "   syntax region yamlFrontmatter start=/\%^---$/ end=/^---$/ keepend contains=@Yaml,@Spell
-  " endfunction
 
   if v:version >= 700
     autocmd BufNewFile,BufRead *.txt setlocal spell spelllang=en
@@ -633,11 +612,12 @@ function! s:Median(nums)
     let i = (l - 1) / 2
     return nums[i]
   else
-    return (nums[1/2] + nums[(1/2)-1]) / 2
+    let i = l / 2
+    return (nums[i] + nums[i-1]) / 2
   endif
 endfunction
 
-"return the syntax highlight group under the cursor
+" return the syntax highlight group under the cursor
 function! StatusCurrentHighlight()
   let name = synIDattr(synID(line('.'),col('.'),1),'name')
   if name == ''
