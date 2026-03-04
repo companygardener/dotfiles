@@ -1,5 +1,6 @@
 # Functions shared by bash and zsh
 
+unalias md 2>/dev/null
 md() {
   mkdir -p "$@" && cd "$@"
 }
