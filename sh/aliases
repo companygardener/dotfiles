@@ -26,6 +26,7 @@ if [[ $(uname) = Darwin ]]; then
   alias ipv6off='networksetup -setv6off Wi-Fi'
   alias ipv6on='networksetup -setv6automatic Wi-Fi'
 
+  alias afk="/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend"
   alias flushdns="dscacheutil -flushcache"
   alias sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
 
@@ -51,7 +52,10 @@ alias dotfiles='cd $DOTFILES'
 
 alias gemdocs='yard server --gems --reload --port 8809'
 
-alias myip='wget -nv -O - http://checkip.dyndns.org/ 2>&1'
+alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
+alias iplocal="ipconfig getifaddr en0"
+alias jsonfix="pbpaste | jq . | pbcopy"
+alias path='echo -e ${PATH//:/\\n}'
 alias psql='PAGER=~/bin/vimpager psql'
 
 alias screen="screen -U"

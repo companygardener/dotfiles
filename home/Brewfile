@@ -1,10 +1,12 @@
 install ag
+install bat
 install bash-completion
 install beanstalk
 install chromedriver
 install chruby
 install ctags
 install elixir
+install fzf
 install gdbm
 install gem-completion
 install git

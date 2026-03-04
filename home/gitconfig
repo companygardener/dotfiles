@@ -185,6 +185,7 @@
   sma        = submodule add
   small      = submodule foreach
   smu        = submodule update --init
+  sno        = show --name-only
   snapshot   = !git stash save "snapshot: $(date)" && git stash apply "stash@{0}"
   ss         = submodule summary
   st         = stash

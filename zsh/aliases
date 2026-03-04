@@ -1,8 +1,9 @@
 # zsh/aliases
 # Note: many zsh aliases are installed by oh-my-zsh plugins
 #
-# Shared aliases
+# Shared aliases and functions
 [[ -e $DOTFILES/sh/aliases ]] && source $DOTFILES/sh/aliases || true
+[[ -e $DOTFILES/sh/functions ]] && source $DOTFILES/sh/functions || true
 
 # zsh global aliases
 alias -g gp='| grep -i'
