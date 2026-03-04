@@ -102,11 +102,6 @@ gemdoc() {
   open $GEMDIR/`ls $GEMDIR | grep $1 | sort | awk '{print $9}' | tail -1`/rdoc/index.html
 }
 
-mategem() {
-  GEMDIR=`gem env gemdir`/gems
-  mate $GEMDIR/`ls $GEMDIR | grep $1 | sort | awk '{print $9}' | tail -1`
-}
-
 # Easy extract
 extract() {
   if [ -f $1 ] ; then

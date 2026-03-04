@@ -1,7 +1,7 @@
 set transparency=2
 set guioptions=acemg
 " set guifont=source_code_pro:h10
-set guifont=operator_mono_bold:h12<cr>
+set guifont=operator_mono_bold:h12,source_code_pro:h10,Menlo:h11
 
 set guifontwide=source_code_pro:h10
 set guicursor=n:blinkon0,v:blinkon0

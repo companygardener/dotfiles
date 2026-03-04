@@ -7,9 +7,9 @@ rescue LoadError
 end
 
 begin
-  require 'pry-nav'
+  require 'pry-byebug'
 rescue LoadError
-  puts "pry-nav not installed"
+  puts "pry-byebug not installed"
 end
 
 require 'bigdecimal'

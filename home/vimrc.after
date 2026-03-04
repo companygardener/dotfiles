@@ -147,12 +147,11 @@ map <S-`> :ZoomWin<cr>
 
 nnoremap <leader>ff :set fu!<cr>:ZoomWin<cr>
 
-" vundle
-nnoremap <leader>vc :PluginClean<cr>
-nnoremap <leader>vl :PluginList<cr>
-nnoremap <leader>vi :PluginInstall<cr>
-nnoremap <leader>vu :PluginInstall!<cr>
-nnoremap <leader>vs :PluginSearch<space>
+" vim-plug
+nnoremap <leader>vc :PlugClean<cr>
+nnoremap <leader>vl :PlugStatus<cr>
+nnoremap <leader>vi :PlugInstall<cr>
+nnoremap <leader>vu :PlugUpdate<cr>
 
 nnoremap <leader><leader> :Goyo<cr>
 

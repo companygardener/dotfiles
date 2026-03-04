@@ -3,9 +3,10 @@
     # Install oh-my-zsh
     # Install homebrew
 
-    git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+    curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
-    vim +BundleInstall +qall
+    vim +PlugInstall +qall
 
     brew install --cask iterm2
     brew install --cask macvim
@@ -14,4 +15,3 @@
 # Resources
 
 * http://statico.github.io/vim2.html
-* http://c7.se/switching-to-vundle/

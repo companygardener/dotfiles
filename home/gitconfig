@@ -74,9 +74,6 @@
 [difftool "icdiff"]
   cmd = icdiff --line-numbers $LOCAL $REMOTE
 
-[github]
-  user = companygardener
-
 [merge]
   keepbackup = false
   conflictstyle = diff3

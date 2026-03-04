@@ -11,7 +11,6 @@ alias ..5='..;..;..;..;..'
 
 alias be='bundle exec'
 alias eg='ember generate'
-alias rb=rbenv
 
 if [[ $(uname) = Darwin ]]; then
   is_darwin=1
@@ -23,7 +22,6 @@ if [[ $(uname) = Darwin ]]; then
 
   for method in GET HEAD POST PUT DELETE TRACE OPTIONS; do alias "$method"="lwp-request -m '$method'"; done
 
-  alias mate="~/build/TextMate/Applications/mate/mate -w"
 else
   is_darwin=0
 fi
@@ -38,17 +36,8 @@ alias gs="git s"
 # Autocomplete for 'g' as well
 complete -o default -o nospace -F _git g
 
-alias p4s='p4 sync'
-alias p4c='p4 change'
-alias p4e='p4 edit'
-alias p4i='p4 integrate'
-
-alias pd='powder'
-
 alias df='df -h'
 alias h='history | grep -i '
-
-alias rvmpow='rvm env . -- --env > .powenv'
 
 alias reload='source ~/.bashrc'
 

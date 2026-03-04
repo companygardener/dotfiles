@@ -1,5 +1,3 @@
-.powenv
-
 .claude/settings.local.json
 
 # OS X
@@ -49,7 +47,7 @@
 .*.sw[a-z]
 *.un~
 vim/backup/*
-vim/bundle
+vim/plugged
 vim/temp
 
 # Emacs

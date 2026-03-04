@@ -4,11 +4,11 @@ Two-file setup: `vimrc` (plugins and filetype settings) loads `vimrc.after` (eve
 
 ## Plugin Manager
 
-Vundle. Commands: `<leader>vi` install, `<leader>vu` update, `<leader>vl` list, `<leader>vc` clean, `<leader>vs` search.
+vim-plug. Commands: `<leader>vi` install, `<leader>vu` update, `<leader>vl` status, `<leader>vc` clean.
 
 ## Key Mappings
 
-Leader is `\` (default).
+Leader is `,` (set in `vimrc.before`).
 
 ### Navigation & Windows
 

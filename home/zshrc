@@ -122,49 +122,28 @@ fi
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
 #
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-
 . $DOTFILES/zsh/aliases
+
+# PATH
+prepend_path "$HOME/bin"
+prepend_path "$HOME/.local/bin"
+prepend_path "/opt/homebrew/opt/libpq/bin"
+
+# Python (pyenv)
+export PYENV_ROOT="$HOME/.pyenv"
+prepend_path "$PYENV_ROOT/bin"
+eval "$(pyenv init --path)"
+
+# Node
+export NODE_ROOT="$HOME/node_modules"
+prepend_path "$NODE_ROOT/.bin"
+prepend_path "$(brew --prefix node)/bin"
+
+# Ruby
+chruby ruby-4.0.1
+export RUBY_YJIT_ENABLE=1
 
 # Local zsh initialization
 [[ -e ~/.zshrc.local ]] && source ~/.zshrc.local || true
 
-export PATH="/usr/local/opt/postgresql@14/bin:$PATH"
-
-# THIS WORKS
-# ruby-install ruby-3.2.2 -- --with-openssl-dir=$(brew --prefix openssl@1.1)
-#
-#
-# DID NOT WORK
-# export RUBY_CONFIGURE_OPTS="--with-zlib-dir=$(brew --prefix zlib) --with-openssl-dir=$(brew --prefix openssl@1.1) --with-readline-dir=$(brew --prefix readline) --with-libyaml-dir=$(brew --prefix libyaml) --with-gdbm-dir=$(brew --prefix gdbm)"
-# export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@1.1)"
-
-
-# export PATH="/usr/local/opt/llvm/bin:$PATH"
-
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-
-# eval "$(pyenv virtualenv-init -)"
-eval "$(pyenv init --path)"
-
-export NODE_ROOT="$HOME/node_modules"
-export PATH="$NODE_ROOT/.bin:$PATH"
-
-export PATH="$HOME/bin:$PATH"
-
-chruby ruby-4.0.1
-export RUBY_YJIT_ENABLE=1
-
 # vim: ft=zsh
-export PATH="$(brew --prefix node)/bin:$PATH"
-export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
-export PATH="$HOME/.local/bin:$PATH"
-
-# OpenClaw Completion
-source "/Users/erik/.openclaw/completions/openclaw.zsh"
-
-# Added by LM Studio CLI tool (lms)
-export PATH="$PATH:/Users/erik/.lmstudio/bin"
