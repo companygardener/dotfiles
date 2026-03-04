@@ -256,7 +256,6 @@ inoremap vq <esc>Vgq
 
 nnoremap <leader>w <C-w>v<C-w>l
 nnoremap <leader>W <C-w>s<C-w>j
-nnoremap <leader>= <C-w>=
 
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
@@ -478,6 +477,36 @@ function! s:align()
     call search(repeat('[^|]*|',column).'\s\{-\}'.repeat('.',position),'ce',line('.'))
   endif
 endfunction
+
+function! IndentToMatchPrior()
+  let cur_indent = indent('.')
+  let cur_line = line('.')
+
+  " Expand up to find start of block with same indent
+  let start = cur_line
+  while start > 1 && indent(start - 1) == cur_indent
+    let start = start - 1
+  endwhile
+
+  " Expand down to find end of block
+  let end = cur_line
+  while end < line('$') && indent(end + 1) == cur_indent
+    let end = end + 1
+  endwhile
+
+  if start <= 1
+    return
+  endif
+
+  let target_indent = indent(start - 1)
+
+  for lnum in range(start, end)
+    let stripped = substitute(getline(lnum), '^\s*', '', '')
+    call setline(lnum, repeat(' ', target_indent) . stripped)
+  endfor
+endfunction
+
+nnoremap <leader>= :call IndentToMatchPrior()<CR>
 
 if has("autocmd")
   filetype on
