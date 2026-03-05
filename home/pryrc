@@ -43,7 +43,38 @@ class Symbol
   end
 end
 
+def y(obj)
+  puts obj.to_yaml
+end
+
+def table(rows)
+  rows.each { |row| puts row }
+end
+
 class Object
+  def vim(method_name = nil)
+    if method_name.nil? && self.is_a?(Method)
+      file, line = self.source_location
+    else
+      file, line = method(method_name).source_location
+    end
+
+    return system("vim #{file} +#{line}") if file
+
+    puts "Source not available. Is this a C extension?"
+  end
+
+  def find_method(*args, result)
+    public_methods(false).select do |name|
+      begin
+        clone.send(name, *args) == result
+      rescue TypeError
+        send(name, *args) == result
+      rescue
+      end
+    end
+  end
+
   def ivs
     instance_variables
   end

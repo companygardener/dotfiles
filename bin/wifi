@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+
+source "${BASH_SOURCE%/*}/_includes.sh"
+
+en=en0
+
+usage_name wifi <<-DESC
+	A tool for managing WiFi on macOS.
+DESC
+
+usage_cmd info <<-DESC
+	Print the current wifi status.
+DESC
+
+usage_cmd local <<-DESC
+	Print the wifi local ip and copy it to the clipboard.
+DESC
+
+usage_cmd global <<-DESC
+	Print the global ip and copy it to the clipboard.
+DESC
+
+usage_cmd on <<-DESC
+	Power on the wifi adapter.
+DESC
+
+usage_cmd off <<-DESC
+	Power off the wifi adapter.
+DESC
+
+usage_cmd scan <<-DESC
+	Scan for nearby networks.
+DESC
+
+usage_cmd join "<ssid>" "[password]" <<-DESC
+	Join a network.
+DESC
+
+usage_cmd list <<-DESC
+	List known SSIDs.
+DESC
+
+usage_cmd forget "<ssid>" <<-DESC
+	Forget the given <ssid>.
+DESC
+
+
+wifi() {
+	required cmd "$1"
+
+	case $cmd in
+		on)
+			networksetup -setairportpower $en on
+			;;
+
+		off)
+			networksetup -setairportpower $en off
+			;;
+
+		re*)
+			wifi off
+			wifi on
+			;;
+
+		scan)
+			/System/Library/PrivateFrameworks/Apple80211.framework/Versions/A/Resources/airport scan
+			;;
+
+		join)
+			required ssid $2
+			optional password $3
+
+			networksetup -setairportnetwork $en "$ssid" "$password"
+			;;
+
+		list)
+			networksetup -listpreferredwirelessnetworks $en
+			;;
+
+		forget)
+			required ssid $2
+
+			networksetup -removepreferredwirelessnetwork $en "$ssid"
+			;;
+
+		info)
+			networksetup -getinfo 'Wi-Fi'
+			;;
+
+		local)
+			ip=`ipconfig getifaddr en0`
+			echo -n $ip | pbcopy
+			echo $ip
+			;;
+
+		global)
+			ip=`curl -s ipv4.icanhazip.com`
+			echo -n $ip | pbcopy
+			echo $ip
+			;;
+	esac
+}
+
+wifi "$@"

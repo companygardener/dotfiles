@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+
+source "${BASH_SOURCE%/*}/_includes.sh"
+
+usage_name dev <<-DESC
+	A tool for dev-related tasks.
+DESC
+
+usage_cmd root <<-DESC
+	Print path to code directory.
+DESC
+
+usage_cmd split "<name>" "[cmds]" <<-DESC
+	Run many commands in tmux.
+DESC
+
+usage_cmd split-example <<-DESC
+	Show example of using tmux split.
+DESC
+
+usage_cmd tunnel "<port>" <<-DESC
+	Open a tunnel to dev.yak.sh:80
+DESC
+
+usage_cmd fwd "<scheme>" <<-DESC
+	Open ports to dev.yak.sh.
+	e.g. dev fwd -R :80:localhost:3000
+DESC
+
+usage_cmd id <<-DESC
+	Generates a uuid, prints it, and copies it to clipboard.
+	e.g. 1D73E1DE-D26C-4A1F-B950-23626E1056C1
+DESC
+
+usage_cmd restart <<-DESC
+	Restart brew service.
+DESC
+
+dev() {
+	required cmd "$1"
+	args="${@:2}"
+
+	case $cmd in
+		root)
+			echo "$HOME/code"
+			;;
+
+		id)
+			uuidgen | tr '[:upper:]' '[:lower:]' | tee >(tr -d '\n' | pbcopy)
+			;;
+
+		hash)
+			cat | shasum -a 256 | awk '{print $1;}' | tee >(tr -d '\n' | pbcopy)
+			;;
+
+		tu*)
+			required port $2
+
+			dev fwd -R :80:localhost:$2
+			;;
+
+		fwd | forward)
+			echo "Forwarding: ${@:2}"
+			ssh a.yak.sh -NT "${@:2}"
+			;;
+
+		log|tail)
+			tail -f /opt/homebrew/var/log/$2/*.log
+			;;
+
+		restart|r*)
+			brew services restart "$args";
+			;;
+
+		split)
+			# https://unix.stackexchange.com/questions/292137/tmux-script-to-launch-several-commands
+			required commands "$2"
+			args=("\"$cmd && $SHELL -i\"")
+
+			for cmd in "${@:3}"; do
+				args+=('\;')
+				args+=(split-window)
+				args+=("\"$cmd && $SHELL -i\"")
+			done
+
+			echo "${args[@]}"
+
+			# tmux new -A -s dev-split
+			tmux new-session $args
+			;;
+
+		split-example)
+			dev split dev-split \
+				"ls" \
+				"ls .."
+			;;
+
+		each)
+			required cmd "$2"
+
+			local apps=(${DEV_EACH:-})
+			for app in "${apps[@]}"
+			do
+				echo "Running '$args' for $app..."
+				cd "$(dev root)/$app"
+				$args
+			done
+			;;
+
+	esac
+}
+
+dev "$@"

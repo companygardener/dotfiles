@@ -155,6 +155,11 @@ nnoremap <leader>vu :PlugUpdate<cr>
 
 nnoremap <leader><leader> :Goyo<cr>
 
+" case conversion
+map <leader>cC viw:s/\v%(%(\l)@<=[_-]\|<)(\l)/\u\1/ge<cr>
+map <leader>cc viw:s/\v%(\l)@<=[_-](\l)/\u\1/ge<cr>
+map <leader>cu viw:s/\v%(\l)@<=(\u)/_\l\1/ge<cr>
+
 " format entire file
 nnoremap <leader>fef :normal! gg=G``<cr>
 

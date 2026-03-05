@@ -1,0 +1,288 @@
+#!/usr/bin/env bash
+
+source "${BASH_SOURCE%/*}/_includes.sh"
+
+ROOT=`abs_path ${BASH_SOURCE%/*}/../..`
+REPO_ROOT="https://github.com/companygardener/dotfiles"
+
+usage_name "dot" <<-DESC
+	A tool for managing dotfiles.
+DESC
+
+usage_cmd link "[-f]" <<-DESC
+	Link everything.
+DESC
+
+usage_cmd edit "[dotfile]" <<-DESC
+	Edit a dotfile in the default VISUAL editor.
+DESC
+
+usage_cmd commit "<message>" <<-DESC
+	Commit all changes to the dotfile repo.
+DESC
+
+usage_cmd status <<-DESC
+	View dotfile changes.
+DESC
+
+usage_cmd push <<-DESC
+	Push dotfile commits.
+DESC
+
+usage_cmd pull <<-DESC
+	Pull dotfile commits.
+DESC
+
+usage_cmd repo "[dotfile]" <<-DESC
+	Show a dotfile on github.
+DESC
+
+usage_cmd root <<-DESC
+	Print the path to the dotfiles repo.
+DESC
+
+usage_cmd home <<-DESC
+	Print the path to the dotfile 'home' directory.
+DESC
+
+usage_cmd bin <<-DESC
+	Print the path to the dotfiles bin directory.
+DESC
+
+usage_cmd os <<-DESC
+	Print the name of the current OS.
+DESC
+
+usage_cmd os-version <<-DESC
+	Print the version number of the current OS.
+DESC
+
+usage_cmd link-all "<srcdir>" "<dstdir>" <<-DESC
+	Safely link all files in <srcdir> to <dstdir>.
+DESC
+
+usage_cmd link-file "<src>" "<dst>" <<-DESC
+	Safely link <src> to <dst>.
+DESC
+
+usage_cmd links-to "<path>" <<-DESC
+	Returns the destination that <path> will link to.
+DESC
+
+usage_cmd help <<-DESC
+	Print this doc.
+DESC
+
+puts() {
+	[ "$QUIET_FLAG" ] || echo "$@"
+}
+
+puts_v() {
+	[ "$VERBOSE_FLAG" ] && puts "$@"
+}
+
+dot() {
+	required "cmd" $1
+
+	case $cmd in
+		link)
+			[ "$DRY_RUN_FLAG" ] && puts "Dry run: Not actually linking."
+
+			dot link-all "$ROOT/home" "$HOME"
+			# dot link-all "$ROOT/config" "$HOME/.config"
+			show $(green "Done!")
+			;;
+
+		link-all)
+			required srcdir "$2"
+			required dstdir "$3"
+
+			for f in `ls -A "$srcdir"`; do
+				dot link-file "$srcdir/$f" "$dstdir/$f"
+			done
+			;;
+
+
+		link-file)
+			required src $2
+			required dst $3
+
+			cur=`readlink -n "$dst"`
+			pretty="~/$(rel_path "$HOME" "$dst")"
+
+			if [ -z "${FORCE_FLAG}" ]; then
+				if [ ! -z "$cur" ]; then
+					if [ "$cur" == "$src" ]; then
+						[ "$QUIET_FLAG" ] || puts "$(dim "Found $pretty")"
+						return
+					else
+						[ "$QUIET_FLAG" ] || puts $(yellow "$pretty -> $cur already linked")
+						return
+					fi
+				elif [ -e "$dst" ]; then
+					puts "$(red "$pretty exists!")"
+					return
+				fi
+			fi
+
+			if [ "$DRY_RUN_FLAG" ]; then
+				puts "$(green Linked) $pretty"
+			else
+				ln -nsf "$src" "$dst" && puts "$(green Linked) $pretty"
+			fi
+			;;
+
+		links-to)
+			required path $2
+			newpath="$(rel_path "$ROOT" "$path")"
+
+			case "$newpath" in
+				home/*)
+					echo "$HOME"
+					;;
+			esac
+			;;
+
+		root)
+			echo "$ROOT"
+			;;
+
+		home)
+			echo "$ROOT/home"
+			;;
+
+		bin)
+			echo "$(abs_path ${BASH_SOURCE%/*})"
+			;;
+
+		os)
+			uname -a | cut -d " " -f 1 | tr '[:upper:]' '[:lower:]'
+			;;
+
+		os-version)
+			case "$(dot os)" in
+				darwin)
+					sw_vers -productVersion
+					;;
+				*)
+					echo "unknown";;
+
+			esac
+			;;
+
+		edit)
+			optional file "$2"
+
+			if [[ ! -z $file ]]; then
+				$VISUAL "$ROOT" "$ROOT/home/$file"
+			else
+				$VISUAL "$ROOT"
+			fi
+			;;
+
+		commit|c*)
+			echo "$2"
+			required message "$2"
+
+			cd "$ROOT"
+			if [ "$DRY_RUN_FLAG" ]; then
+				puts "Dry run: Not actually committing."
+			else
+				git add .
+				git commit -m "$message"
+			fi
+			;;
+
+		status|s*)
+			cd "$ROOT"
+			git status
+			git diff
+			;;
+
+		push)
+			cd "$ROOT"
+			if [ "$DRY_RUN_FLAG" ]; then
+				echo "Dry run: Not actually pushing."
+			else
+				git push
+			fi
+			;;
+
+		pull)
+			cd "$ROOT"
+			if [ "$DRY_RUN_FLAG" ]; then
+				echo "Dry run: Not actually pulling."
+			else
+				git pull
+			fi
+			;;
+
+		repo)
+			optional file "$2"
+
+			if [[ ! -z $file ]]; then
+				open "$REPO_ROOT/tree/master/home/$file"
+			else
+				open "$REPO_ROOT"
+			fi
+			;;
+
+		help | usage)
+			usage
+			;;
+
+		*)
+			error "'$1' is not a valid command."
+			;;
+	esac
+}
+
+PARAMS=()
+
+# Possible flags:
+# -f, --force: force link even if file exists
+# -h, --help: print help
+# -v, --verbose: print more info
+# -q, --quiet: print less info
+# -d, --dry-run: don't actually do anything
+# -y, --yes: answer yes to all questions
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+		-f|--force)
+			FORCE_FLAG="1"
+			shift
+			;;
+
+		-h|--help)
+			usage
+			exit 0
+			;;
+
+		-v|--verbose)
+			VERBOSE_FLAG="1"
+			shift
+			;;
+
+		-q|--quiet)
+			QUIET_FLAG="1"
+			shift
+			;;
+
+		-d|--dry-run)
+			DRY_RUN_FLAG="1"
+			shift
+			;;
+
+		-y|--yes)
+			YES_FLAG="1"
+			shift
+			;;
+
+		*)
+			PARAMS+=("$1")
+			shift
+			;;
+	esac
+done
+
+dot "${PARAMS[@]}"

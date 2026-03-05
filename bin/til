@@ -1,0 +1,9 @@
+#!/bin/bash
+
+FILENAME="$HOME/til.md"
+
+if [[ -n "$@" ]]; then
+  echo -e "\n$(date +'%Y-%m-%d'): $@" >> "$FILENAME"
+else
+  vim "$FILENAME" +
+fi

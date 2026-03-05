@@ -1,0 +1,9 @@
+#!/bin/bash
+
+FILENAME="$HOME/notes.md"
+
+if [[ -n "$@" ]]; then
+  echo -e "\n$@" >> "$FILENAME"
+else
+  vim "$FILENAME" +
+fi

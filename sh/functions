@@ -169,6 +169,26 @@ sumit () {
   '
 }
 
+loop() {
+  local i=2 t=1 cond
+
+  [ -z ${1//[0-9]/} ] && i=$1 && shift
+  [ -z ${1//[0-9]/} ] && t=$1 && shift && cond=1
+  while [ $t -gt 0 ]; do
+    sleep $i
+    [ $cond ] && : $((--t))
+    $@
+  done
+}
+
+clear_port() {
+  lsof -t -i tcp:$1 | xargs kill -9
+}
+
+drop() {
+  tail -c +$1 ${@:2}
+}
+
 curltime() {
   curl -w "   time_namelookup:  %{time_namelookup}\n\
       time_connect:  %{time_connect}\n\
