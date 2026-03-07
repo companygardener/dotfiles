@@ -1,7 +1,8 @@
 set transparency=2
 set guioptions=acemg
-" set guifont=source_code_pro:h10
-set guifont=operator_mono_bold:h12,source_code_pro:h10,Menlo:h11
+
+" set guifont=source_code_pro:h12
+set guifont=operator_mono_bold:h12,source_code_pro:h11,Menlo:h11
 
 set guifontwide=source_code_pro:h10
 set guicursor=n:blinkon0,v:blinkon0
@@ -13,10 +14,9 @@ set colorcolumn=+1,+2,+3
 set linespace=1
 set fuoptions=maxvert
 
-colorscheme tungsten
+
 " highlight lessVariable guifg=#81a2be
-" colorscheme jellybeans
-" highlight ColorColumn guibg=#222222
+" highlight ColorColumn  guibg=#222222
 
 set scrolloff=3
 set sidescrolloff=1

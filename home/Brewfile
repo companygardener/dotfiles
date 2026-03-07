@@ -2,13 +2,16 @@ install ag
 install bat
 install bash-completion
 install beanstalk
+install delta
 install chromedriver
 install chruby
 install ctags
 install elixir
+install fd
 install fzf
 install gdbm
 install gem-completion
+install gh
 install git
 install go
 install gnu-sed
@@ -34,6 +37,7 @@ install postgresql
 install python3
 install readline
 install redis
+install ripgrep
 install rails-completion
 install ruby-build
 install ruby-install

@@ -143,9 +143,9 @@ let ruby_operators = 1
 let ruby_minlines = 1000
 
 map ` :set fu!<cr>
-map <S-`> :ZoomWin<cr>
+" map <S-`> :ZoomWin<cr>
 
-nnoremap <leader>ff :set fu!<cr>:ZoomWin<cr>
+" nnoremap <leader>ff :set fu!<cr>:ZoomWin<cr>
 
 " vim-plug
 nnoremap <leader>vc :PlugClean<cr>
@@ -188,7 +188,6 @@ autocmd FileType fugitiveblame nmap <buffer> q gq
 
 " Tagbar
 nnoremap <leader>rt :TagbarToggle<cr>
-
 
 " Rails
 " nnoremap <leader>tv :CommandTFlush<cr><bar>:CommandT app/views<cr>
@@ -441,10 +440,16 @@ nnoremap <leader>f :NERDTreeFind<cr>
 nnoremap - :NERDTreeFind<cr>
 
 " @todo simple todo list
-inoremap <leader>to <esc>O@todo:<space><esc>V:TComment<cr>A
-nnoremap <leader>to      O@todo:<space><esc>V:TComment<cr>A
+" inoremap <leader>to <esc>O@todo:<space><esc>V:TComment<cr>A
+" nnoremap <leader>to      O@todo:<space><esc>V:TComment<cr>A
 inoremap <leader>tl <esc>:grep --exclude=*~ -r todo * <cr> :copen <cr>
 nnoremap <leader>tl      :grep --exclude=*~ -r todo * <cr> :copen <cr>
+
+" vim-ai
+vnoremap <leader>aie :AIEdit<space>
+vnoremap <leader>aig :AIEdit fix spelling and grammar<cr>
+vnoremap <leader>aic :AIChat<space>
+nnoremap <leader>aic :AIChat<cr>
 
 " brew install the_silver_searcher
 " http://robots.thoughtbot.com/faster-grepping-in-vim/
@@ -457,14 +462,14 @@ if executable('ag')
 endif
 
 " dbext
-let g:dbext_default_window_use_horiz = 1
-
-let g:dbext_default_window_use_bottom = 1
-let g:dbext_default_buffer_lines = 30
-
-let g:dbext_default_window_use_right = 1
-let g:dbext_default_window_width = 120
-let g:dbext_default_window_increment = 120
+" let g:dbext_default_window_use_horiz = 1
+"
+" let g:dbext_default_window_use_bottom = 1
+" let g:dbext_default_buffer_lines = 30
+"
+" let g:dbext_default_window_use_right = 1
+" let g:dbext_default_window_width = 120
+" let g:dbext_default_window_increment = 120
 
 let g:ctrlp_map = '<c-p>'
 
@@ -551,12 +556,12 @@ if has("autocmd")
   if v:version >= 700
     autocmd BufNewFile,BufRead *.txt setlocal spell spelllang=en
   endif
+
 endif
 
 set t_Co=256
 silent! colorscheme tungsten
-" colorscheme jellybeans
-" highlight ColorColumn guibg=#222222
+" silent! colorscheme jellybeans
 
 let g:markdown_github_languages = ['ruby', 'erb=eruby', 'sql']
 

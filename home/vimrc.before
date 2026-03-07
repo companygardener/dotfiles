@@ -1,2 +1,5 @@
 let mapleader   = ","
 let g:mapleader = ","
+
+" Disable netrw — NERDTree replaces it via NERDTreeHijackNetrw
+let g:loaded_netrwPlugin = 1
