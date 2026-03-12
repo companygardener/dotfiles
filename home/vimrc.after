@@ -545,7 +545,7 @@ if has("autocmd")
   autocmd BufNewFile,BufRead psqlrc setlocal filetype=sql
   autocmd BufNewFile,BufRead {Gemfile,Rakefile,Thorfile,config.ru} setlocal filetype=ruby
 
-  autocmd BufWinLeave * call clearmatches()
+  " autocmd BufWinLeave * silent! call clearmatches()  " conflicts with vim-css-color match cleanup (E803)
   autocmd BufRead     * call s:set_hidden()
   function! s:set_hidden()
     if empty(&buftype) " most explorer plugins have buftype=nofile

@@ -54,7 +54,7 @@ Plug 'ziglang/zig.vim'
 
 " Tools
 Plug 'airblade/vim-gitgutter'
-Plug 'ap/vim-css-color'
+Plug 'companygardener/vim-css-color'
 Plug 'godlygeek/tabular'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'junegunn/goyo.vim'

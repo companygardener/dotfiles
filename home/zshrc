@@ -147,3 +147,6 @@ export RUBY_YJIT_ENABLE=1
 [[ -e ~/.zshrc.local ]] && source ~/.zshrc.local || true
 
 # vim: ft=zsh
+
+# OpenClaw Completion
+source "/Users/erik/.openclaw/completions/openclaw.zsh"

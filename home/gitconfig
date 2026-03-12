@@ -127,7 +127,8 @@
   ca         = commit --amend
   changes    = diff --name-status -r
   check      = diff --check
-  child-sha  = !git rev-list HEAD..master | tail -n 1
+  # child-sha  = !git rev-list HEAD..main | tail -n 1
+  child-sha  = !git rev-list "HEAD..$(git rev-parse --abbrev-ref origin/HEAD | sed s:origin/::)" | tail -n 1
   ci         = check-ignore -v
   cm         = commit --message
   co         = checkout
@@ -161,9 +162,10 @@
   master     = checkout master
   mm         = merge --no-ff
   news       = log --patch HEAD@{1}..HEAD@{0}
-  # next       = "!sh -c 'git log --reverse --pretty=%H master | awk \"/$(git rev-parse HEAD)/{getline;print}\" | xargs git checkout'"
+  n          = !git checkout $(git child-sha) && git show HEAD
   next       = !git checkout $(git child-sha)
-  p          = cherry-pick --signoff
+  p          = !git checkout HEAD^1 && git show HEAD
+  ps         = cherry-pick --signoff
   pick       = cherry-pick
   pr         = "!f() { git fetch origin refs/pull/$1/head:pr/$1; } ; f"
   prev       = !git checkout HEAD^1
