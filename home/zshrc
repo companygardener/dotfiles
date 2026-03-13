@@ -150,3 +150,10 @@ export RUBY_YJIT_ENABLE=1
 
 # OpenClaw Completion
 source "/Users/erik/.openclaw/completions/openclaw.zsh"
+
+# bun completions
+[ -s "/Users/erik/.bun/_bun" ] && source "/Users/erik/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
