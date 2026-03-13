@@ -174,14 +174,14 @@ nnoremap <leader>T8 :set noexpandtab tabstop=8 shiftwidth=8 softtabstop=8<cr>
 " Markdown
 nnoremap <leader>1 yypVr=
 nnoremap <leader>2 yypVr-
-nnoremap <leader>md :!open -a "Marked 2" "%:p"<cr>
+nnoremap <leader>md :silent !open -a "Marked 2" "%:p"<cr>
 
 " Fugitive
-nnoremap <leader>gb :Git blame<cr>
+nnoremap <leader>gb :Git blame <cr>
 nnoremap <leader>gc :Git commit<cr>
-nnoremap <leader>gd :Git diff<cr>
-nnoremap <leader>gl :Git log<cr>
-nnoremap <leader>gp :Git push<cr>
+nnoremap <leader>gd :Git diff  <cr>
+nnoremap <leader>gl :Git log   <cr>
+nnoremap <leader>gp :Git push  <cr>
 nnoremap <leader>gs :Git status<cr>
 
 autocmd FileType fugitiveblame nmap <buffer> q gq
