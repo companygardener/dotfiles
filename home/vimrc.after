@@ -397,11 +397,28 @@ nnoremap <leader>a<bar> :Tab /<bar><cr>
 
 vnoremap <leader>a<space> :Tab /[^ ]<space>\+\zs/l0l1<cr>
 nnoremap <leader>a<space> :Tab /[^ ]<space>\+\zs/l0l1<cr>
+function! AlignDash() range
+  let lines = getline(a:firstline, a:lastline)
+  let has_emdash = 0
+  for line in lines
+    if line =~ '—'
+      let has_emdash = 1
+      break
+    endif
+  endfor
+  if has_emdash
+    execute a:firstline . ',' . a:lastline . 'Tab /^-\?.\{-}\zs — /l0l1'
+  else
+    execute a:firstline . ',' . a:lastline . 'Tab /^-\?.\{-}\zs - /l0l1'
+  endif
+endfunction
+vnoremap <leader>a- :call AlignDash()<cr>
+nnoremap <leader>a- :call AlignDash()<cr>
 
 " foo: 1
 " foobar: 2
-nnoremap <leader>a: :Tab /\w:\zs/l0l1<cr>
-vnoremap <leader>a: :Tab /\w:\zs/l0l1<cr>
+nnoremap <leader>a: :Tab /^[^:]*:\zs/l0l1<cr>
+vnoremap <leader>a: :Tab /^[^:]*:\zs/l0l1<cr>
 
 "    foo: 1
 " foobar: 2
