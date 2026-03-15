@@ -137,7 +137,7 @@ eval "$(pyenv init --path)"
 # Node
 export NODE_ROOT="$HOME/node_modules"
 prepend_path "$NODE_ROOT/.bin"
-prepend_path "$(brew --prefix node)/bin"
+prepend_path "$(brew --prefix node@24)/bin"
 
 # Ruby
 chruby ruby-4.0.1
