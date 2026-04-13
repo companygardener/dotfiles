@@ -143,6 +143,10 @@ prepend_path "$(brew --prefix node@24)/bin"
 chruby ruby-4.0.1
 export RUBY_YJIT_ENABLE=1
 
+# Show ruby version in prompt (right of cwd, red)
+setopt prompt_subst
+RPROMPT='%{$fg[red]%}${RUBY_VERSION}%{$reset_color%} '${RPROMPT}
+
 # Local zsh initialization
 [[ -e ~/.zshrc.local ]] && source ~/.zshrc.local || true
 
