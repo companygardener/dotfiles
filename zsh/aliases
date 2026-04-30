@@ -10,6 +10,5 @@ alias -g gp='| grep -i'
 
 # zsh suffix aliases (when extension is ... open with ...)
 alias -s rb=$EDITOR
-alias -s w=$EDITOR
 
 alias reload='source ~/.zshrc'
