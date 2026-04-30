@@ -18,6 +18,7 @@ Plug 'git@github-private:companygardener/vim-tungsten'
 " Plug 'w0ng/vim-hybrid'
 
 " Languages
+Plug 'othree/html5.vim'
 Plug 'rhysd/vim-llvm'
 Plug 'cakebaker/scss-syntax.vim'
 Plug 'chrisbra/csv.vim'
