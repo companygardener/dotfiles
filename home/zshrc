@@ -92,7 +92,6 @@ plugins=(
   github
   httpie
   macos
-  rails
   ruby
   z
   zsh-syntax-highlighting
