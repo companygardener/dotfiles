@@ -156,4 +156,12 @@ RPROMPT='%{$fg[red]%}${RUBY_VERSION}%{$reset_color%} '${RPROMPT}
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
+export W_INSTALL="$HOME/tungsten"
+
 export PATH="$BUN_INSTALL/bin:$PATH"
+export PATH="$W_INSTALL/bin:$PATH"
+
+fpath=(/Users/erik/tungsten/scripts $fpath)
+autoload -Uz compinit && compinit
+
+export BIT_HOME="$HOME/tungsten/bits"
