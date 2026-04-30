@@ -16,4 +16,4 @@ source /opt/homebrew/opt/chruby/share/chruby/chruby.sh
 source /opt/homebrew/opt/chruby/share/chruby/auto.sh
 
 # Optional default when not in a project with .ruby-version
-chruby 4.0.1
+chruby 4.0.2
