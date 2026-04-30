@@ -152,9 +152,6 @@ RPROMPT='%{$fg[red]%}${RUBY_VERSION}%{$reset_color%} '${RPROMPT}
 
 # vim: ft=zsh
 
-# OpenClaw Completion
-source "/Users/erik/.openclaw/completions/openclaw.zsh"
-
 # bun completions
 [ -s "/Users/erik/.bun/_bun" ] && source "/Users/erik/.bun/_bun"
 
