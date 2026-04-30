@@ -64,6 +64,7 @@
   renames   = copies
   mnemonicprefix = true
   tool = icdiff
+  renameLimit = 1000
 
 [diff "pdf-html"]
   textconv=pdf2htmlex
