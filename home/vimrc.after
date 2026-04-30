@@ -468,6 +468,10 @@ vnoremap <leader>aig :AIEdit fix spelling and grammar<cr>
 vnoremap <leader>aic :AIChat<space>
 nnoremap <leader>aic :AIChat<cr>
 
+" yank location for claude code
+" nnoremap <leader>yl :let @+="@" . expand("%") . ":" . line(".")<CR>
+nnoremap <silent> yl :let @+="@" . fnamemodify(expand("%"), ":~:.") . ":" . line(".")<CR>
+
 " brew install the_silver_searcher
 " http://robots.thoughtbot.com/faster-grepping-in-vim/
 if executable('ag')
@@ -682,6 +686,48 @@ function! StatusCurrentHighlight()
     return '[' . name . ']'
   endif
 endfunction
+
+function! AIEditPreview() range
+  let l:indent = matchstr(getline(a:firstline), '^\s*')
+  let l:prompt = "programming syntax is " . &filetype . ", edit the code below as instructed. Preserve the existing indentation — each line should start with at least '" . l:indent . "' to match the surrounding code."
+  '<,'>call vim_ai#AIChatRun(a:lastline - a:firstline + 1, {}, l:prompt)
+endfunction
+command! -range AIEditPreview <line1>,<line2>call AIEditPreview()
+
+function! AIComplete(prompt) range
+  let l:indent = matchstr(getline(a:firstline), '^\s*')
+  let l:prompt = "programming syntax is " . &filetype . ", edit the code below as instructed. Preserve the existing indentation - each line should start with at least '" . l:indent . "' to match the surrounding code. " . a:prompt
+  '<,'>call vim_ai#AIRun(a:lastline - a:firstline + 1, {}, l:prompt)
+endfunction
+
+command! -range -nargs=* AIComplete <line1>,<line2>call AIComplete(<q-args>)
+vnoremap <leader>aic :AIComplete<space>
+
+function! AIEditInPlace(prompt) range
+  let l:indent = matchstr(getline(a:firstline), '^\s*')
+  let l:prompt = "programming syntax is " . &filetype . ". Preserve the existing indentation — each line should start with at least '" . l:indent . "'. " . a:prompt
+  '<,'>call vim_ai#AIEditRun(a:lastline - a:firstline + 1, {}, l:prompt)
+endfunction
+
+command! -range -nargs=* AIEditInPlace <line1>,<line2>call AIEditInPlace(<q-args>)
+vnoremap <leader>aie :AIEditInPlace<space>
+
+function! AISimplify() range
+  let l:indent = matchstr(getline(a:firstline), '^\s*')
+  let l:text = join(getline(a:firstline, a:lastline), "\n")
+  echo "simplifying..." | redraw
+  let l:lines = split(substitute(system('claude -p "simplify this ' . &filetype . '. Print without code fences. Match indentation." 2>/dev/null', l:text), '\n$', '', ''), "\n", 1)
+
+  let l:min = min(map(filter(copy(l:lines), 'v:val =~# "\\S"'), 'len(matchstr(v:val, "^\\s*"))'))
+
+  call map(l:lines, {_, l -> l =~# '^\s*$' ? '' : l:indent . l[l:min:]})
+  execute a:firstline . ',' . a:lastline . 'delete _'
+  call append(a:firstline - 1, l:lines)
+  echo "done"
+endfunction
+
+command! -range AISimplify <line1>,<line2>call AISimplify()
+vnoremap <leader>ais :AISimplify<CR>
 
 " ruby-conque
 " function! RunSingleConque(command)
