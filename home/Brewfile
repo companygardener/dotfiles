@@ -1,64 +1,62 @@
-install ag
-install bat
-install bash-completion
-install beanstalk
-install delta
-install chromedriver
-install chruby
-install ctags
-install elixir
-install fd
-install fzf
-install gdbm
-install gem-completion
-install gh
-install git
-install go
-install gnu-sed
-install heroku
-install htop
-install httpie
-install hub
-install icdiff
-install jq
-install libffi
-install libxml2
-install libyaml
-install macvim
-install memcached
-install n
-install node
-install openssl
-install ossp-uuid
-install par
-install pip-completion
-install pngcrush
-install postgresql
-install python3
-install readline
-install redis
-install ripgrep
-install rails-completion
-install ruby-build
-install ruby-install
-install ssh-copy-id
-install tree
-install vim
-install wget
-install yarn
+brew "ag"
+brew "bat"
+brew "bash-completion"
+brew "beanstalk"
+brew "delta"
+brew "chruby"
+brew "ctags"
+brew "elixir"
+brew "fd"
+brew "fzf"
+brew "gdbm"
+brew "gem-completion"
+brew "gh"
+brew "git"
+brew "go"
+brew "gnu-sed"
+brew "heroku"
+brew "htop"
+brew "httpie"
+brew "hub"
+brew "icdiff"
+brew "jq"
+brew "libffi"
+brew "libxml2"
+brew "libyaml"
+brew "macvim"
+brew "memcached"
+brew "n"
+brew "node"
+brew "openssl"
+brew "ossp-uuid"
+brew "par"
+brew "pip-completion"
+brew "pngcrush"
+brew "postgresql"
+brew "python3"
+brew "readline"
+brew "redis"
+brew "ripgrep"
+brew "rails-completion"
+brew "ruby-build"
+brew "ruby-install"
+brew "ssh-copy-id"
+brew "tree"
+brew "vim"
+brew "wget"
+brew "yarn"
 
-tap homebrew/cask
-
-cask install 1password
-cask install cleanmymac
-cask install dropbox
-cask install google-chrome
-cask install iterm2
-cask install slack
-cask install spotify
-cask install steam
-cask install transmission
-cask install transmit
-cask install tunnelblick
-cask install xquartz
-cask install vlc
+cask "1password"
+cask "chromedriver"
+cask "cleanmymac"
+cask "dropbox"
+cask "google-chrome"
+cask "iterm2"
+cask "slack"
+cask "spotify"
+cask "steam"
+cask "transmission"
+cask "transmit"
+cask "tunnelblick"
+cask "xquartz"
+cask "vlc"

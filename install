@@ -34,4 +34,7 @@ end
 
 `tic -o ~/.terminfo ../terminfo/xterm-256color.terminfo`
 
-# git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+plugin_dir = File.expand_path "~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+unless File.exist?(plugin_dir)
+  `git clone https://github.com/zsh-users/zsh-syntax-highlighting.git #{plugin_dir}`
+end
