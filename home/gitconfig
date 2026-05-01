@@ -135,8 +135,8 @@
   co         = checkout
   conflicts  = grep --name-only --full-name '<<<<<<< HEAD'
   d          = difftool
-  dbm        = !git branch          --merged | grep -v 'master\\|^\\*'                       | xargs -n 1 git branch --delete
-  dbmr       = !git branch --remote --merged | grep -v 'master\\|^\\*' | sed 's/origin\\///' | xargs -n 1 git push --delete origin
+  dbm        = !git branch --merged          "$(git rev-parse --abbrev-ref origin/HEAD | sed s:origin/::)"        | grep -vE 'master|main|^\\*'                       | xargs -n 1 git branch --delete
+  dbmr       = !git fetch --prune && git branch --remote --merged "origin/$(git rev-parse --abbrev-ref origin/HEAD | sed s:origin/::)" | grep -vE 'master|main|^\\*' | sed 's/origin\\///' | xargs -n 1 git push --delete origin
   dc         = difftool --cached
   dct        = difftool --cached
   di         = diff
