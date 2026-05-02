@@ -124,6 +124,7 @@ fi
 . $DOTFILES/zsh/aliases
 
 # PATH
+prepend_path "/opt/homebrew/bin"
 prepend_path "$HOME/bin"
 prepend_path "$HOME/.local/bin"
 prepend_path "/opt/homebrew/opt/libpq/bin"
