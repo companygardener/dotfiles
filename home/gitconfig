@@ -171,6 +171,7 @@
   pr         = "!f() { git fetch origin refs/pull/$1/head:pr/$1; } ; f"
   prev       = !git checkout HEAD^1
   prune      = fetch --prune
+  pushf      = push --force-with-lease --force-if-includes
   r          = remote
   rb         = rebase
   rba        = rebase --abort
