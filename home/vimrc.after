@@ -557,6 +557,15 @@ if has("autocmd")
   autocmd FileType ruby,haml,eruby,yaml,html,javascript,sass,cucumber setlocal autoindent ts=2 sts=2 sw=2 expandtab nospell
   autocmd FileType python setlocal autoindent tabstop=4 softtabstop=4 shiftwidth=4 expandtab
 
+  " slim: gq should hang-indent wrapped lines under the text after the tag.
+  " formatexpr=1 forces vim's internal formatter (returns non-zero -> falls
+  " back to internal, bypassing the global formatprg=par which would otherwise
+  " win via global-local fallback even with `setlocal formatprg=`).
+  " formatoptions=n + formatlistpat gives the hang indent.  Ruby ftplugin
+  " zeroes textwidth, so restore it.  Pattern matches slim line starters:
+  " tag (p, h1), .class, #id, p.foo / div#bar.baz, and text blocks (|, ').
+  autocmd FileType slim setlocal formatexpr=1 formatoptions=roqn1 textwidth=80 autoindent formatlistpat=^\\s*[a-zA-Z.#\|'][a-zA-Z0-9._#-]*\\s\\+
+
   autocmd FileType make setlocal ts=2 sts=2 sw=2 noexpandtab
   autocmd FileType sql  setlocal ts=4 sts=4 sw=4 expandtab
 
