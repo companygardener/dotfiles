@@ -11,13 +11,12 @@ if [[ $(uname) = Darwin ]]; then
 
   alias deleted='lsof | grep "(deleted)$"'
 
-  alias pstree='pstree -g2 -w'
+  alias pstree='pstree -g3 -w'
 
-  alias stripcr="sed -i $'s/\r//'"
+  alias stripcr="sed -i '' $'s/\r//'"
 
   alias mute="osascript -e 'set volume output muted true'"
   alias shout="osascript -e 'set volume 10'"
-  alias slime='open -a "Sublime Text 2"'
 
   alias soundfix="sudo pkill coreaudiod"
 
@@ -26,13 +25,17 @@ if [[ $(uname) = Darwin ]]; then
   alias ipv6off='networksetup -setv6off Wi-Fi'
   alias ipv6on='networksetup -setv6automatic Wi-Fi'
 
-  alias afk="/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend"
-  alias flushdns="dscacheutil -flushcache"
-  alias sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
+  # Lock the screen now (Ctrl-Cmd-Q); CGSession was removed in macOS 11
+  alias afk="osascript -e 'tell application \"System Events\" to keystroke \"q\" using {control down, command down}'"
+  alias flushdns="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder"
+  # Plain-HTTP requests on the default-route interface
+  alias sniff='sudo ngrep -d "$(route -n get default | awk "/interface:/ {print \$2}")" -t "^(GET|POST) " "tcp and port 80"'
 
   alias uuid=uuidgen
 
   alias npmup="npm install -g npm"
+
+  alias p='cd ~/code/projects'
 else
   is_darwin=0
 
@@ -50,14 +53,17 @@ alias ssh="TERM=xterm-256color ssh"
 alias dus='du -Psckx * | sort -nr'
 alias dotfiles='cd $DOTFILES'
 
-alias gemdocs='yard server --gems --reload --port 8809'
-
 alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
 alias iplocal="ipconfig getifaddr en0"
 alias jsonfix="pbpaste | jq . | pbcopy"
 alias path='echo -e ${PATH//:/\\n}'
-alias psql='PAGER=~/bin/vimpager psql'
+alias psql='PAGER=$DOTFILES/bin/vimpager psql'
 
 alias screen="screen -U"
+
+alias fig=figlet
+
+alias python=python3
+alias pip=pip3
 
 # vim: ft=sh

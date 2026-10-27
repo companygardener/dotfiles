@@ -6,9 +6,10 @@
 [[ -e $DOTFILES/sh/functions ]] && source $DOTFILES/sh/functions || true
 
 # zsh global aliases
-alias -g gp='| grep -i'
+alias -g G='| grep -i'
 
 # zsh suffix aliases (when extension is ... open with ...)
-alias -s rb=$EDITOR
+alias -s rb=${EDITOR%% *} # without -f, so the terminal isn't blocked
 
-alias reload='source ~/.zshrc'
+# Start a fresh login shell (re-reads ~/.zprofile, so PATH changes apply too)
+alias reload='exec zsh -l'

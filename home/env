@@ -4,10 +4,20 @@
 # https://github.com/mika-fischer/dotfiles/blob/master/sh/env
 
 # Environment variables
-export EDITOR=vim
+
+# MacVim locally (-f waits for the window to close), vim over SSH or off macOS
+if [[ $OSTYPE == darwin* && -z $SSH_CONNECTION ]]; then
+  export EDITOR='mvim -f'
+else
+  export EDITOR=vim
+fi
 export VISUAL=vim
 
 export DOTFILES="$HOME/.dotfiles/companygardener"
+
+export BIT_HOME="$HOME/tungsten/bits"
+export BUNDLE_COOLDOWN=7
+export RUBY_YJIT_ENABLE=1
 
 export FULLNAME="Erik Peterson"
 export EMAIL="thecompanygardener@gmail.com"
@@ -22,18 +32,19 @@ export LC_MESSAGES="en_US.UTF-8"
 export ENV=~/.env
 export BASH_ENV=~/.bash_env
 
-# Try to set $TERM correctly
-if [ "$TERM" = "xterm" ]; then
+# Try to set $TERM correctly (interactive shells only; warnings go to stderr
+# so they never end up in a script's output)
+if [[ $- == *i* && $TERM == xterm ]]; then
   if [ -z "$COLORTERM" ]; then
     if [ -z "$XTERM_VERSION" ]; then
-      echo "Warning: Termianl wrongly calling itself 'xterm'."
+      echo "Warning: Terminal wrongly calling itself 'xterm'." >&2
     else
       case "$XTERM_VERSION" in
         XTerm\(88\)) export TERM="xterm-88color"  ;;
         XTerm\(*\))  export TERM="xterm-256color" ;;
         XTerm) ;;
         *)
-          echo "Warning: Unrecognized XTERM_VERSION: $XTERM_VERSION"
+          echo "Warning: Unrecognized XTERM_VERSION: $XTERM_VERSION" >&2
           ;;
       esac
     fi
@@ -47,21 +58,33 @@ if [ "$TERM" = "xterm" ]; then
         export TERM="gnome-256color"
         ;;
       *)
-        echo "Warning: Unrecognized COLORTERM: $COLORTERM"
+        echo "Warning: Unrecognized COLORTERM: $COLORTERM" >&2
         ;;
     esac
   fi
 fi
 
 # Helper functions
+remove_path() {
+  local p=":$PATH:"
+  while [[ $p == *":$1:"* ]]; do
+    p="${p//":$1:"/:}"
+  done
+  p="${p#:}"
+  export PATH="${p%:}"
+}
+
+# Adds $1 at the end unless it is already on PATH
 append_path() {
-  if [[ -d "$1" ]]; then
+  if [[ -d "$1" && ":$PATH:" != *":$1:"* ]]; then
     export PATH="$PATH:$1"
   fi
 }
 
+# Moves $1 to the front of PATH
 prepend_path() {
   if [[ -d "$1" ]]; then
+    remove_path "$1"
     export PATH="$1:$PATH"
   fi
 }

@@ -3,14 +3,14 @@
     # Install oh-my-zsh
     # Install homebrew
 
-    curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-
+    ./install                # symlinks home/* into ~ (also fetches vim-plug)
+    brew bundle --global     # everything in ~/.Brewfile
     vim +PlugInstall +qall
 
-    brew install --cask iterm2
-    brew install --cask macvim
-    brew install --cask 1password/tap/1password-cli
+PATH lives in `sh/path`, shared by bash and zsh. When an installer appends
+PATH lines to ~/.profile, ~/.zshrc and friends, move them there.
+
+To set up another machine over SSH: `copy-dotfiles <host>`.
 
 # Resources
 

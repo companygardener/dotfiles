@@ -1,0 +1,46 @@
+# PATH shared by bash and zsh
+#
+# Sourced from ~/.zprofile and ~/.bash_profile, after macOS path_helper has
+# run (/etc/zprofile, /etc/profile), so these entries win over /usr/bin.
+# Uses append_path/prepend_path from ~/.env; later prepends take precedence.
+
+# Lowest precedence, after the system directories
+append_path "$DOTFILES/bin"
+append_path "$HOME/.lmstudio/bin"
+append_path "$HOME/.cargo/bin" # rustup; Homebrew's rust in /opt/homebrew/bin wins
+
+# Homebrew (setting HOMEBREW_PREFIX also lets the omz brew plugin skip `brew --prefix`)
+if [[ -x /opt/homebrew/bin/brew ]]; then
+  export HOMEBREW_PREFIX="/opt/homebrew"
+  export HOMEBREW_CELLAR="$HOMEBREW_PREFIX/Cellar"
+  export HOMEBREW_REPOSITORY="$HOMEBREW_PREFIX"
+fi
+
+prepend_path "$HOME/.elan/bin"
+prepend_path "/opt/homebrew/sbin"
+prepend_path "/opt/homebrew/bin"
+prepend_path "$HOME/bin"
+prepend_path "/opt/homebrew/opt/libpq/bin"
+
+# Python (pyenv)
+export PYENV_ROOT="$HOME/.pyenv"
+prepend_path "$PYENV_ROOT/bin"
+command -v pyenv >/dev/null 2>&1 && eval "$(pyenv init --path)"
+
+# Node
+export NODE_ROOT="$HOME/node_modules"
+prepend_path "$NODE_ROOT/.bin"
+prepend_path "/opt/homebrew/opt/node@24/bin"
+
+# bun, Tungsten
+export BUN_INSTALL="$HOME/.bun"
+export W_INSTALL="$HOME/tungsten"
+prepend_path "$BUN_INSTALL/bin"
+prepend_path "$W_INSTALL/bin"
+
+# Installer-managed CLIs (grok, Antigravity, opencode)
+prepend_path "$HOME/.grok/bin"
+prepend_path "$HOME/.local/bin"
+prepend_path "$HOME/.opencode/bin"
+
+# vim: ft=sh

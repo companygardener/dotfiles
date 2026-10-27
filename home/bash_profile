@@ -7,6 +7,9 @@
 # Initialization shared with zsh
 [[ -e ~/.profile ]] && source ~/.profile || true
 
+# PATH shared with zsh
+[[ -e $DOTFILES/sh/path ]] && source $DOTFILES/sh/path || true
+
 # Bash-specific initialization
 
 # Local bash-specific variables
@@ -16,6 +19,3 @@
 [[ -n $PS1 ]] && [[ -e ~/.bashrc ]] && source ~/.bashrc
 
 # vim: ft=sh
-
-# Added by LM Studio CLI tool (lms)
-export PATH="$PATH:/Users/erik/.lmstudio/bin"

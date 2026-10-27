@@ -3,8 +3,6 @@
 
 export DOTFILES="$HOME/.dotfiles/companygardener"
 
-. $DOTFILES/sh/aliases
-
 . $DOTFILES/bash/env
 . $DOTFILES/bash/colors
 . $DOTFILES/bash/git
@@ -13,6 +11,13 @@ export DOTFILES="$HOME/.dotfiles/companygardener"
 . $DOTFILES/bash/vbox_functions
 
 . $DOTFILES/bash/scripts
+
+# Ruby (zsh loads chruby through the oh-my-zsh plugin)
+if [[ -e /opt/homebrew/opt/chruby/share/chruby/chruby.sh ]]; then
+  . /opt/homebrew/opt/chruby/share/chruby/chruby.sh
+  . /opt/homebrew/opt/chruby/share/chruby/auto.sh
+  chruby ruby-4.0.6 # keep in sync with zshrc
+fi
 
 shopt -s checkwinsize
 shopt -s cmdhist
@@ -23,6 +28,3 @@ if [[ -f "$HOME/.bashrc.local" ]]; then
 fi
 
 . $DOTFILES/bash/config
-
-# Added by LM Studio CLI tool (lms)
-export PATH="$PATH:/Users/erik/.lmstudio/bin"

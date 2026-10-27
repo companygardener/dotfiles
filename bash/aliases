@@ -10,13 +10,11 @@ alias ..4='..;..;..;..'
 alias ..5='..;..;..;..;..'
 
 alias be='bundle exec'
-alias eg='ember generate'
 
 if [[ $(uname) = Darwin ]]; then
   is_darwin=1
 
   alias code='cd ~/code; pwd'
-  alias p="cd ~/code/projects"
 
   alias m.='mvim .'
 
@@ -30,16 +28,17 @@ alias g=git
 alias ga="git add"
 alias gc="git commit"
 alias gd="git diff"
-alias gh="git help"
 alias gs="git s"
 
 # Autocomplete for 'g' as well
 complete -o default -o nospace -F _git g
 
 alias df='df -h'
+alias grep='grep --color=auto'
 alias h='history | grep -i '
 
-alias reload='source ~/.bashrc'
+# Start a fresh login shell (re-reads ~/.bash_profile, so PATH changes apply too)
+alias reload='exec bash -l'
 
 # alias ll='ls -la'
 # alias lt='ls -ltra'
@@ -63,4 +62,3 @@ alias reload='source ~/.bashrc'
 # alias run='psql -q'
 # alias pgkill='sudo -u postgres kill $1'
 
-alias fig='figlet'

@@ -51,6 +51,7 @@ cdgem() {
 }
 
 dirsize() {
+  [ -n "$ZSH_VERSION" ] && setopt local_options null_glob
   du -shx * .[a-zA-Z0-9_]* 2> /dev/null | \
   egrep '^ *[0-9.]*[MG]' | sort -n > /tmp/list
   egrep '^ *[0-9.]*M' /tmp/list
@@ -63,20 +64,22 @@ to-utf8() {
   diff $1 /tmp/to-utf8
 }
 
+# Copy the dotfiles working tree (no .git) to a host and run its installer,
+# which needs Ruby there: copy-dotfiles <host>
 copy-dotfiles() {
-  mkdir -p ~/tmp
-  rm -rf ~/tmp/bin
-  cp -r ~/bin tmp/bin
-  cd ~/tmp
-  tar cjvf dotfiles.tar.bz2 bin
-  scp dotfiles.tar.bz2 $1:~/
-  ssh $1 -C "tar xjvf dotfiles.tar.bz2 && bin/dotfiles/install && rm dotfiles.tar.bz2"
-  rm dotfiles.tar.bz2
-  cd -
+  if [ -z "$1" ]; then
+    echo "usage: copy-dotfiles <host>" >&2
+    return 1
+  fi
+
+  COPYFILE_DISABLE=1 tar -C "$DOTFILES" --exclude .git --no-xattrs -czf - . |
+    ssh "$1" 'mkdir -p ~/.dotfiles/companygardener &&
+              tar -C ~/.dotfiles/companygardener -xzf - &&
+              ~/.dotfiles/companygardener/install'
 }
 
 fn_exists() {
-  type $1 2>/dev/null | grep -q 'is a function'
+  declare -f "$1" >/dev/null 2>&1
 }
 
 ff() {
@@ -93,34 +96,7 @@ cdf() {
   cd "$(ff "$@")"
 }
 
-gemdoc() {
-  GEMDIR=`gem env gemdir`/doc
-  open $GEMDIR/`ls $GEMDIR | grep $1 | sort | awk '{print $9}' | tail -1`/rdoc/index.html
-}
-
-# Easy extract
-extract() {
-  if [ -f $1 ] ; then
-      case $1 in
-          *.tar.bz2)   tar xvjf $1    ;;
-          *.tar.gz)    tar xvzf $1    ;;
-          *.tar.xz)    tar xvzf $1    ;;
-          *.bz2)       bunzip2 $1     ;;
-          *.rar)       unrar x $1     ;;
-          *.gz)        gunzip $1      ;;
-          *.tar)       tar xvf $1     ;;
-          *.tbz2)      tar xvjf $1    ;;
-          *.tgz)       tar xvzf $1    ;;
-          *.zip)       unzip $1       ;;
-          *.Z)         uncompress $1  ;;
-          *.7z)        7z x $1        ;;
-          *)           echo "don't know how to extract '$1'..." ;;
-      esac
-  else
-      echo "'$1' is not a valid file!"
-  fi
-}
-
+# extract comes from the oh-my-zsh plugin in zsh and bash/functions in bash
 alias xt=extract
 
 large-files() {
@@ -128,15 +104,15 @@ large-files() {
 }
 
 awksum() {
-  awk '
-    !/^$/ { delta = \$$1 - mean; mean += delta / NR; mean2 += delta * (\$$1 - mean); sum += \$$1; count += 1; }
+  awk -v col="${1:-1}" '
+    !/^$/ { delta = $col - mean; mean += delta / NR; mean2 += delta * ($col - mean); sum += $col; count += 1; }
 
-    NR == 1 { min = \$$1; max = \$$1 }
+    NR == 1 { min = $col; max = $col }
 
-    \$$1 <= min && !/^$/ { min = \$$1 }
-    \$$1 >= max && !/^$/ { max = \$$1 }
+    $col <= min && !/^$/ { min = $col }
+    $col >= max && !/^$/ { max = $col }
 
-    END { printf(\"%d lines -- sum: %d avg: %d stdev: %d min: %d max: %d\n\", count, sum, mean, sqrt(mean2 / count), min, max); }'
+    END { printf("%d lines -- sum: %d avg: %d stdev: %d min: %d max: %d\n", count, sum, mean, sqrt(mean2 / count), min, max); }'
 }
 
 awksumall() {

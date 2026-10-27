@@ -1,62 +1,80 @@
-brew "ag"
-brew "bat"
-brew "bash-completion"
-brew "beanstalk"
-brew "delta"
-brew "chruby"
-brew "ctags"
-brew "elixir"
-brew "fd"
-brew "fzf"
-brew "gdbm"
-brew "gem-completion"
-brew "gh"
-brew "git"
+# ~/.Brewfile — install with `brew bundle --global`
+# Only packages installed on purpose; Homebrew pulls in their dependencies.
+
+tap "runpod/runpodctl"
+
+# Tungsten (~/tungsten): toolchain, runtime libraries, bits and benchmarks
+brew "boost"         # big_math benchmark
+brew "cadical"       # SAT solver: tungsten-wassat, metaflip
+brew "cryptominisat" # SAT solver: tungsten-wassat, metaflip
+brew "ffmpeg"        # media benchmarks, studio
+brew "form"          # symbolic algebra: polysum benchmark, tungsten-koala
+brew "gmp"           # big_math benchmarks, metaflip certificates
+brew "libpq"         # tungsten-pg bit
+brew "librsvg"       # rsvg-convert for the canvas benchmark
+brew "lld"
+brew "llvm"          # clang 22+
+brew "mimalloc"      # opt-in allocator (TUNGSTEN_MIMALLOC=1)
+brew "mlx-c"         # MLX programs (pulls in mlx)
+brew "openssl@3"     # runtime TLS
+brew "tectonic"      # metaflip papers
+brew "zstd"          # compressed string slabs
+
+# Languages
+brew "crystal"
+brew "gcc"           # includes gfortran
 brew "go"
-brew "gnu-sed"
-brew "heroku"
-brew "htop"
-brew "httpie"
-brew "hub"
-brew "icdiff"
-brew "jq"
-brew "libffi"
-brew "libxml2"
-brew "libyaml"
-brew "macvim"
-brew "memcached"
-brew "n"
 brew "node"
-brew "openssl"
-brew "ossp-uuid"
-brew "par"
-brew "pip-completion"
-brew "pngcrush"
-brew "postgresql"
-brew "python3"
-brew "readline"
-brew "redis"
-brew "ripgrep"
-brew "rails-completion"
+brew "odin"
+brew "openjdk"
+brew "pyenv"
+brew "python@3.14"
+brew "uv"
+brew "chruby"
 brew "ruby-build"
 brew "ruby-install"
-brew "ssh-copy-id"
-brew "tree"
-brew "vim"
-brew "wget"
-brew "yarn"
+brew "rust"
+brew "cargo-deny"
+brew "swi-prolog"
+brew "zig"
 
-cask "1password"
-cask "chromedriver"
-cask "cleanmymac"
-cask "dropbox"
-cask "google-chrome"
+# Tools
+brew "asciinema"
+brew "awscli"
+brew "bazelisk"
+brew "bottom"
+brew "btop"
+brew "cmake"
+brew "coreutils"
+brew "djvulibre"
+brew "docker-compose"
+brew "figlet"
+brew "gh"
+brew "git-lfs"
+brew "htop"
+brew "icdiff"
+brew "libsodium"
+brew "macvim"
+brew "mdfried"
+brew "ngrep"
+brew "ninja"
+brew "pandoc"
+brew "par"
+brew "pari"
+brew "poppler"
+brew "postgresql@18", link: true # keep psql on PATH
+brew "procs"
+brew "pstree"
+brew "ripgrep"
+brew "rubberband"
+brew "runpod/runpodctl/runpodctl"
+brew "the_silver_searcher"
+brew "tmux"
+brew "tree"
+brew "zsh-syntax-highlighting"
+
+# Casks
+cask "blender"
+cask "codex"
+cask "github"
 cask "iterm2"
-cask "slack"
-cask "spotify"
-cask "steam"
-cask "transmission"
-cask "transmit"
-cask "tunnelblick"
-cask "xquartz"
-cask "vlc"
