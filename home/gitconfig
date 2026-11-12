@@ -217,3 +217,5 @@
 	process = git-lfs filter-process
 	required = true
 	clean = git-lfs clean -- %f
+[credential "https://git.heroku.com"]
+	helper = !heroku git:credentials
