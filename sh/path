@@ -7,7 +7,7 @@
 # Lowest precedence, after the system directories
 append_path "$DOTFILES/bin"
 append_path "$HOME/.lmstudio/bin"
-append_path "$HOME/.cargo/bin" # rustup; Homebrew's rust in /opt/homebrew/bin wins
+append_path "$HOME/.cargo/bin" # `cargo install` binaries
 
 # Homebrew (setting HOMEBREW_PREFIX also lets the omz brew plugin skip `brew --prefix`)
 if [[ -x /opt/homebrew/bin/brew ]]; then
@@ -21,6 +21,7 @@ prepend_path "/opt/homebrew/sbin"
 prepend_path "/opt/homebrew/bin"
 prepend_path "$HOME/bin"
 prepend_path "/opt/homebrew/opt/libpq/bin"
+prepend_path "/opt/homebrew/opt/rustup/bin" # keg-only; cargo/rustc proxies
 
 # Python (pyenv)
 export PYENV_ROOT="$HOME/.pyenv"
