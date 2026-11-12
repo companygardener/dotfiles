@@ -14,6 +14,6 @@ typeset -U path PATH
 [[ -e ~/.zshenv.local ]] && source ~/.zshenv.local || true
 
 # rustup (kept here so non-login `zsh -c` can find cargo)
-. "$HOME/.cargo/env"
+[[ -e ~/.cargo/env ]] && source ~/.cargo/env || true
 
 # vim: ft=zsh
