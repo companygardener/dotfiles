@@ -119,7 +119,7 @@ source $ZSH/oh-my-zsh.sh
 . $DOTFILES/zsh/aliases
 
 # Ruby
-chruby ruby-4.0.6
+chruby ruby-4.0.9
 
 # Show ruby version in prompt (right of cwd, red)
 setopt prompt_subst

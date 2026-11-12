@@ -38,9 +38,10 @@ export W_INSTALL="$HOME/tungsten"
 prepend_path "$BUN_INSTALL/bin"
 prepend_path "$W_INSTALL/bin"
 
-# Installer-managed CLIs (grok, Antigravity, opencode)
+# Installer-managed CLIs (grok, Antigravity, opencode, darkbloom)
 prepend_path "$HOME/.grok/bin"
 prepend_path "$HOME/.local/bin"
 prepend_path "$HOME/.opencode/bin"
+prepend_path "$HOME/.darkbloom/bin"
 
 # vim: ft=sh
